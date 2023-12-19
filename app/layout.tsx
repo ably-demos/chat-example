@@ -1,28 +1,23 @@
 import "@/styles/globals.css"
-import { Metadata } from "next"
 
-import { siteConfig } from "@/config/site"
+import { Metadata } from "next"
+import { Toaster } from "react-hot-toast";
+
+import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
-import { SiteHeader } from "@/components/site-header"
-import { TailwindIndicator } from "@/components/tailwind-indicator"
-import { ThemeProvider } from "@/components/theme-provider"
+import Header from "@/components/Header"
+import { ThemeProvider } from "@/components/ThemeProvider"
+import ProgressBar from "@/components/ProgressBar";
+import ActiveBreakpoint from "@/components/ActiveBreakpoint";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: appConfig.name,
+    template: `%s - ${appConfig.name}`,
   },
-  description: siteConfig.description,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
-  },
+  description: appConfig.description,
+  metadataBase: new URL("https://chat-app.ably.com"),
 }
 
 interface RootLayoutProps {
@@ -40,12 +35,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
             fontSans.variable
           )}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
             <div className="relative flex min-h-screen flex-col">
-              <SiteHeader />
+              <Header />
               <div className="flex-1">{children}</div>
             </div>
-            <TailwindIndicator />
+            <ActiveBreakpoint />
           </ThemeProvider>
         </body>
       </html>

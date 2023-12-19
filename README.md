@@ -1,16 +1,14 @@
-# next-template
-
-A Next.js 13 template for building apps with Radix UI and Tailwind CSS.
+# Ably Chat Reference Application
 
 ## Usage
 
 ```bash
-npx create-next-app -e https://github.com/shadcn/next-template
+npx create-next-app -e https://github.com/ably-labs/reference-app
 ```
 
 ## Features
 
-- Next.js 13 App Directory
+- Next.js 14 App Directory
 - Radix UI Primitives
 - Tailwind CSS
 - Icons from [Lucide](https://lucide.dev)
