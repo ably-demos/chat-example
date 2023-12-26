@@ -1,74 +1,65 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useChannel } from "hooks/useChannel"
+import { useState } from "react"
+import { type Types as Ably } from "ably/promises"
+import { useChannel, usePresence } from "ably/react"
+// import { useChannel } from "hooks/useChannel"
 import { useClient } from "hooks/useClient"
-import { useUser } from "hooks/useUser"
 
+import { Message } from "@/types/temp"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
-import InviteUsers from "../InviteUsers"
+import ChatHeader from "../ChatHeader"
 import LoadingDots from "../LoadingDots"
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
-import ChatHeader from "./ChatHeader"
 
 type ChatComponentProps = {
-  userId: string
+  username: string
+  channelRef: string
 }
 
-const Chat = ({ userId }: ChatComponentProps) => {
-  const [client] = useClient(userId)
+const Chat = ({ username, channelRef }: ChatComponentProps) => {
+  const [messages, setMessages] = useState<Message[]>([])
 
-  const [open, setOpen] = useState(false)
-  const [recipient] = useUser(client, "demo")
-  const [channel] = useChannel(client, recipient)
+  const { presenceData, updateStatus } = usePresence(
+    channelRef,
+    "initialPresenceStatus"
+  )
 
-  useEffect(() => {
-    if (!client) return
-    //    TODO: Implement this
-    //    client?.getChannels().then(({ channels }): void => {
-    //      console.log(channels)
-    //      channels.forEach((channel) => {
-    //        channel.delete()
-    //      })
-    //    })
-  }, [client])
+  const { channel } = useChannel(channelRef, (message) => {
+    setMessages((prev) => [...prev, message as unknown as Message])
+  })
 
-  async function handleSend(text: string) {
-    if (!channel) return
-    await channel.sendText(text)
+  const handleSend = async (text: string) => {
+    if (!channel) {
+      console.log("no channel, not sending message")
+      return
+    }
+    const msgData = {
+      name: "new_message",
+      data: text,
+    }
+
+    console.log(msgData)
+    await channel.publish(msgData)
+    console.log("message sent")
   }
 
-  if (!client || !channel) return <LoadingDots />
-
-  const handleLeave = async () => {
-    channel.leave()
-  }
+  if (!channel) return <LoadingDots />
 
   return (
-    <>
-      <Card className="h-full w-full flex flex-col">
-        <CardHeader className="flex flex-row items-center">
-          <ChatHeader
-            channel={channel}
-            onLeave={handleLeave}
-            onInviteClick={() => setOpen(true)}
-          />
-        </CardHeader>
-        <CardContent className="flex grow">
-          <MessageList channel={channel} />
-        </CardContent>
-        <CardFooter>
-          <MessageInput onSend={handleSend} />
-        </CardFooter>
-      </Card>
-      <InviteUsers
-        open={open}
-        channel={channel}
-        onOpenChange={(value: boolean) => setOpen(value)}
-      />
-    </>
+    <Card className="flex h-full w-full flex-col rounded-none">
+      <CardHeader className="flex flex-row items-center">
+        <ChatHeader channelName="Chat room" />
+      </CardHeader>
+      <CardContent className="flex grow">
+        <MessageList messages={messages} />
+      </CardContent>
+      <CardFooter>
+        <MessageInput onSubmit={handleSend} />
+      </CardFooter>
+    </Card>
   )
 }
 

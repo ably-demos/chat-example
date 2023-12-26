@@ -1,6 +1,16 @@
+import { FontBoldIcon, FontItalicIcon } from "@radix-ui/react-icons"
+import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { formatRelative } from "date-fns"
+import { UnderlineIcon } from "lucide-react"
 
 import { Message, MessagePart } from "@/types/temp"
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip"
 
 const renderMessagePart = (messagePart: MessagePart) => {
   if (messagePart.type === "text") {
@@ -43,29 +53,49 @@ const getPartKey = (messagePart: MessagePart) => {
 type MessageItemProps = {
   message: Message
   username: string
-  avatar: string
+  color?: string
 }
 
-const MessageItem = ({ message, username, avatar }: MessageItemProps) => {
+const MessageItem = ({ message, username, color }: MessageItemProps) => {
+  console.log(message)
   return (
-    <li key={message.created_at}>
-      <aside style={{ background: avatar }}>username</aside>
-      <article>
-        <h3>
-          {username}
-          <time>
-            {formatRelative(new Date(message.created_at), new Date())}
-          </time>
-        </h3>
-        <p>
-          {message.messageParts.map((messagePart: MessagePart) => (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <li key={message.created_at}>
+            <article className="inline-flex">
+              <h3 style={{ color }} className="mr-2">
+                {username}
+              </h3>
+              <p>
+                {message.data}
+                {/* {message.messageParts.map((messagePart: MessagePart) => (
             <span key={getPartKey(messagePart)}>
               {renderMessagePart(messagePart)}
             </span>
-          ))}
-        </p>
-      </article>
-    </li>
+          ))} */}
+              </p>
+            </article>
+          </li>
+        </TooltipTrigger>
+        <TooltipContent>
+          <ToggleGroup type="multiple">
+            <ToggleGroupItem value="bold" aria-label="Toggle bold">
+              <FontBoldIcon className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="italic" aria-label="Toggle italic">
+              <FontItalicIcon className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="strikethrough"
+              aria-label="Toggle strikethrough"
+            >
+              <UnderlineIcon className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }
 

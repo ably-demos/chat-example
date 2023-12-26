@@ -1,22 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 
-import { cn } from "@/lib/utils"
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import AuthStatus from "@/components/AuthStatus"
-import { Icons } from "@/components/Icons"
-
-import SignOut from "../SignOut"
 import ThemeToggle from "../ThemeToggle"
 import NavListItem from "./NavListItem"
 
@@ -60,9 +45,8 @@ const components: { title: string; href: string; description: string }[] = [
 
 export const Nav = () => {
   return (
-    <nav className="w-full inline-flex justify-end">
+    <nav className="inline-flex w-full justify-end">
       <ThemeToggle />
-      <SignOut />
     </nav>
   )
 }

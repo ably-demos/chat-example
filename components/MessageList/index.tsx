@@ -1,20 +1,19 @@
 "use client"
 
 import React, { useEffect, useRef } from "react"
-import { useMembers } from "hooks/useMembers"
-import { useMessages } from "hooks/useMessages"
+import { type Types as Ably } from "ably/promises"
 
-import { Channel } from "@/types/temp"
+import { Message } from "@/types/temp"
+
+// import { useMembers } from "hooks/useMembers"
 
 import MessageItem from "../MessageItem"
 
 type MessageListProps = {
-  channel: Channel
+  messages: Message[]
 }
 
-const MessageList = ({ channel }: MessageListProps) => {
-  const [messages] = useMessages(channel)
-  const [members] = useMembers(channel)
+const MessageList = ({ messages }: MessageListProps) => {
   const messageListRef = useRef<HTMLOListElement>(null)
 
   useEffect(() => {
@@ -23,15 +22,14 @@ const MessageList = ({ channel }: MessageListProps) => {
   }, [messages])
 
   return (
-    <ol ref={messageListRef} className="space-y-4 grow w-full flex flex-col">
+    <ol ref={messageListRef} className="flex w-full grow flex-col space-y-4">
       {messages.map((message) => {
-        const user = members.find((member) => member.id === message.user_id)!
         return (
           <MessageItem
-            key={message.created_at}
+            key={message.timestamp}
             message={message}
-            username={user.username}
-            avatar={user.imageUrl}
+            username={message.clientId}
+            color="hsl(var(--muted-foreground)"
           />
         )
       })}

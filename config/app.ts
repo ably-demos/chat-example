@@ -1,13 +1,13 @@
 
 export const app = {
-  name: "Reference App",
+  name: "Livestream Demo",
   description:
     "Ably reference app built with Next.js, TypeScript, Radix UI, Tailwind CSS, and Prisma.",
   mainNav: [
-    {
-      title: "Home",
-      href: "/home",
-    },
+    // {
+    //   title: "Home",
+    //   href: "/home",
+    // },
   ]
 }
 
