@@ -1,10 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { type Types as Ably } from "ably/promises"
 import { useChannel, usePresence } from "ably/react"
+
 // import { useChannel } from "hooks/useChannel"
-import { useClient } from "hooks/useClient"
 
 import { Message } from "@/types/temp"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -22,10 +21,16 @@ type ChatComponentProps = {
 const Chat = ({ username, channelRef }: ChatComponentProps) => {
   const [messages, setMessages] = useState<Message[]>([])
 
+  const handlePresenceUpdate = (presenceData: any) => {
+    console.log("presence update", presenceData)
+  }
   const { presenceData, updateStatus } = usePresence(
     channelRef,
-    "initialPresenceStatus"
+    "initialPresenceStatus",
+    handlePresenceUpdate
   )
+
+  console.log("presenceData", presenceData)
 
   const { channel } = useChannel(channelRef, (message) => {
     setMessages((prev) => [...prev, message as unknown as Message])

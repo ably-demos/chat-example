@@ -7,8 +7,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-
 import {
   Form,
   FormControl,
@@ -16,7 +14,8 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "../ui/form"
+} from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
 
 type Props = {
   onSubmit: (value: string) => void

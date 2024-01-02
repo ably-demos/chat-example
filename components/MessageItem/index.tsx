@@ -4,13 +4,12 @@ import { formatRelative } from "date-fns"
 import { UnderlineIcon } from "lucide-react"
 
 import { Message, MessagePart } from "@/types/temp"
-
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip"
+} from "@/components/ui/tooltip"
 
 const renderMessagePart = (messagePart: MessagePart) => {
   if (messagePart.type === "text") {
