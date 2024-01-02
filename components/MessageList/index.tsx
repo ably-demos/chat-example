@@ -22,7 +22,10 @@ const MessageList = ({ messages }: MessageListProps) => {
   }, [messages])
 
   return (
-    <ol ref={messageListRef} className="flex w-full grow flex-col space-y-4">
+    <ol
+      ref={messageListRef}
+      className="flex w-full grow flex-col items-start space-y-2"
+    >
       {messages.map((message) => {
         return (
           <MessageItem

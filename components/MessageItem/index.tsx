@@ -62,19 +62,12 @@ const MessageItem = ({ message, username, color }: MessageItemProps) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger>
-          <li key={message.created_at}>
+          <li className="w-full" key={message.created_at}>
             <article className="inline-flex">
               <h3 style={{ color }} className="mr-2">
                 {username}
               </h3>
-              <p>
-                {message.data}
-                {/* {message.messageParts.map((messagePart: MessagePart) => (
-            <span key={getPartKey(messagePart)}>
-              {renderMessagePart(messagePart)}
-            </span>
-          ))} */}
-              </p>
+              <p>{message.data}</p>
             </article>
           </li>
         </TooltipTrigger>

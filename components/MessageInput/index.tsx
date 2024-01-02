@@ -87,15 +87,3 @@ const MessageInput = ({ onSubmit }: Props) => {
 }
 
 export default MessageInput
-
-{
-  /* <form className="flex w-full items-center space-x-2">
-        <Textarea
-          id="message"
-          className="flex-1"
-          autoComplete="off"
-          value={text}
-          onChange={(event) => setText(event.target.value)}
-        />
-      </form> */
-}

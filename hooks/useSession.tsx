@@ -1,22 +1,10 @@
 import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
 
+import { fetchJson } from "@/lib/fetcher"
 import { defaultSession, SessionData } from "@/lib/session"
 
 const sessionApiRoute = "/api/session"
-
-async function fetchJson<JSON = unknown>(
-  input: RequestInfo,
-  init?: RequestInit
-): Promise<JSON> {
-  return fetch(input, {
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-    },
-    ...init,
-  }).then((res) => res.json())
-}
 
 function doCreate(url: string) {
   return fetchJson<SessionData>(url, {

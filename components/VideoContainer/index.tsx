@@ -4,16 +4,25 @@ import { Clock10Icon, PauseIcon, UserIcon, Volume2Icon } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 
-type VideoContainerProps = {}
+type VideoContainerProps = {
+  title: string
+  url: string
+  views: number
+  user: {
+    name: string
+    // avatar: string
+    subscribers: number
+  }
+}
 
-const VideoContainer = (props: VideoContainerProps) => {
+const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
   return (
     <div className="flex h-full w-full bg-muted">
       <div className="m-4 flex w-full flex-col lg:max-w-7xl">
         <div className="relative flex w-full ">
           <iframe
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-            title="YouTube video player"
+            src={url}
+            title={title}
             allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             className="aspect-video w-full"
           />
@@ -33,7 +42,7 @@ const VideoContainer = (props: VideoContainerProps) => {
           </h1>
           <div className="inline-flex space-x-4">
             <span className="inline-flex text-destructive-foreground">
-              <UserIcon className="mr-1" /> 928
+              <UserIcon className="mr-1" /> {views}
             </span>
             <span className="inline-flex">
               <Clock10Icon className="mr-1" /> 01:20:13
@@ -48,12 +57,12 @@ const VideoContainer = (props: VideoContainerProps) => {
               )}&rounded=true&background=random`}
               alt="Image"
             />
-            <AvatarFallback>OM</AvatarFallback>
+            <AvatarFallback>SN</AvatarFallback>
           </Avatar>
           <div>
-            <p className="p-2 text-sm font-medium leading-none">Sports News</p>
+            <p className="p-2 text-sm font-medium leading-none">{user.name}</p>
             <p className="p-2 text-sm font-medium leading-none text-muted-foreground">
-              855,721 Subscribers
+              {user.subscribers} Subscribers
             </p>
           </div>
         </div>

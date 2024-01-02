@@ -51,7 +51,7 @@ const Chat = ({ username, channelRef }: ChatComponentProps) => {
   return (
     <Card className="flex h-full w-full flex-col rounded-none">
       <CardHeader className="flex flex-row items-center">
-        <ChatHeader channelName="Chat room" />
+        <ChatHeader channelName="Chat room" onlineUserCount={928} />
       </CardHeader>
       <CardContent className="flex grow">
         <MessageList messages={messages} />
