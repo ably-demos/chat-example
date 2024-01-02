@@ -1,14 +1,14 @@
-import { User, Video } from "@prisma/client"
 import useSWR from "swr"
 
 import { fetchJson } from "@/lib/fetcher"
+import { GETVideoResponse } from "@/app/api/video/route"
 
 const videoApiRoute = "/api/video"
 
 export default function useVideo() {
   const { data: video, isLoading } = useSWR(
     videoApiRoute,
-    fetchJson<Video & { user: User }>
+    fetchJson<GETVideoResponse>
   )
 
   return { video, isLoading }

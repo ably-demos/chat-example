@@ -1,19 +1,16 @@
-import { cookies } from "next/headers"
-import { PrismaClient } from "@prisma/client"
+import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 
-import { defaultSession, getSession } from "@/lib/session"
-
-const prisma = new PrismaClient()
+import prisma from "@/lib/prisma"
 
 // read session
-export async function GET() {
-  const session = await getSession(cookies())
-
-  if (!session) {
-    return Response.json(defaultSession)
-  }
-
+export async function GET(): Promise<NextResponse<GETVideoResponse>> {
   const video = await prisma.video.findFirst({ include: { user: true } })
 
-  return Response.json(video)
+  return NextResponse.json(video)
 }
+export type GETVideoResponse = Prisma.Result<
+  typeof prisma.video,
+  { include: { user: true } },
+  "findFirst"
+>

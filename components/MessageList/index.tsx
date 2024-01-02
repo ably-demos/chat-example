@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useRef } from "react"
-import { type Types as Ably } from "ably/promises"
 
 import { Message } from "@/types/temp"
 
@@ -32,7 +31,6 @@ const MessageList = ({ messages }: MessageListProps) => {
             key={message.timestamp}
             message={message}
             username={message.clientId}
-            color="hsl(var(--muted-foreground)"
           />
         )
       })}

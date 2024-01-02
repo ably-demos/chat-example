@@ -11,12 +11,22 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  name        String?  @unique
-  videos      Video[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  subscribers Int      @default(0)
+  id                 Int       @id @default(autoincrement())
+  name               String    @unique
+  avatar             String
+  videos             Video[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  subscribers        Int       @default(0)
+  favouritedMessages Message[] @relation(name: "favouritedBy")
+}
+
+model Message {
+  id           Int      @id @default(autoincrement())
+  text         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  favouritedBy User[]   @relation(name: "favouritedBy")
 }
 
 model Video {

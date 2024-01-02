@@ -20,11 +20,16 @@ type ChatComponentProps = {
 
 const Chat = ({ username, channelRef }: ChatComponentProps) => {
   const [messages, setMessages] = useState<Message[]>([])
+  const [users, setUsers] = useState<string[]>([])
 
   const handlePresenceUpdate = (presenceData: any) => {
     console.log("presence update", presenceData)
+    if (presenceData.action === "present") {
+      setUsers((prev) => [...prev, presenceData.clientId])
+    }
   }
-  const { presenceData, updateStatus } = usePresence(
+
+  const { presenceData } = usePresence(
     channelRef,
     "initialPresenceStatus",
     handlePresenceUpdate
@@ -38,23 +43,23 @@ const Chat = ({ username, channelRef }: ChatComponentProps) => {
 
   const handleSend = async (text: string) => {
     if (!channel) {
-      console.log("no channel, not sending message")
+      console.error("Skipping send. Check Channel is set.")
       return
     }
+
     const msgData = {
       name: "new_message",
       data: text,
     }
 
-    console.log(msgData)
     await channel.publish(msgData)
-    console.log("message sent")
+    console.trace("message sent")
   }
 
   if (!channel) return <LoadingDots />
 
   return (
-    <Card className="flex h-full w-full flex-col rounded-none">
+    <Card className="flex h-full w-full flex-col rounded-none border-t-0">
       <CardHeader className="flex flex-row items-center">
         <ChatHeader channelName="Chat room" onlineUserCount={928} />
       </CardHeader>

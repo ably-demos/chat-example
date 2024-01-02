@@ -1,8 +1,6 @@
 import React from "react"
-import { InfoIcon, Plus, Users } from "lucide-react"
+import { InfoIcon, Users } from "lucide-react"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
@@ -11,7 +9,6 @@ import {
 } from "@/components/ui/tooltip"
 
 import { Separator } from "./ui/separator"
-import { ToggleGroup } from "./ui/toggle-group"
 
 type ChatHeaderProps = {
   channelName: string
@@ -23,8 +20,8 @@ const ChatHeader = ({ channelName, onlineUserCount }: ChatHeaderProps) => {
     <div className="flex flex-col">
       <div className="space-between flex w-full items-center space-x-4">
         <p className="grow text-lg font-medium leading-none">{channelName}</p>
-        <span className="flex">
-          <Users className="mr-2" />
+        <span className="flex items-center text-sm">
+          <Users size="16" className="mr-2" />
           {onlineUserCount}
         </span>
       </div>
@@ -37,7 +34,7 @@ const ChatHeader = ({ channelName, onlineUserCount }: ChatHeaderProps) => {
             <Tooltip>
               <TooltipTrigger>
                 <span className="inline-flex text-destructive-foreground">
-                  blacklisted words list <InfoIcon height={"16"} />
+                  blocklisted words list <InfoIcon height={"16"} />
                 </span>
               </TooltipTrigger>
               <TooltipContent>

@@ -6,10 +6,15 @@ dotenv.config()
 const prisma = new PrismaClient()
 
 const seed = async () => {
+  const name = "Sport News"
+
   const user = await prisma.user.create({
     data: {
-      name: "Sport News",
+      name,
       subscribers: 855721,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        name
+      )}&rounded=true&background=random`,
     },
   })
 
@@ -25,4 +30,8 @@ const seed = async () => {
       },
     },
   })
+
+  console.info(user, video)
 }
+
+seed()
