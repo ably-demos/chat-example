@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation"
 import { Realtime } from "ably"
 import { AblyProvider } from "ably/react"
+import { isValid } from "date-fns"
 
 import useSession from "@/hooks/useSession"
 import useVideo from "@/hooks/useVideo"
@@ -19,9 +20,11 @@ export default function Channel() {
     useTokenAuth: true,
   })
 
-  const { video } = useVideo()
+  const { video, isLoading } = useVideo()
 
-  if (!video) return <div>Loading...</div>
+  if (isLoading) return <div>Loading...</div>
+
+  if (!video) return <div>Video not found</div>
   return (
     <AblyProvider client={client}>
       {/* TODO: Fix max height*/}
