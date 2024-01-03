@@ -2,7 +2,7 @@ import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
 
 import { fetchJson } from "@/lib/fetcher"
-import { defaultSession, SessionData } from "@/lib/session"
+import { defaultSession, getSession, SessionData } from "@/lib/session"
 
 const sessionApiRoute = "/api/session"
 
@@ -19,7 +19,7 @@ function doReset(url: string) {
 }
 
 export default function useSession() {
-  const { data: session, isLoading } = useSWR(
+  const { data, ...getSession } = useSWR(
     sessionApiRoute,
     fetchJson<SessionData>,
     {
@@ -27,11 +27,21 @@ export default function useSession() {
     }
   )
 
-  const { trigger: create } = useSWRMutation(sessionApiRoute, doCreate, {
-    // the login route already provides the updated information, no need to revalidate
-    revalidate: false,
-  })
+  const { trigger: create } = useSWRMutation(
+    sessionApiRoute,
+    (url) => doCreate(url),
+    {
+      // the login route already provides the updated information, no need to revalidate
+      revalidate: false,
+    }
+  )
+
   const { trigger: reset } = useSWRMutation(sessionApiRoute, doReset)
 
-  return { session, reset, create, isLoading }
+  return {
+    session: data,
+    resetSession: reset,
+    createSession: create,
+    ...getSession,
+  }
 }

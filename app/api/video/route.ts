@@ -9,6 +9,7 @@ export async function GET(): Promise<NextResponse<GETVideoResponse>> {
 
   return NextResponse.json(video)
 }
+
 export type GETVideoResponse = Prisma.Result<
   typeof prisma.video,
   { include: { user: true } },

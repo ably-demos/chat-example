@@ -1,6 +1,13 @@
 import { cookies } from "next/headers"
+import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 
-import { defaultSession, generateSession, getSession } from "@/lib/session"
+import {
+  defaultSession,
+  generateSession,
+  getSession,
+  SessionData,
+} from "@/lib/session"
 
 // read session
 export async function GET() {
@@ -13,22 +20,20 @@ export async function GET() {
   return Response.json(session)
 }
 
-export async function POST() {
+const createSessionBodySchema = z.object({
+  channel: z.string().nullable(),
+})
+
+export type CreateSessionBodySchema = z.infer<typeof createSessionBodySchema>
+
+export async function POST(req: NextRequest, res: NextResponse<SessionData>) {
   const session = await getSession(cookies())
 
-  const { username, channelRef } = generateSession()
+  const { username } = await generateSession(session.username)
 
   session.username = username
-  session.channelRef = channelRef
+
   await session.save()
 
   return Response.json(session)
-}
-
-export async function DELETE() {
-  const session = await getSession(cookies())
-
-  session.destroy()
-
-  return Response.json(generateSession())
 }

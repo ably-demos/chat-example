@@ -1,18 +1,12 @@
 import React from "react"
-import {
-  Clock10Icon,
-  PauseIcon,
-  UserIcon,
-  Video,
-  Volume2Icon,
-} from "lucide-react"
+import { PauseIcon, PlayIcon } from "lucide-react"
 import ReactPlayer from "react-player/file"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 
 import RoomReactions from "./RoomReactions"
 import VideoDetail from "./VideoDetail"
+import Volume from "./Volume"
 
 type VideoContainerProps = {
   title: string
@@ -26,26 +20,45 @@ type VideoContainerProps = {
 }
 
 const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
+  const [playing, setPlaying] = React.useState(false)
+  const videoRef = React.useRef<ReactPlayer>(null)
+  const [volume, setVolume] = React.useState(0.5)
+
+  const handlePlayPause = () => {
+    setPlaying((prev) => !prev)
+  }
+
   return (
     <div className="flex h-full w-full justify-center bg-muted">
-      <div className="m-4 flex w-full flex-col lg:max-w-7xl">
-        <div className="relative flex w-full ">
-          <video
-            title={title}
-            className="aspect-video h-full max-h-[500px] w-full max-w-screen-lg lg:h-[500px]"
-            controls
-          >
-            <source src={url} type="video/mp4" className="w-full" />
-          </video>
-          {/* <div className="absolute bottom-0 left-0">
-            <Button variant="ghost">
-              <PauseIcon />
-            </Button>
-            <Button variant="ghost">
-              <Volume2Icon />
-            </Button>
-            <RoomReactions />
-          </div> */}
+      <div className="container m-4 flex w-full flex-col">
+        <div className="relative w-full ">
+          <ReactPlayer
+            url={url}
+            volume={volume}
+            ref={videoRef}
+            playing={playing}
+            controls={false}
+            width={"100%"}
+            height={"100%"}
+            className="m-auto aspect-video h-auto w-auto"
+          />
+          {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2 */}
+          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-background bg-opacity-0">
+            <div className="flex w-full">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handlePlayPause}
+                color="primary"
+              >
+                {playing ? <PauseIcon /> : <PlayIcon />}
+              </Button>
+              <Volume onChange={setVolume} />
+            </div>
+            <div>
+              <RoomReactions />
+            </div>
+          </div>
         </div>
         <VideoDetail
           views={views}

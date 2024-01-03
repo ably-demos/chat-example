@@ -20,8 +20,8 @@ const seed = async () => {
 
   const video = await prisma.video.create({
     data: {
-      title: "Rick Astley - Never Gonna Give You Up",
-      url: "/videos/rick_roll.mp4",
+      title: "Back To The Future",
+      url: "/videos/back_to_the_future.mp4",
       views: 928,
       user: {
         connect: {

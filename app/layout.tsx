@@ -6,7 +6,7 @@ import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import ActiveBreakpoint from "@/components/ActiveBreakpoint"
-import Header from "@/components/Header"
+import PageHeader from "@/components/PageHeader"
 import { ThemeProvider } from "@/components/ThemeProvider"
 
 export const metadata: Metadata = {
@@ -39,7 +39,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           disableTransitionOnChange
         >
           <div className="flex h-full min-h-screen w-full flex-col">
-            <Header />
+            <PageHeader />
             <div className="flex flex-1">{children}</div>
           </div>
           <ActiveBreakpoint />

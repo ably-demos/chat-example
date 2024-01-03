@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Maybe } from "@/types"
 
 import { Channel, Message } from "@/types/temp"
 
@@ -9,7 +10,7 @@ export const useMessages = (channel: Maybe<Channel>) => {
 
   useEffect(() => {
     if (!channel) return
-    // TODO: implement
+    // TODO: Implement
     // return channel.connect((message) =>
     //   setMessages((messages) => [...messages, message]),
     // );

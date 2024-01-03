@@ -1,28 +1,37 @@
 "use client"
 
-import { useEffect } from "react"
-import { redirect } from "next/navigation"
+import { useEffect, useState } from "react"
+import { redirect, useSearchParams } from "next/navigation"
 
+import { getRandomChannel, isValidChannel } from "@/lib/channel"
 import useSession from "@/hooks/useSession"
-import LoadingDots from "@/components/LoadingDots"
+import Spinner from "@/components/Spinner"
 
 export default function IndexPage() {
-  const { session, create } = useSession()
+  const { session, isLoading, createSession } = useSession()
+  const searchParams = useSearchParams()
+
+  const [channel, setChannel] = useState(searchParams.get("channel"))
 
   useEffect(() => {
-    if (!session?.channelRef) {
-      console.info("Creating user session")
-      create()
-      return
+    if (!session?.username && !isLoading) {
+      createSession()
     }
+  }, [createSession, isLoading, session?.username])
 
-    console.debug("Redirecting to channel", session.channelRef)
-    redirect(session.channelRef)
-  }, [create, session])
+  useEffect(() => {
+    if (!session?.username) return
+
+    if (!isValidChannel(channel)) {
+      setChannel(getRandomChannel())
+    } else {
+      redirect(`/watch?channel=${channel}`)
+    }
+  }, [channel, session?.username])
 
   return (
-    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
-      <LoadingDots />
+    <section className="container grid items-center justify-center gap-6 pb-8 pt-6 md:py-10">
+      <Spinner />
     </section>
   )
 }

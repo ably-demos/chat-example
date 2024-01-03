@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { Maybe } from "@/types"
 
 import { Channel, Client } from "@/types/temp"
 

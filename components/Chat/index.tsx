@@ -8,38 +8,39 @@ import { useChannel, usePresence } from "ably/react"
 import { Message } from "@/types/temp"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
-import ChatHeader from "../ChatHeader"
-import LoadingDots from "../LoadingDots"
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
+import Spinner from "../Spinner"
+import ChatHeader from "./ChatHeader"
 
 type ChatComponentProps = {
-  username: string
-  channelRef: string
+  channelId: string
 }
 
-const Chat = ({ username, channelRef }: ChatComponentProps) => {
+const Chat = ({ channelId }: ChatComponentProps) => {
   const [messages, setMessages] = useState<Message[]>([])
-  const [users, setUsers] = useState<string[]>([])
 
   const handlePresenceUpdate = (presenceData: any) => {
     console.log("presence update", presenceData)
-    if (presenceData.action === "present") {
-      setUsers((prev) => [...prev, presenceData.clientId])
-    }
+    // if (presenceData.action === "present") {
+    // setUsers((prev) => [...prev, presenceData.clientId])
+    // }
   }
 
   const { presenceData } = usePresence(
-    channelRef,
+    channelId,
     "initialPresenceStatus",
     handlePresenceUpdate
   )
 
   console.log("presenceData", presenceData)
 
-  const { channel } = useChannel(channelRef, (message) => {
-    setMessages((prev) => [...prev, message as unknown as Message])
-  })
+  const { channel, connectionError, channelError } = useChannel(
+    channelId,
+    (message) => {
+      setMessages((prev) => [...prev, message as unknown as Message])
+    }
+  )
 
   const handleSend = async (text: string) => {
     if (!channel) {
@@ -47,21 +48,27 @@ const Chat = ({ username, channelRef }: ChatComponentProps) => {
       return
     }
 
-    const msgData = {
+    await channel.publish({
       name: "new_message",
       data: text,
-    }
-
-    await channel.publish(msgData)
-    console.trace("message sent")
+    })
   }
 
-  if (!channel) return <LoadingDots />
+  if (!channel) return <Spinner />
+
+  if (channelError) {
+    console.error("Channel error", channelError)
+    return <div>Channel error</div>
+  }
+  if (connectionError) {
+    console.error("Connection error", connectionError)
+    return <div>Connection error</div>
+  }
 
   return (
     <Card className="flex h-full w-full flex-col rounded-none border-t-0">
       <CardHeader className="flex flex-row items-center">
-        <ChatHeader channelName="Chat room" onlineUserCount={928} />
+        <ChatHeader title="Chat room" onlineUserCount={928} />
       </CardHeader>
       <CardContent className="flex grow">
         <MessageList messages={messages} />

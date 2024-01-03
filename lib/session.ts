@@ -1,11 +1,9 @@
 import { cookies } from "next/headers"
 import { faker } from "@faker-js/faker"
 import { getIronSession } from "iron-session"
-import { generate } from "random-words"
 
 export interface SessionData {
   username: string | null
-  channelRef: string | null
 }
 
 export const getSession = async (cookieStore: ReturnType<typeof cookies>) =>
@@ -19,10 +17,22 @@ export const getSession = async (cookieStore: ReturnType<typeof cookies>) =>
 
 export const defaultSession: SessionData = {
   username: null,
-  channelRef: null,
 }
 
-export const generateSession = (): SessionData => ({
-  username: faker.internet.userName(),
-  channelRef: generate({ exactly: 3, minLength: 6, join: "-" }), //"writing-though-palace", //,
-})
+/**
+ * Generate a session for the user.
+ *
+ * @param currentChannel The current channel the user is in, or null if none.
+ * @returns The generated session.
+ */
+export const generateSession = async (
+  username?: string | null
+): Promise<SessionData> => {
+  return {
+    username: username ?? faker.internet.userName(),
+  }
+}
+
+export const hasValidSession = (
+  session: SessionData | null
+): session is NonNullable<SessionData> => session?.username !== null
