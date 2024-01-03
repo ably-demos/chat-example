@@ -24,5 +24,5 @@ export const defaultSession: SessionData = {
 
 export const generateSession = (): SessionData => ({
   username: faker.internet.userName(),
-  channelRef: "writing-though-palace", //generate({ exactly: 3, minLength: 6, join: "-" }),
+  channelRef: generate({ exactly: 3, minLength: 6, join: "-" }), //"writing-though-palace", //,
 })
