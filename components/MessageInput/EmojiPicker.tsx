@@ -23,38 +23,18 @@ const getEmojiPickerTheme = (theme: Theme | undefined): EmojiPickerTheme => {
   }
 }
 
-type EmojiPickerProps = { open: boolean; onCloseEvent: () => void }
+type EmojiPickerProps = { onCloseEvent: () => void }
 
-const EmojiPicker = ({ open, onCloseEvent }: EmojiPickerProps) => {
+const EmojiPicker = ({ onCloseEvent }: EmojiPickerProps) => {
   const { theme } = useTheme() ?? Theme.System
 
-  useEffect(() => {
-    const keyDownHandler = (event: KeyboardEvent) => {
-      console.trace("User pressed: ", event.key)
-
-      if (event.key === "Escape") {
-        event.preventDefault()
-        onCloseEvent()
-      }
-    }
-
-    document.addEventListener("keydown", keyDownHandler)
-
-    return () => {
-      document.removeEventListener("keydown", keyDownHandler)
-    }
-  }, [onCloseEvent])
-
-  if (!open) return null
   return (
     <ReactEmojiPicker
-      className="w-96"
       theme={getEmojiPickerTheme(theme)}
       defaultSkinTone={SkinTones.NEUTRAL}
       emojiStyle={EmojiStyle.NATIVE}
-      //   lazyLoadEmojis={true}
       skinTonesDisabled
-      //   width={"3px"}
+      width={"350px"}
       suggestedEmojisMode={SuggestionMode.RECENT}
     />
   )

@@ -35,8 +35,13 @@ const MessageInput = ({ onSubmit }: Props) => {
     mode: "onChange",
   })
 
+  const textAreaId = React.useId()
   const handleSubmit = (values: MessageInputSchema) => {
-    if (!values?.content) return
+    console.log(values)
+    if (!values?.content) {
+      console.error("No content. Assert disabled set on button.")
+      return
+    }
     onSubmit(values.content)
     form.reset()
   }
@@ -51,7 +56,7 @@ const MessageInput = ({ onSubmit }: Props) => {
           control={form.control}
           name="content"
           render={({ field }) => (
-            <MessageInputField id="new-message-content" {...field} />
+            <MessageInputField id={textAreaId} {...field} />
           )}
         />
       </form>

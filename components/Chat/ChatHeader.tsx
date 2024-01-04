@@ -32,16 +32,16 @@ const ChatHeader = ({ title, onlineUserCount }: ChatHeaderProps) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <span className="inline-flex text-destructive-foreground">
+                <span className="flex items-center text-foreground">
                   blocklisted words list <InfoIcon height={"16"} />
                 </span>
               </TooltipTrigger>
-              <TooltipContent>
-                <div>
+              <TooltipContent className="border bg-background">
+                <p className="text-foreground">
                   Blocklisted words:
                   <br />
                   cat, dog, shark
-                </div>
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

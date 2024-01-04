@@ -7,16 +7,16 @@ type RoomReactionProps = {}
 
 const reactions = {
   smile: () => (
-    <Emoji size={18} emojiStyle={EmojiStyle.NATIVE} unified="1f603" />
+    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="1f603" />
   ),
   hushed: () => (
-    <Emoji size={18} emojiStyle={EmojiStyle.NATIVE} unified="1f62f" />
+    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="1f62f" />
   ),
   thumbsUp: () => (
-    <Emoji size={18} emojiStyle={EmojiStyle.NATIVE} unified="1f44d" />
+    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="1f44d" />
   ),
   redHeart: () => (
-    <Emoji size={18} emojiStyle={EmojiStyle.NATIVE} unified="2764-fe0f" />
+    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="2764-fe0f" />
   ),
 }
 

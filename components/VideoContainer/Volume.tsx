@@ -1,7 +1,9 @@
 import { memo, useRef, useState } from "react"
+import { Transition } from "@tailwindui/react"
 import clsx from "clsx"
 import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react"
 
+import { useDebounce } from "@/hooks/useDebounce"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 
@@ -31,6 +33,10 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
   const [muted, setMuted] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
 
+  const debouncedLeave = useDebounce(() => {
+    setIsOpen(false)
+  }, 2500)
+
   const handleVolumeClick = () => {
     setIsOpen(true)
     setMuted(!muted)
@@ -40,33 +46,46 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
     setIsOpen(true)
   }
 
+  const handleMouseLeave = () => {
+    debouncedLeave()
+  }
+
   const handleSliderChange = (value: number[]) => {
     onChange(value[0])
   }
 
   return (
-    <div className="flex grow">
+    <div className="flex grow" onMouseLeave={debouncedLeave}>
       <Button
         variant="ghost"
+        size="icon"
         onClick={handleVolumeClick}
         onMouseEnter={handleMouseEnter}
       >
         <VolumeIcon volume={volume.current} muted={muted} />
       </Button>
+      {/* <Transition
+        show={isOpen}
+        enter="transition-opacity duration-75"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition-opacity duration-150"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <div className="w-full"> */}
       {isOpen ? (
         <Slider
           step={0.01}
           defaultValue={[volume.current]}
           min={0}
           max={1}
-          className={clsx("w-[60%] max-w-[200px]", {
-            "opacity-100": isOpen,
-            "opacity-0": !isOpen,
-            "animate-in": isOpen,
-          })}
+          className={clsx("w-[60%] max-w-[200px]")}
           onValueChange={handleSliderChange}
         />
       ) : null}
+      {/* </div>
+      </Transition> */}
     </div>
   )
 }

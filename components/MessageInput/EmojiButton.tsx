@@ -36,8 +36,8 @@ const EmojiButton = ({
           <Emoji unified="1f604" emojiStyle={EmojiStyle.NATIVE} size={18} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0">
-        <EmojiPicker open={isOpen} onCloseEvent={() => setIsOpen(false)} />
+      <PopoverContent className="w-[350px] p-0">
+        <EmojiPicker onCloseEvent={() => setIsOpen(false)} />
       </PopoverContent>
     </Popover>
   )

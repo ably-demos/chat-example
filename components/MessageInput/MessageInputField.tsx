@@ -23,13 +23,11 @@ type MessageInputFieldProps = ControllerRenderProps<
 }
 
 const MessageInputField = (props: MessageInputFieldProps) => {
-  const form = useForm()
   const formField = useFormField()
 
-  console.log(props.ref)
-  const inputLength = form.watch<string>(formField.name)?.length ?? 0
-
+  debugger
   console.log(formField)
+
   return (
     <FormItem className="w-full">
       {formField.error?.type !== "too_small" ? <FormMessage /> : null}
@@ -45,9 +43,10 @@ const MessageInputField = (props: MessageInputFieldProps) => {
         <div className="absolute bottom-0 left-0 w-full">
           <Separator className="m-auto flex w-full " />
           <div className="flex w-full items-center justify-between">
-            <EmojiButton disabled={formField.error?.type === "maxLength"} />
+            <EmojiButton disabled={formField.error?.type === "too_long"} />
             <div className="flex items-center">
-              <FormDescription>{inputLength}/200</FormDescription>
+              {/* TODO: Fix character count*/}
+              {/* <FormDescription>0/200</FormDescription> */}
               <Button
                 type="submit"
                 size="icon"

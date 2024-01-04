@@ -43,7 +43,7 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
             className="m-auto aspect-video h-auto w-auto"
           />
           {/* eslint-disable-next-line tailwindcss/migration-from-tailwind-2 */}
-          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-background bg-opacity-0">
+          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-background/50 bg-opacity-0">
             <div className="flex w-full">
               <Button
                 variant="ghost"
