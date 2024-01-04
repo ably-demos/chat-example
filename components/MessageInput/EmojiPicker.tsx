@@ -8,7 +8,7 @@ import ReactEmojiPicker, {
 
 import { useTheme } from "@/hooks/useTheme"
 
-import { Theme } from "../ThemeProvider"
+import { Theme } from "../../providers/ThemeProvider"
 
 import "./emoji-picker-styles.css"
 

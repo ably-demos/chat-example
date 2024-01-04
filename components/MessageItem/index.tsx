@@ -1,51 +1,13 @@
+import { Message } from "@ably-labs/chat"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { Laugh, Pencil, Reply, Star, Trash2 } from "lucide-react"
 
-import { Message, MessagePart } from "@/types/temp"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-const renderMessagePart = (messagePart: MessagePart) => {
-  if (messagePart.type === "text") {
-    return messagePart.content.text
-  }
-  if (messagePart.type === "plainLink") {
-    return <a href={messagePart.content.link}>{messagePart.content.link}</a>
-  }
-  if (messagePart.type === "textLink") {
-    return <a href={messagePart.content.link}>{messagePart.content.text}</a>
-  }
-  if (messagePart.type === "mention") {
-    return (
-      <a href={`https://ably.com/${messagePart.content.userId}`}>
-        {messagePart.content.name}
-      </a>
-    )
-  }
-
-  return ""
-}
-
-const getPartKey = (messagePart: MessagePart) => {
-  if (messagePart.type === "text") {
-    return messagePart.content.text
-  }
-  if (messagePart.type === "plainLink") {
-    return messagePart.content.link
-  }
-  if (messagePart.type === "textLink") {
-    return messagePart.content.link
-  }
-  if (messagePart.type === "mention") {
-    return messagePart.content.userId
-  }
-
-  return ""
-}
 
 type MessageItemProps = {
   message: Message
@@ -87,7 +49,7 @@ const MessageItem = ({ message, username }: MessageItemProps) => {
             <h3 style={{ color }} className="pr-2">
               {username}
             </h3>
-            <p>{message.data}</p>
+            <p>{message.content}</p>
           </li>
         </TooltipTrigger>
         <TooltipContent>

@@ -1,38 +1,35 @@
 "use client"
 
-import { useMemo } from "react"
 import { redirect, useSearchParams } from "next/navigation"
-import { Realtime } from "ably"
-import { AblyProvider } from "ably/react"
+import { ChatProvider } from "@/providers/ChatProvider"
 
 import { isValidChannel } from "@/lib/channel"
+/**
+ * Hooks
+ */
+import { useClient } from "@/hooks/useClient"
 import useSession from "@/hooks/useSession"
 import useVideo from "@/hooks/useVideo"
-import Chat from "@/components/Chat"
+/**
+ * Components
+ */
+import Conversation from "@/components/Conversation"
 import Spinner from "@/components/Spinner"
 import VideoContainer from "@/components/VideoContainer"
 
 const Watch = () => {
   const searchParams = useSearchParams()
-  const channel = searchParams.get("channel")
+  const conversationId = searchParams.get("channel")
   const { video, isLoading: isVideoLoading } = useVideo()
   const {
     session: { username },
   } = useSession()
 
-  if (!isValidChannel(channel)) {
+  if (!isValidChannel(conversationId)) {
     redirect("/")
   }
 
-  const client = useMemo(() => {
-    return (
-      username &&
-      new Realtime.Promise({
-        authUrl: "/api/auth",
-        useTokenAuth: true,
-      })
-    )
-  }, [username])
+  const client = useClient(username)
 
   if (isVideoLoading || !client) {
     return <Spinner />
@@ -40,8 +37,10 @@ const Watch = () => {
 
   if (!video) return <div>Video not found</div>
 
+  if (!conversationId) return <div>Conversation not found</div>
+
   return (
-    <AblyProvider client={client}>
+    <ChatProvider client={client} conversationId={conversationId}>
       <main className="flex flex-1 flex-col lg:flex-row">
         <article className="flex h-full w-full">
           <VideoContainer
@@ -52,10 +51,10 @@ const Watch = () => {
           />
         </article>
         <aside className="flex h-full w-128">
-          <Chat channelId={`chat:${channel}`} />
+          <Conversation conversationId={conversationId} />
         </aside>
       </main>
-    </AblyProvider>
+    </ChatProvider>
   )
 }
 

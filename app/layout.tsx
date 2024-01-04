@@ -1,13 +1,16 @@
 import "@/styles/globals.css"
 
 import { Metadata } from "next"
+import { ThemeProvider } from "@/providers/ThemeProvider"
 
 import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+/**
+ * Components
+ */
 import ActiveBreakpoint from "@/components/ActiveBreakpoint"
 import PageHeader from "@/components/PageHeader"
-import { ThemeProvider } from "@/components/ThemeProvider"
 
 export const metadata: Metadata = {
   title: {

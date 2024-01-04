@@ -1,20 +1,43 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { Maybe } from "@/types"
+import { useCallback, useEffect, useState } from "react"
+import { ConversationController, Message, MessageEvents } from "@ably-labs/chat"
 
-import { Channel, Message } from "@/types/temp"
+import { useChat } from "./useChat"
+import { useConversation } from "./useConversation"
 
-export const useMessages = (channel: Maybe<Channel>) => {
+export const useMessages = (conversationId: string): Message[] => {
+  const client = useChat()
+
+  const conversation = useConversation(client, conversationId)
+
   const [messages, setMessages] = useState<Message[]>([])
 
-  useEffect(() => {
-    if (!channel) return
-    // TODO: Implement
-    // return channel.connect((message) =>
-    //   setMessages((messages) => [...messages, message]),
-    // );
-  }, [channel])
+  const subscribeFn = ({ message }: { message: Message }) => {
+    setMessages((prev) => [...prev, message])
+  }
 
-  return [messages, setMessages] as const
+  const init = useCallback(async (controller: ConversationController) => {
+    const msgs = await controller.messages.query({ limit: 100 })
+    setMessages(msgs)
+    controller.messages.subscribe(MessageEvents.created, subscribeFn)
+  }, [])
+
+  useEffect(() => {
+    if (!conversation) return
+    init(conversation)
+  }, [conversation, init])
+
+  useEffect(() => {
+    if (!conversation) {
+      if (messages.length > 0) setMessages([])
+      return
+    }
+
+    return () => {
+      conversation.messages.unsubscribe(MessageEvents.created, subscribeFn)
+    }
+  }, [conversation, messages.length])
+
+  return messages
 }

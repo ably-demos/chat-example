@@ -1,17 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
+import { Maybe } from "@/types"
+import { Chat as AblyChat } from "@ably-labs/chat"
+import { Realtime } from "ably/promises"
 
-import { Client } from "@/types/temp"
+export const useClient = (username: Maybe<string>) => {
+  const client = useMemo(() => {
+    return username
+      ? new Realtime({
+          authUrl: "/api/auth",
+          useTokenAuth: true,
+        })
+      : undefined
+  }, [username])
 
-export function useClient(userId: string) {
-  const [client, setClient] = useState<Client>()
-
-  useEffect(() => {
-    if (!userId) return
-    // TODO: implement
-    // setClient(new Chat(process.env.ABLY_API_KEY));
-  }, [userId])
-
-  return [client, setClient] as const
+  return useMemo(() => (client ? new AblyChat(client) : undefined), [client])
 }

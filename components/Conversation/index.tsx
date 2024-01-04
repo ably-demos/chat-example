@@ -1,24 +1,25 @@
 "use client"
 
-import { useState } from "react"
-import { useChannel, usePresence } from "ably/react"
+import { usePresence } from "ably/react"
 
+import { useChat } from "@/hooks/useChat"
+import { useClient } from "@/hooks/useClient"
 // import { useChannel } from "hooks/useChannel"
 
-import { Message } from "@/types/temp"
+import { useConversation } from "@/hooks/useConversation"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
-import Spinner from "../Spinner"
-import ChatHeader from "./ChatHeader"
+import ChatHeader from "./ConversationHeader"
 
-type ChatComponentProps = {
-  channelId: string
+type ConversationProps = {
+  conversationId: string
 }
 
-const Chat = ({ channelId }: ChatComponentProps) => {
-  const [messages, setMessages] = useState<Message[]>([])
+const Conversation = ({ conversationId }: ConversationProps) => {
+  const client = useChat()
+  const conversation = useConversation(client, conversationId)
 
   const handlePresenceUpdate = (presenceData: any) => {
     console.log("presence update", presenceData)
@@ -28,41 +29,20 @@ const Chat = ({ channelId }: ChatComponentProps) => {
   }
 
   const { presenceData } = usePresence(
-    channelId,
+    conversationId,
     "initialPresenceStatus",
     handlePresenceUpdate
   )
 
   console.log("presenceData", presenceData)
 
-  const { channel, connectionError, channelError } = useChannel(
-    channelId,
-    (message) => {
-      setMessages((prev) => [...prev, message as unknown as Message])
-    }
-  )
-
   const handleSend = async (text: string) => {
-    if (!channel) {
+    if (!conversation) {
       console.error("Skipping send. Check Channel is set.")
       return
     }
 
-    await channel.publish({
-      name: "new_message",
-      data: text,
-    })
-  }
-
-  if (!channel) return <Spinner />
-
-  if (channelError) {
-    console.error("Channel error", channelError)
-    return <div>Channel error</div>
-  }
-  if (connectionError) {
-    console.error("Connection error", connectionError)
-    return <div>Connection error</div>
+    await conversation?.messages.send(text)
   }
 
   return (
@@ -71,7 +51,7 @@ const Chat = ({ channelId }: ChatComponentProps) => {
         <ChatHeader title="Chat room" onlineUserCount={928} />
       </CardHeader>
       <CardContent className="flex grow">
-        <MessageList messages={messages} />
+        <MessageList conversationId={conversationId} />
       </CardContent>
       <CardFooter>
         <MessageInput onSubmit={handleSend} />
@@ -80,4 +60,4 @@ const Chat = ({ channelId }: ChatComponentProps) => {
   )
 }
 
-export default Chat
+export default Conversation

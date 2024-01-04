@@ -1,24 +1,21 @@
 "use client"
 
-import React, { useEffect, useRef } from "react"
+import React, { useRef } from "react"
 
-import { Message } from "@/types/temp"
-
-// import { useMembers } from "hooks/useMembers"
+import { useMessages } from "@/hooks/useMessages"
 
 import MessageItem from "../MessageItem"
+import Spinner from "../Spinner"
 
 type MessageListProps = {
-  messages: Message[]
+  conversationId: string
 }
 
-const MessageList = ({ messages }: MessageListProps) => {
+const MessageList = ({ conversationId }: MessageListProps) => {
   const messageListRef = useRef<HTMLOListElement>(null)
+  const messages = useMessages(conversationId)
 
-  useEffect(() => {
-    if (!messageListRef.current) return
-    messageListRef.current.scrollTop = messageListRef.current.scrollHeight
-  }, [messages])
+  if (!messages) return <Spinner />
 
   return (
     <ol
@@ -28,9 +25,9 @@ const MessageList = ({ messages }: MessageListProps) => {
       {messages.map((message) => {
         return (
           <MessageItem
-            key={message.timestamp}
+            key={`${message.created_at}_${message.client_id}`}
             message={message}
-            username={message.clientId}
+            username={message.client_id}
           />
         )
       })}

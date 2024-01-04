@@ -12,7 +12,8 @@
     "preview": "next build && next start",
     "typecheck": "tsc --noEmit",
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
-    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache"
+    "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache",
+    "update:chat": "./scripts/update-chat.sh"
   },
   "dependencies": {
     "@faker-js/faker": "8.3.1",
@@ -35,6 +36,7 @@
     "@radix-ui/react-tooltip": "1.0.7",
     "@tailwindui/react": "0.1.1",
     "ably": "1.2.48",
+    "@ably-labs/chat": "file:./packages/ably-labs-chat-0.0.1.tgz",
     "axios": "1.6.2",
     "class-variance-authority": "0.7.0",
     "clsx": "2.0.0",
