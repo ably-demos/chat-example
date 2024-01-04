@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 
 import { Metadata } from "next"
+import { Theme } from "emoji-picker-react"
 
 import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"

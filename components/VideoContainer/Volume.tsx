@@ -1,6 +1,5 @@
 import { memo, useRef, useState } from "react"
 import clsx from "clsx"
-import { set } from "date-fns"
 import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -28,8 +27,8 @@ const VolumeIcon = memo(function VolumeIcon({
   return <Volume2Icon />
 })
 
-const Volume = ({ defaultVolume, onChange }: Props) => {
-  const volume = useRef(defaultVolume ?? 0.5)
+const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
+  const volume = useRef(defaultVolume)
   const [muted, setMuted] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
 

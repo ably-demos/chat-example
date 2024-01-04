@@ -1,0 +1,5 @@
+.EmojiPickerReact {
+  :root {
+    --epr-bg-color: var(hsl(--bg-background));
+  }
+}

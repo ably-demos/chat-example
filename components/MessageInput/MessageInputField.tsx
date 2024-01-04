@@ -13,6 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 
 import { Separator } from "../ui/separator"
+import EmojiButton from "./EmojiButton"
 
 type MessageInputFieldProps = ControllerRenderProps<
   { content: string },
@@ -25,6 +26,7 @@ const MessageInputField = (props: MessageInputFieldProps) => {
   const form = useForm()
   const formField = useFormField()
 
+  console.log(props.ref)
   const inputLength = form.watch<string>(formField.name)?.length ?? 0
 
   return (
@@ -43,14 +45,7 @@ const MessageInputField = (props: MessageInputFieldProps) => {
         <div className="absolute bottom-0 left-0 w-full">
           <Separator className="m-auto flex w-full " />
           <div className="flex w-full items-center justify-between px-2">
-            <Button
-              type="submit"
-              size="icon"
-              variant="ghost"
-              disabled={formField.invalid}
-            >
-              <Laugh className="h-5 w-5" />
-            </Button>
+            <EmojiButton disabled={formField.invalid} />
             <div className="flex items-center">
               <FormDescription>{inputLength}/200</FormDescription>
               <Button

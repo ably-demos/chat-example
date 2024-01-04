@@ -1,5 +1,5 @@
 import { cookies } from "next/headers"
-import { faker } from "@faker-js/faker"
+import { faker } from "@faker-js/faker/locale/en_GB"
 import { getIronSession } from "iron-session"
 
 export interface SessionData {
@@ -25,13 +25,9 @@ export const defaultSession: SessionData = {
  * @param currentChannel The current channel the user is in, or null if none.
  * @returns The generated session.
  */
-export const generateSession = async (
-  username?: string | null
-): Promise<SessionData> => {
-  return {
-    username: username ?? faker.internet.userName(),
-  }
-}
+export const generateSession = (username?: string | null): SessionData => ({
+  username: username ?? faker.internet.userName(),
+})
 
 export const hasValidSession = (
   session: SessionData | null

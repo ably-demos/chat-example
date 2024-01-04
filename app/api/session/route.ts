@@ -29,7 +29,7 @@ export type CreateSessionBodySchema = z.infer<typeof createSessionBodySchema>
 export async function POST(req: NextRequest, res: NextResponse<SessionData>) {
   const session = await getSession(cookies())
 
-  const { username } = await generateSession(session.username)
+  const { username } = generateSession(session.username)
 
   session.username = username
 
