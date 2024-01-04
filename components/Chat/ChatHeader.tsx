@@ -1,14 +1,13 @@
 import React from "react"
 import { InfoIcon, Users } from "lucide-react"
 
+import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-import { Separator } from "../ui/separator"
 
 type ChatHeaderProps = {
   title: string

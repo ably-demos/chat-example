@@ -1,0 +1,6 @@
+:root {
+  .EmojiPickerReact.epr-dark-theme {
+    --epr-bg-color: 224 71% 4%;
+    --epr-category-label-bg-color: 224 71% 4%;
+  }
+}

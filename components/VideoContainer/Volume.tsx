@@ -3,8 +3,7 @@ import clsx from "clsx"
 import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-
-import { Slider } from "../ui/slider"
+import { Slider } from "@/components/ui/slider"
 
 type Props = {
   defaultVolume?: number

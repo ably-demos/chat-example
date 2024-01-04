@@ -1,80 +1,45 @@
-import { get } from "http"
-import React, { useEffect } from "react"
-import { set } from "date-fns"
-import EmojiPicker, {
-  Theme as EmojiPickerTheme,
-  EmojiStyle,
-  SkinTones,
-  SuggestionMode,
-} from "emoji-picker-react"
-import { Laugh } from "lucide-react"
+import React, { useState } from "react"
+import { Emoji, EmojiStyle } from "emoji-picker-react"
 
-import { useTheme } from "@/hooks/useTheme"
-import { Button } from "@/components/ui/button"
+import { Button, ButtonProps } from "@/components/ui/button"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
-import { Theme } from "../ThemeProvider"
+import EmojiPicker from "./EmojiPicker"
 
 type EmojiButtonProps = {
   disabled?: boolean
-}
+  onClick?: (cb?: (open: boolean) => void) => void
+} & ButtonProps
 
-const getEmojiPickerTheme = (theme: Theme | undefined): EmojiPickerTheme => {
-  switch (theme) {
-    case Theme.Light:
-      return EmojiPickerTheme.LIGHT
-    case Theme.Dark:
-      return EmojiPickerTheme.DARK
-    default:
-      return EmojiPickerTheme.AUTO
-  }
-}
-
-const EmojiButton = ({ disabled = false }: EmojiButtonProps) => {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const { theme } = useTheme() ?? Theme.System
-
-  useEffect(() => {
-    const keyDownHandler = (event: KeyboardEvent) => {
-      console.trace("User pressed: ", event.key)
-
-      if (event.key === "Escape") {
-        event.preventDefault()
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener("keydown", keyDownHandler)
-
-    return () => {
-      document.removeEventListener("keydown", keyDownHandler)
-    }
-  }, [])
-
+const EmojiButton = ({
+  disabled = false,
+  onClick = () => {},
+  ...props
+}: EmojiButtonProps) => {
+  const [isOpen, setIsOpen] = useState(false)
   return (
-    <>
-      <Button
-        type="submit"
-        size="icon"
-        variant="ghost"
-        disabled={disabled}
-        onClick={() => setIsOpen((prev) => !prev)}
-      >
-        <Laugh className="h-5 w-5" />
-      </Button>
-      <div className="relative">
-        {isOpen ? (
-          <EmojiPicker
-            theme={getEmojiPickerTheme(theme)}
-            defaultSkinTone={SkinTones.NEUTRAL}
-            emojiStyle={EmojiStyle.NATIVE}
-            lazyLoadEmojis={true}
-            skinTonesDisabled
-            suggestedEmojisMode={SuggestionMode.RECENT}
-            className="min-w-[300px] max-w-[400px]"
-          />
-        ) : null}
-      </div>
-    </>
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          type="submit"
+          size="icon"
+          variant="ghost"
+          disabled={disabled}
+          className="w-10"
+          onClick={() => setIsOpen((prev) => !prev)}
+          {...props}
+        >
+          <Emoji unified="1f604" emojiStyle={EmojiStyle.NATIVE} size={18} />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-96 p-0">
+        <EmojiPicker open={isOpen} onCloseEvent={() => setIsOpen(false)} />
+      </PopoverContent>
+    </Popover>
   )
 }
 
