@@ -1,11 +1,5 @@
 "use client"
 
-import { usePresence } from "ably/react"
-
-import { useChat } from "@/hooks/useChat"
-import { useClient } from "@/hooks/useClient"
-// import { useChannel } from "hooks/useChannel"
-
 import { useConversation } from "@/hooks/useConversation"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
@@ -18,23 +12,7 @@ type ConversationProps = {
 }
 
 const Conversation = ({ conversationId }: ConversationProps) => {
-  const client = useChat()
-  const conversation = useConversation(client, conversationId)
-
-  const handlePresenceUpdate = (presenceData: any) => {
-    console.log("presence update", presenceData)
-    // if (presenceData.action === "present") {
-    // setUsers((prev) => [...prev, presenceData.clientId])
-    // }
-  }
-
-  const { presenceData } = usePresence(
-    conversationId,
-    "initialPresenceStatus",
-    handlePresenceUpdate
-  )
-
-  console.log("presenceData", presenceData)
+  const conversation = useConversation(conversationId)
 
   const handleSend = async (text: string) => {
     if (!conversation) {

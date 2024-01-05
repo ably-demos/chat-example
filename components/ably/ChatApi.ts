@@ -144,6 +144,10 @@ export class ChatApi {
     body?: REQ
   ): Promise<RES> {
     const tokenDetails = await this.getTokenDetails()
+
+    console.error(`${this.baseUrl}/${url}`)
+    console.error("tokenDetails", tokenDetails)
+
     const response = await fetch(`${this.baseUrl}/${url}`, {
       method,
       headers: {

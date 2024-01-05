@@ -1,18 +1,15 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo } from "react"
+import { ChatContext } from "@/providers/ChatProvider"
 import { Maybe } from "@/types"
 
-import { Chat, ConversationController } from "@/components/ably"
-
-import { useClient } from "./useClient"
-
-// import { Channel } from "@/types/temp"
+import { ConversationController } from "@/components/ably"
 
 export const useConversation = (
-  client: Maybe<Chat>,
   conversationId: string
 ): Maybe<ConversationController> => {
+  const { client } = useContext(ChatContext) ?? {}
   const conversation = useMemo<Maybe<ConversationController>>(
     () => client?.conversations.get(conversationId),
     [client?.conversations, conversationId]

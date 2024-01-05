@@ -8,13 +8,10 @@ import {
   MessageEvents,
 } from "@/components/ably"
 
-import { useChat } from "./useChat"
 import { useConversation } from "./useConversation"
 
 export const useMessages = (conversationId: string): Message[] => {
-  const client = useChat()
-
-  const conversation = useConversation(client, conversationId)
+  const conversation = useConversation(conversationId)
 
   const [messages, setMessages] = useState<Message[]>([])
 

@@ -1,9 +1,6 @@
-import { useMemo } from "react"
-import { useAbly } from "ably/react"
-
-import { Chat } from "@/components/ably"
+import { useContext } from "react"
+import { ChatContext } from "@/providers/ChatProvider"
 
 export const useChat = () => {
-  const ably = useAbly()
-  return useMemo(() => (ably ? new Chat(ably) : undefined), [ably])
+  return useContext(ChatContext)
 }
