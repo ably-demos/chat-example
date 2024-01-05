@@ -4,7 +4,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  transpilePackages: ["@ably-labs/chat"],
   swcMinify: true,
 }
 

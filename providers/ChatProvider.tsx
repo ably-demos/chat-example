@@ -1,5 +1,6 @@
 import { createContext, FC, ReactNode, useMemo } from "react"
-import { Chat, ConversationController } from "@ably-labs/chat"
+
+import { Chat, ConversationController } from "@/components/ably"
 
 interface ChatContextProps {
   client: Chat

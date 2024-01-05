@@ -2,8 +2,9 @@
 
 import { useMemo } from "react"
 import { Maybe } from "@/types"
-import { Chat as AblyChat } from "@ably-labs/chat"
 import { Realtime } from "ably/promises"
+
+import { Chat as AblyChat } from "@/components/ably"
 
 export const useClient = (username: Maybe<string>) => {
   const client = useMemo(() => {

@@ -1,6 +1,7 @@
 import { useMemo } from "react"
-import { Chat } from "@ably-labs/chat"
 import { useAbly } from "ably/react"
+
+import { Chat } from "@/components/ably"
 
 export const useChat = () => {
   const ably = useAbly()

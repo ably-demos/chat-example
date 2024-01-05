@@ -1,7 +1,12 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { ConversationController, Message, MessageEvents } from "@ably-labs/chat"
+
+import {
+  ConversationController,
+  Message,
+  MessageEvents,
+} from "@/components/ably"
 
 import { useChat } from "./useChat"
 import { useConversation } from "./useConversation"

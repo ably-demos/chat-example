@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Maybe } from "@/types"
-import { Chat, ConversationController } from "@ably-labs/chat"
+
+import { Chat, ConversationController } from "@/components/ably"
 
 import { useClient } from "./useClient"
 
