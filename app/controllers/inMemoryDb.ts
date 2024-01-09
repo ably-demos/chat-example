@@ -175,7 +175,7 @@ const enrichMessageWithReactions = (
 }
 
 const enrichMessagesWithReactions = (messages: Message[], clientId: string) => {
-  return messages
+  return messages ?? []
   // .map((message) => {
   //   try {
   //     const msg = enrichMessageWithReactions(message, clientId)
