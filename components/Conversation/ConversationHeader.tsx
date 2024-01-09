@@ -9,12 +9,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-type ChatHeaderProps = {
+type ConversationHeaderProps = {
   title: string
   onlineUserCount: number
 }
 
-const ChatHeader = ({ title, onlineUserCount }: ChatHeaderProps) => {
+const ConversationHeader = ({
+  title,
+  onlineUserCount,
+}: ConversationHeaderProps) => {
   return (
     <div className="flex flex-col">
       <div className="space-between flex w-full items-center space-x-4">
@@ -51,4 +54,4 @@ const ChatHeader = ({ title, onlineUserCount }: ChatHeaderProps) => {
   )
 }
 
-export default ChatHeader
+export default ConversationHeader

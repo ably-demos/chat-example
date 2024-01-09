@@ -1,7 +1,4 @@
 import React from "react"
-import { ChatProvider } from "@/providers/ChatProvider"
-
-import Conversation from "../Conversation"
 
 type ChatClientProps = {
   conversationId: string

@@ -42,14 +42,9 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
             height={"100%"}
             className="m-auto aspect-video h-auto w-auto"
           />
-          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-background/25">
+          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-background/75 px-2">
             <div className="flex w-full">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handlePlayPause}
-                color="primary"
-              >
+              <Button variant="ghost" size="icon" onClick={handlePlayPause}>
                 {playing ? <PauseIcon /> : <PlayIcon />}
               </Button>
               <Volume onChange={setVolume} />

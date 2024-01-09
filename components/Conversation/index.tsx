@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
-import ChatHeader from "./ConversationHeader"
+import ConversationHeader from "./ConversationHeader"
 
 type ConversationProps = {
   conversationId: string
@@ -26,7 +26,7 @@ const Conversation = ({ conversationId }: ConversationProps) => {
   return (
     <Card className="flex h-full w-full flex-col rounded-none border-t-0">
       <CardHeader className="flex flex-row items-center">
-        <ChatHeader title="Chat room" onlineUserCount={928} />
+        <ConversationHeader title="Chat room" onlineUserCount={928} />
       </CardHeader>
       <CardContent className="flex grow">
         <MessageList conversationId={conversationId} />

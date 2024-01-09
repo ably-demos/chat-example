@@ -1,28 +1,29 @@
 "use client"
 
-import { useCallback, useContext, useEffect, useMemo } from "react"
-import { ChatContext } from "@/providers/ChatProvider"
+import { useCallback, useEffect, useMemo } from "react"
 import { Maybe } from "@/types"
+import { ConversationController as Conversation } from "@ably-labs/chat"
 
-import { ConversationController } from "@/components/ably"
+import { useConversations } from "./useConversations"
 
 export const useConversation = (
   conversationId: string
-): Maybe<ConversationController> => {
-  const { client } = useContext(ChatContext) ?? {}
-  const conversation = useMemo<Maybe<ConversationController>>(
-    () => client?.conversations.get(conversationId),
-    [client?.conversations, conversationId]
+): Maybe<Conversation> => {
+  const conversations = useConversations()
+
+  const conversation = useMemo<Maybe<Conversation>>(
+    () => conversations.get(conversationId),
+    [conversations, conversationId]
   )
 
   const create = useCallback(async () => {
-    await conversation?.create()
+    conversation?.create()
   }, [conversation])
 
   useEffect(() => {
-    if (!client || !conversation) return
+    if (!conversations || !conversation) return
     create()
-  }, [client, conversation, create])
+  }, [conversations, conversation, create])
 
   return conversation
 }

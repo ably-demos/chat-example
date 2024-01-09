@@ -1,12 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-
-import {
-  ConversationController,
-  Message,
-  MessageEvents,
-} from "@/components/ably"
+import { ConversationController, Message, MessageEvents } from "@ably-labs/chat"
 
 import { useConversation } from "./useConversation"
 
@@ -15,15 +10,25 @@ export const useMessages = (conversationId: string): Message[] => {
 
   const [messages, setMessages] = useState<Message[]>([])
 
-  const subscribeFn = ({ message }: { message: Message }) => {
-    setMessages((prev) => [...prev, message])
-  }
-
-  const init = useCallback(async (controller: ConversationController) => {
-    const msgs = await controller.messages.query({ limit: 100 })
-    setMessages(msgs)
-    controller.messages.subscribe(MessageEvents.created, subscribeFn)
+  const subscribeFn = useCallback(({ message }: { message: Message }) => {
+    console.log("message created", message)
+    // TODO: This is a hack to prevent duplicate messages, can be removed after routes deployed
+    setMessages((prev) => {
+      if (prev.length && prev[prev.length - 1]?.id === message.id) {
+        return prev
+      }
+      return [...prev, message]
+    })
   }, [])
+
+  const init = useCallback(
+    async (controller: ConversationController) => {
+      const msgs = await controller.messages.query({ limit: 100 })
+      setMessages(msgs)
+      controller.messages.subscribe(MessageEvents.created, subscribeFn)
+    },
+    [subscribeFn]
+  )
 
   useEffect(() => {
     if (!conversation) return
@@ -39,7 +44,7 @@ export const useMessages = (conversationId: string): Message[] => {
     return () => {
       conversation.messages.unsubscribe(MessageEvents.created, subscribeFn)
     }
-  }, [conversation, messages.length])
+  }, [conversation, messages.length, subscribeFn])
 
   return messages
 }

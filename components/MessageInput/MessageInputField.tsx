@@ -25,9 +25,6 @@ type MessageInputFieldProps = ControllerRenderProps<
 const MessageInputField = (props: MessageInputFieldProps) => {
   const formField = useFormField()
 
-  debugger
-  console.log(formField)
-
   return (
     <FormItem className="w-full">
       {formField.error?.type !== "too_small" ? <FormMessage /> : null}

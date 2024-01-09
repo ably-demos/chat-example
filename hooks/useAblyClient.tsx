@@ -4,9 +4,7 @@ import { useMemo } from "react"
 import { Maybe } from "@/types"
 import { Realtime } from "ably/promises"
 
-import { Chat as AblyChat } from "@/components/ably"
-
-export const useClient = (username: Maybe<string>) => {
+export const useAblyClient = (username: Maybe<string>) => {
   const client = useMemo(() => {
     return username
       ? new Realtime({
@@ -16,5 +14,5 @@ export const useClient = (username: Maybe<string>) => {
       : undefined
   }, [username])
 
-  return useMemo(() => (client ? new AblyChat(client) : undefined), [client])
+  return client
 }

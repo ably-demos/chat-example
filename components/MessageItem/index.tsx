@@ -1,3 +1,4 @@
+import { Message } from "@ably-labs/chat"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { Laugh, Pencil, Reply, Star, Trash2 } from "lucide-react"
 
@@ -7,7 +8,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Message } from "@/components/ably"
 
 type MessageItemProps = {
   message: Message

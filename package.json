@@ -16,6 +16,7 @@
     "update:chat": "./scripts/update-chat.sh"
   },
   "dependencies": {
+    "@ably-labs/chat": "file:ably-labs-chat-0.0.1.tgz",
     "@faker-js/faker": "8.3.1",
     "@hookform/resolvers": "3.3.2",
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",

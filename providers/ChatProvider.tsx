@@ -1,10 +1,11 @@
 import { createContext, FC, ReactNode, useMemo } from "react"
-
-import { Chat, ConversationController } from "@/components/ably"
+import { Chat } from "@ably-labs/chat"
+import { useAbly } from "ably/react"
 
 interface ChatContextProps {
-  client: Chat
-  conversation: ConversationController
+  chat: Chat
+  conversationId: string
+  // conversations: Conversations
 }
 
 export const ChatContext = createContext<ChatContextProps | undefined>(
@@ -12,22 +13,29 @@ export const ChatContext = createContext<ChatContextProps | undefined>(
 )
 
 interface ChatProviderProps {
-  client: Chat
-  conversationId: string
   children: ReactNode
+  conversationId: string
 }
+
 export const ChatProvider: FC<ChatProviderProps> = ({
-  client,
-  conversationId,
   children,
+  conversationId,
 }) => {
-  const value = useMemo(
-    () => ({
-      client,
-      conversation: client.conversations.get(conversationId),
-    }),
+  const client = useAbly()
+  const context = useMemo(
+    () => ({ chat: new Chat(client), conversationId }),
     [client, conversationId]
   )
-
-  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>
+  return <ChatContext.Provider value={context}>{children}</ChatContext.Provider>
 }
+
+/**
+ * Chat
+ */
+// useAbly
+// useChat
+// useConversations
+// useConversation
+// useMessages
+// useMessage
+// usePresence
