@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ForwardedRef } from "react"
 import { Send } from "lucide-react"
 import { ControllerRenderProps, useForm } from "react-hook-form"
 
@@ -13,6 +13,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 
+import { Input } from "../ui/input"
 import EmojiButton from "./EmojiButton"
 
 type MessageInputFieldProps = ControllerRenderProps<
@@ -22,7 +23,10 @@ type MessageInputFieldProps = ControllerRenderProps<
   id?: HTMLElement["id"]
 }
 
-const MessageInputField = (props: MessageInputFieldProps) => {
+export default React.forwardRef(function MessageInputField(
+  props: Omit<MessageInputFieldProps, "ref">,
+  ref: ForwardedRef<any> //ControllerRenderProps["ref"]
+) {
   const formField = useFormField()
 
   return (
@@ -30,9 +34,10 @@ const MessageInputField = (props: MessageInputFieldProps) => {
       {formField.error?.type !== "too_small" ? <FormMessage /> : null}
       <div className="relative flex w-full rounded-md border border-input bg-transparent pb-9 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
         <FormControl>
-          <Textarea
+          <Input
             placeholder="Type your message..."
             className="min-h-[80px] resize-none border-none focus-visible:ring-0"
+            ref={ref}
             {...props}
           />
         </FormControl>
@@ -60,6 +65,4 @@ const MessageInputField = (props: MessageInputFieldProps) => {
       </div>
     </FormItem>
   )
-}
-
-export default MessageInputField
+})

@@ -1,5 +1,6 @@
-import { Theme } from "@/providers/ThemeProvider"
 import { useTheme as useNextTheme } from "next-themes"
+
+import { Theme } from "@/components/ThemeProvider"
 
 export const useTheme = () => {
   const { theme, setTheme } = useNextTheme()
