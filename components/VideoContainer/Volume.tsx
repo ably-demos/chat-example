@@ -33,7 +33,7 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
   const [muted, setMuted] = useState(true)
   const [isOpen, setIsOpen] = useState(false)
 
-  const debouncedLeave = useDebounce(() => {
+  const { fn: debouncedLeave, cancel: cancelLeave } = useDebounce(() => {
     setIsOpen(false)
   }, 2500)
 
@@ -44,6 +44,7 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
 
   const handleMouseEnter = () => {
     setIsOpen(true)
+    cancelLeave()
   }
 
   const handleMouseLeave = () => {
@@ -55,26 +56,27 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
   }
 
   return (
-    <div className="flex grow" onMouseLeave={debouncedLeave}>
+    <div className="dark flex grow">
       <Button
         variant="ghost"
         size="icon"
         onClick={handleVolumeClick}
         onMouseEnter={handleMouseEnter}
+        onMouseLeave={debouncedLeave}
+        className="text-white/95"
       >
         <VolumeIcon volume={volume.current} muted={muted} />
       </Button>
-      {/* <Transition
-        show={isOpen}
+      <Transition
+        show
         enter="transition-opacity duration-75"
         enterFrom="opacity-0"
         enterTo="opacity-100"
-        leave="transition-opacity duration-150"
+        leave="transition-opacity duration-300"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
+        className="ml-2 flex h-9 w-full items-center"
       >
-        <div className="w-full"> */}
-      {isOpen ? (
         <Slider
           step={0.01}
           defaultValue={[volume.current]}
@@ -82,10 +84,10 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
           max={1}
           className={clsx("w-[60%] max-w-[200px]")}
           onValueChange={handleSliderChange}
+          onMouseEnter={cancelLeave}
+          onMouseLeave={handleMouseLeave}
         />
-      ) : null}
-      {/* </div>
-      </Transition> */}
+      </Transition>
     </div>
   )
 }

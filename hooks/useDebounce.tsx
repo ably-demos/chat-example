@@ -5,11 +5,16 @@ function debounce<FuncArgs extends any[]>(
   timeout = 300
 ) {
   let timer: NodeJS.Timeout
-  return (...args: FuncArgs) => {
-    clearTimeout(timer)
-    timer = setTimeout(() => {
-      func.apply(args)
-    }, timeout)
+  return {
+    fn: (...args: FuncArgs) => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        func.apply(args)
+      }, timeout)
+    },
+    cancel: () => {
+      clearTimeout(timer)
+    },
   }
 }
 

@@ -1,3 +1,4 @@
+import { memo } from "react"
 import { Message } from "@ably-labs/chat"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { Laugh, Pencil, Reply, Star, Trash2 } from "lucide-react"
@@ -12,13 +13,9 @@ import {
 type MessageItemProps = {
   message: Message
   username: string
-}
-const icons = {
-  emoji: <Laugh size="16" />,
-  reply: <Reply size="16" />,
-  new: <Pencil size="16" />,
-  delete: <Trash2 size="16" />,
-  star: <Star size="16" />,
+  onAddReaction: () => void
+  onEdit: () => void
+  onDelete: () => void
 }
 
 function getUserColor(username: string) {
@@ -36,8 +33,15 @@ function stringToHue(str: string) {
   return hash % 360
 }
 
-const MessageItem = ({ message, username }: MessageItemProps) => {
+const MessageItem = ({
+  message,
+  username,
+  onAddReaction: handleAddReaction,
+  onEdit: handleEdit,
+  onDelete: handleDelete,
+}: MessageItemProps) => {
   const color = getUserColor(username)
+  const isOwnMessage = message.client_id === username
   return (
     <TooltipProvider>
       <Tooltip>
@@ -52,18 +56,51 @@ const MessageItem = ({ message, username }: MessageItemProps) => {
             <p>{message.content}</p>
           </li>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="border bg-background">
           <ToggleGroup type="multiple">
-            {Object.entries(icons).map(([name, icon]) => (
+            <ToggleGroupItem
+              value={"add-reaction"}
+              aria-label={"Add Reaction"}
+              className="mx-1"
+            >
+              {/* <Emoji unified="1f604"  siz/> */}
+              <Laugh size="16" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value={"reply"}
+              aria-label={"reply"}
+              className="mx-1"
+            >
+              <Reply size="16" />
+            </ToggleGroupItem>
+            {isOwnMessage ? (
+              <>
+                <ToggleGroupItem
+                  value={"edit"}
+                  aria-label={"edit"}
+                  className="mx-1"
+                  onClick={handleEdit}
+                >
+                  <Pencil size="16" />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value={"delete"}
+                  aria-label={"delete"}
+                  className="mx-1"
+                  onClick={handleDelete}
+                >
+                  <Trash2 size="16" />
+                </ToggleGroupItem>
+              </>
+            ) : (
               <ToggleGroupItem
-                key={name}
-                value={name}
-                aria-label={name}
+                value={"favourite"}
+                aria-label={"favourite"}
                 className="mx-1"
               >
-                {icon}
+                <Star size="16" />
               </ToggleGroupItem>
-            ))}
+            )}
           </ToggleGroup>
         </TooltipContent>
       </Tooltip>
@@ -71,4 +108,4 @@ const MessageItem = ({ message, username }: MessageItemProps) => {
   )
 }
 
-export default MessageItem
+export default memo(MessageItem)

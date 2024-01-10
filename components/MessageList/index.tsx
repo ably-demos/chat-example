@@ -1,19 +1,25 @@
 "use client"
 
 import React, { useRef } from "react"
-
-import { useMessages } from "@/hooks/useMessages"
+import { Message } from "@ably-labs/chat"
 
 import MessageItem from "../MessageItem"
 import Spinner from "../Spinner"
 
 type MessageListProps = {
-  conversationId: string
+  messages?: Message[]
+  onAddReaction: (messageId: string) => void
+  onDelete: (messageId: string) => void
+  onEdit: (messageId: string) => void
 }
 
-const MessageList = ({ conversationId }: MessageListProps) => {
+const MessageList = ({
+  messages,
+  onAddReaction: handleAddReaction,
+  onDelete: handleDelete,
+  onEdit: handleEdit,
+}: MessageListProps) => {
   const messageListRef = useRef<HTMLOListElement>(null)
-  const messages = useMessages(conversationId)
 
   if (!messages) return <Spinner />
 
@@ -28,6 +34,9 @@ const MessageList = ({ conversationId }: MessageListProps) => {
             key={`${message.created_at}_${message.client_id}`}
             message={message}
             username={message.client_id}
+            onEdit={() => handleEdit(message.id)}
+            onAddReaction={() => handleAddReaction(message.id)}
+            onDelete={() => handleDelete(message.id)}
           />
         )
       })}

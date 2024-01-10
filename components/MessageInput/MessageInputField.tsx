@@ -1,11 +1,8 @@
-import React, { ForwardedRef } from "react"
-import { Send } from "lucide-react"
-import { ControllerRenderProps, useForm } from "react-hook-form"
+import React, { ForwardedRef, useEffect } from "react"
+import { ControllerRenderProps } from "react-hook-form"
 
-import { Button } from "@/components/ui/button"
 import {
   FormControl,
-  FormDescription,
   FormItem,
   FormMessage,
   useFormField,
@@ -13,28 +10,31 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 
-import { Input } from "../ui/input"
-import EmojiButton from "./EmojiButton"
-
-type MessageInputFieldProps = ControllerRenderProps<
-  { content: string },
-  "content"
+type MessageInputFieldProps = Omit<
+  ControllerRenderProps<{ content: string }, "content">,
+  "ref"
 > & {
   id?: HTMLElement["id"]
+  onClear?: () => void
+  showClear?: boolean
+  children?: React.ReactNode
 }
 
 export default React.forwardRef(function MessageInputField(
-  props: Omit<MessageInputFieldProps, "ref">,
-  ref: ForwardedRef<any> //ControllerRenderProps["ref"]
+  { showClear, children, ...props }: MessageInputFieldProps,
+  ref: ForwardedRef<any>
 ) {
   const formField = useFormField()
+  useEffect(() => {
+    console.log("remount")
+  }, [])
 
   return (
     <FormItem className="w-full">
       {formField.error?.type !== "too_small" ? <FormMessage /> : null}
       <div className="relative flex w-full rounded-md border border-input bg-transparent pb-9 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
         <FormControl>
-          <Input
+          <Textarea
             placeholder="Type your message..."
             className="min-h-[80px] resize-none border-none focus-visible:ring-0"
             ref={ref}
@@ -43,24 +43,8 @@ export default React.forwardRef(function MessageInputField(
         </FormControl>
 
         <div className="absolute bottom-0 left-0 w-full">
-          <Separator className="m-auto flex w-full " />
-          <div className="flex w-full items-center justify-between">
-            <EmojiButton disabled={formField.error?.type === "too_long"} />
-            <div className="flex items-center">
-              {/* TODO: Fix character count*/}
-              {/* <FormDescription>0/200</FormDescription> */}
-              <Button
-                type="submit"
-                size="icon"
-                variant="ghost"
-                className="text-primary-foreground"
-                disabled={formField.invalid}
-              >
-                <Send className="h-5 w-5" />
-                <span className="sr-only">Send</span>
-              </Button>
-            </div>
-          </div>
+          <Separator className="m-auto flex w-full" />
+          {children}
         </div>
       </div>
     </FormItem>

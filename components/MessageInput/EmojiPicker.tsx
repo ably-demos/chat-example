@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import ReactEmojiPicker, {
   Theme as EmojiPickerTheme,
   EmojiStyle,
@@ -22,9 +21,9 @@ const getEmojiPickerTheme = (theme: Theme | undefined): EmojiPickerTheme => {
   }
 }
 
-type EmojiPickerProps = { onCloseEvent: () => void }
+type EmojiPickerProps = { onSelect: (emoji: string) => void }
 
-const EmojiPicker = ({ onCloseEvent }: EmojiPickerProps) => {
+const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
   const { theme } = useTheme() ?? Theme.System
 
   return (
@@ -34,6 +33,7 @@ const EmojiPicker = ({ onCloseEvent }: EmojiPickerProps) => {
       emojiStyle={EmojiStyle.NATIVE}
       skinTonesDisabled
       width={"350px"}
+      onEmojiClick={(emoji) => onSelect(emoji.unifiedWithoutSkinTone)}
       suggestedEmojisMode={SuggestionMode.RECENT}
     />
   )

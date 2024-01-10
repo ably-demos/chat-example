@@ -53,6 +53,7 @@ export const createConversation = (id: string): Conversation => {
 createConversation("conversation1")
 
 export const getConversation = (id: string): Conversation => {
+  console.error(conversations)
   const conversation = conversations.find((conv) => conv.id === id)
   if (!conversation) throw new Error()
   return conversation

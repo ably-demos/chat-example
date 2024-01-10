@@ -19,7 +19,7 @@ const ConversationHeader = ({
   onlineUserCount,
 }: ConversationHeaderProps) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full flex-col">
       <div className="space-between flex w-full items-center space-x-4">
         <p className="grow text-lg font-medium leading-none">{title}</p>
         <span className="flex items-center text-sm">

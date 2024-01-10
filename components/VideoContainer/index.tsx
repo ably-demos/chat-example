@@ -17,9 +17,16 @@ type VideoContainerProps = {
     avatar: string
     subscribers: number
   }
+  onReaction: (emoji: string) => void
 }
 
-const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
+const VideoContainer = ({
+  url,
+  title,
+  views,
+  user,
+  onReaction,
+}: VideoContainerProps) => {
   const [playing, setPlaying] = React.useState(false)
   const videoRef = React.useRef<ReactPlayer>(null)
   const [volume, setVolume] = React.useState(0.5)
@@ -42,15 +49,20 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
             height={"100%"}
             className="m-auto aspect-video h-auto w-auto"
           />
-          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-background/75 px-2">
+          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-black/75 px-2">
             <div className="flex w-full">
-              <Button variant="ghost" size="icon" onClick={handlePlayPause}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handlePlayPause}
+                className="text-white/95"
+              >
                 {playing ? <PauseIcon /> : <PlayIcon />}
               </Button>
               <Volume onChange={setVolume} />
             </div>
             <div>
-              <RoomReactions />
+              <RoomReactions onClick={onReaction} />
             </div>
           </div>
         </div>

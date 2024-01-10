@@ -1,32 +1,25 @@
 import React from "react"
-import { EmojiStyle } from "emoji-picker-react"
 
-import Emoji from "../Emoji"
+import Reaction from "@/components/Reaction"
 
-type RoomReactionProps = {}
-
-const reactions = {
-  smile: () => (
-    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="1f603" />
-  ),
-  hushed: () => (
-    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="1f62f" />
-  ),
-  thumbsUp: () => (
-    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="1f44d" />
-  ),
-  redHeart: () => (
-    <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified="2764-fe0f" />
-  ),
+type RoomReactionProps = {
+  onClick: (emoji: string) => void
 }
 
-const RoomReactions = (props: RoomReactionProps) => {
+const reactions = {
+  smile: "1f603",
+  hushed: "1f62f",
+  thumbsUp: "1f44d",
+  redHeart: "2764-fe0f",
+}
+
+const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
   return (
     <div className="flex">
-      {Object.entries(reactions).map(([name, EmojiComp]) => {
+      {Object.entries(reactions).map(([name, charCode]) => {
         return (
           <button key={name} className="p-2">
-            <EmojiComp />
+            <Reaction onClick={handleClick} unified={charCode} />
           </button>
         )
       })}
