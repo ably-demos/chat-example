@@ -17,7 +17,7 @@ type MessageInputFieldProps = Omit<
   id?: HTMLElement["id"]
   onClear?: () => void
   showClear?: boolean
-  children?: React.ReactNode
+  children: React.ReactNode
 }
 
 export default React.forwardRef(function MessageInputField(
@@ -25,9 +25,6 @@ export default React.forwardRef(function MessageInputField(
   ref: ForwardedRef<any>
 ) {
   const formField = useFormField()
-  useEffect(() => {
-    console.log("remount")
-  }, [])
 
   return (
     <FormItem className="w-full">

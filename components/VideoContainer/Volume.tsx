@@ -68,7 +68,7 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
         <VolumeIcon volume={volume.current} muted={muted} />
       </Button>
       <Transition
-        show
+        show={isOpen}
         enter="transition-opacity duration-75"
         enterFrom="opacity-0"
         enterTo="opacity-100"

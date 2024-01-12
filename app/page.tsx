@@ -11,8 +11,9 @@ export default function IndexPage() {
   const { session, isLoading, createSession } = useSession()
   const searchParams = useSearchParams()
 
-  const [channel, setChannel] = useState(searchParams.get("channel"))
+  const [channelId, setChannelId] = useState(searchParams.get("channel"))
 
+  const [channel, setChannel] = useState(channelId)
   useEffect(() => {
     if (!session?.username && !isLoading) {
       createSession()
@@ -23,7 +24,9 @@ export default function IndexPage() {
     if (!session?.username) return
 
     if (!isValidChannel(channel)) {
-      setChannel(getRandomChannel())
+      const channelId = getRandomChannel()
+
+      setChannel(channelId)
     } else {
       redirect(`/watch?channel=${channel}`)
     }

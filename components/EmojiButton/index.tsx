@@ -1,5 +1,5 @@
 import React from "react"
-import { Emoji, EmojiStyle } from "emoji-picker-react"
+import { EmojiStyle } from "emoji-picker-react"
 
 import { cn } from "@/lib/utils"
 import { useWindowSize, WindowSize } from "@/hooks/useWindowSize"
@@ -9,13 +9,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import Emoji from "@/components/Emoji"
+import EmojiPicker from "@/components/EmojiPicker"
 
-import EmojiPicker from "./EmojiPicker"
-
-type EmojiButtonProps = {
+type EmojiButtonProps = Omit<ButtonProps, "onSelect"> & {
   disabled?: boolean
   onSelect: (emoji: string) => void
-} & ButtonProps
+}
 
 export const isMobile = () => {
   const ua = navigator.userAgent
@@ -24,7 +24,7 @@ export const isMobile = () => {
 
 const isLargeScreen = (size: WindowSize) => {
   if (!size.width) return null
-  return size.width > 768
+  return size.width > 1024
 }
 
 export default React.memo(function EmojiButton({
@@ -50,14 +50,14 @@ export default React.memo(function EmojiButton({
         <Button
           variant="ghost"
           disabled={disabled}
-          className={cn(className, "pl-4 pr-5", hidden && "hidden")}
+          className={cn(className, "px-4", hidden && "hidden")}
           {...props}
         >
           <Emoji unified="1f604" emojiStyle={EmojiStyle.NATIVE} size={18} />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[350px] p-0" {...popoverPositionProps}>
-        <EmojiPicker onSelect={() => {}} />
+        <EmojiPicker onSelect={handleSelect} />
       </PopoverContent>
     </Popover>
   )

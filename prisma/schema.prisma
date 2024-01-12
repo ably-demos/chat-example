@@ -17,21 +17,24 @@ model User {
   videos     Video[]
   favourited Message[] @relation(name: "favouritedBy")
 
-  updatedAt   DateTime @updatedAt
-  name        String   @unique
+  updatedAt   DateTime  @updatedAt
+  username    String    @unique
   avatar      String
-  subscribers Int      @default(0)
+  subscribers Int       @default(0)
+  channels    Channel[] @relation(name: "Members")
 }
 
 model Channel {
-  id        Int      @id
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  channelId String @unique
+
+  users User[] @relation(name: "Members")
+
   video   Video @relation(fields: [videoId], references: [id])
   videoId Int
-
-  name String @unique
 }
 
 model Message {

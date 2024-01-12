@@ -8,7 +8,7 @@ import ReactEmojiPicker, {
 import { useTheme } from "@/hooks/useTheme"
 import { Theme } from "@/components/ThemeProvider"
 
-import "./emoji-picker-styles.css"
+import "./styles.css"
 
 const getEmojiPickerTheme = (theme: Theme | undefined): EmojiPickerTheme => {
   switch (theme) {
@@ -21,20 +21,22 @@ const getEmojiPickerTheme = (theme: Theme | undefined): EmojiPickerTheme => {
   }
 }
 
-type EmojiPickerProps = { onSelect: (emoji: string) => void }
+type EmojiPickerProps = { onSelect: (charCode: string) => void }
 
 const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
   const { theme } = useTheme() ?? Theme.System
 
   return (
     <ReactEmojiPicker
-      theme={getEmojiPickerTheme(theme)}
       defaultSkinTone={SkinTones.NEUTRAL}
       emojiStyle={EmojiStyle.NATIVE}
+      onEmojiClick={({ unifiedWithoutSkinTone: charCode }) =>
+        onSelect(charCode)
+      }
       skinTonesDisabled
-      width={"350px"}
-      onEmojiClick={(emoji) => onSelect(emoji.unifiedWithoutSkinTone)}
       suggestedEmojisMode={SuggestionMode.RECENT}
+      theme={getEmojiPickerTheme(theme)}
+      width={"350px"}
     />
   )
 }

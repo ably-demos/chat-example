@@ -10,7 +10,7 @@ import { z } from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormDescription, FormField } from "@/components/ui/form"
 
-import EmojiButton from "./EmojiButton"
+import EmojiButton from "../EmojiButton"
 import MessageInputField from "./MessageInputField"
 
 type Props = {
@@ -32,6 +32,8 @@ const MessageInput = React.memo(function MessagInputInner({
   onClear: handleClear,
   defaultValue,
 }: Props) {
+  const textAreaId = useId()
+
   const form = useForm<MessageInputSchema>({
     resolver: zodResolver(messageSchema),
     defaultValues: {
@@ -40,7 +42,8 @@ const MessageInput = React.memo(function MessagInputInner({
     mode: "onChange",
   })
 
-  const textAreaId = useId()
+  const contentState = form.getFieldState("content")
+  const contentValue = form.watch("content")
 
   const handleSubmit = useCallback(
     (values: MessageInputSchema) => {
@@ -48,13 +51,22 @@ const MessageInput = React.memo(function MessagInputInner({
         console.error("No content. Assert disabled set on button.")
         return
       }
+
       onSubmit(values.content)
       form.reset()
     },
     [form, onSubmit]
   )
 
-  const contentState = form.getFieldState("content")
+  const handleSelectEmoji = useCallback(
+    (charCode: string) => {
+      const fieldValue = contentValue
+      const emoji = String.fromCodePoint(parseInt(charCode, 16))
+
+      form.setValue("content", `${fieldValue}${emoji}`)
+    },
+    [contentValue, form]
+  )
 
   return (
     <Form {...form}>
@@ -71,8 +83,8 @@ const MessageInput = React.memo(function MessagInputInner({
                 <div className="flex items-center">
                   <EmojiButton
                     className="rounded-none"
-                    onSelect={(emoji) => {}}
                     disabled={contentState.error?.type === "too_long"}
+                    onSelect={handleSelectEmoji}
                   />
                   <FormDescription className="px-2">
                     {form.getValues("content")?.length ?? 0}/200
@@ -93,7 +105,7 @@ const MessageInput = React.memo(function MessagInputInner({
                     type="submit"
                     variant="ghost"
                     className="rounded-none text-primary-foreground"
-                    disabled={contentState.invalid}
+                    disabled={contentState.invalid || !contentValue?.length}
                   >
                     <Send size="20" className="" />
                     <span className="sr-only">Send</span>

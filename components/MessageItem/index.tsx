@@ -1,6 +1,8 @@
-import { memo } from "react"
+import { memo, useState } from "react"
 import { Message } from "@ably-labs/chat"
+import { PopoverContent } from "@radix-ui/react-popover"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
+import { Transition } from "@tailwindui/react"
 import { Laugh, Pencil, Reply, Star, Trash2 } from "lucide-react"
 
 import {
@@ -9,11 +11,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import EmojiPicker from "@/components/EmojiPicker"
+
+import EmojiButton from "../EmojiButton"
+import { Popover, PopoverAnchor, PopoverTrigger } from "../ui/popover"
 
 type MessageItemProps = {
   message: Message
   username: string
-  onAddReaction: () => void
+  onAddReaction: (emoji: string) => void
   onEdit: () => void
   onDelete: () => void
 }
@@ -36,75 +42,105 @@ function stringToHue(str: string) {
 const MessageItem = ({
   message,
   username,
-  onAddReaction: handleAddReaction,
+  onAddReaction,
   onEdit: handleEdit,
   onDelete: handleDelete,
 }: MessageItemProps) => {
   const color = getUserColor(username)
   const isOwnMessage = message.client_id === username
+  const [pickerOpen, setPickerOpen] = useState(false)
+
+  const handleSelectEmoji = (emoji: string) => {
+    onAddReaction(emoji)
+    setPickerOpen(false)
+  }
+
+  const reactions = message.reactions.counts
+
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <li
-            className="mx-2 flex w-full rounded-sm px-2 py-1 hover:bg-muted"
-            key={message.created_at}
-          >
-            <h3 style={{ color }} className="pr-2">
-              {username}
-            </h3>
-            <p>{message.content}</p>
-          </li>
-        </TooltipTrigger>
-        <TooltipContent className="border bg-background">
-          <ToggleGroup type="multiple">
-            <ToggleGroupItem
-              value={"add-reaction"}
-              aria-label={"Add Reaction"}
-              className="mx-1"
-            >
-              {/* <Emoji unified="1f604"  siz/> */}
-              <Laugh size="16" />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value={"reply"}
-              aria-label={"reply"}
-              className="mx-1"
-            >
-              <Reply size="16" />
-            </ToggleGroupItem>
-            {isOwnMessage ? (
-              <>
-                <ToggleGroupItem
-                  value={"edit"}
-                  aria-label={"edit"}
-                  className="mx-1"
-                  onClick={handleEdit}
+    <>
+      <Popover>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverAnchor asChild>
+                <li
+                  className="mx-2 flex w-full rounded-sm px-2 py-1 hover:bg-muted"
+                  key={message.created_at}
                 >
-                  <Pencil size="16" />
-                </ToggleGroupItem>
+                  <h3 style={{ color }} className="pr-2">
+                    {username}
+                  </h3>
+                  <p>{message.content}</p>
+                  <div className="flex items-center">
+                    {Object.keys(reactions).map((reaction) => (
+                      <>
+                        <p className="pr-2">{reaction}</p>
+                        <p>{reactions[reaction]}</p>
+                      </>
+                    ))}
+                  </div>
+                </li>
+              </PopoverAnchor>
+            </TooltipTrigger>
+            <TooltipContent className="border bg-background">
+              <ToggleGroup type="multiple">
+                <PopoverTrigger asChild>
+                  <ToggleGroupItem
+                    value={"add-reaction"}
+                    aria-label={"Add Reaction"}
+                    className="mx-1"
+                    onClick={() => setPickerOpen((prev) => !prev)}
+                  >
+                    <Laugh size="16" />
+                  </ToggleGroupItem>
+                </PopoverTrigger>
                 <ToggleGroupItem
-                  value={"delete"}
-                  aria-label={"delete"}
+                  value={"reply"}
+                  aria-label={"reply"}
                   className="mx-1"
-                  onClick={handleDelete}
                 >
-                  <Trash2 size="16" />
+                  <Reply size="16" />
                 </ToggleGroupItem>
-              </>
-            ) : (
-              <ToggleGroupItem
-                value={"favourite"}
-                aria-label={"favourite"}
-                className="mx-1"
-              >
-                <Star size="16" />
-              </ToggleGroupItem>
-            )}
-          </ToggleGroup>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+                {/* {isOwnMessage ? ( */}
+                <>
+                  <ToggleGroupItem
+                    value={"edit"}
+                    aria-label={"edit"}
+                    className="mx-1"
+                    onClick={handleEdit}
+                  >
+                    <Pencil size="16" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value={"delete"}
+                    aria-label={"delete"}
+                    className="mx-1"
+                    onClick={handleDelete}
+                  >
+                    <Trash2 size="16" />
+                  </ToggleGroupItem>
+                </>
+                {/*  ) : ( */}
+                <>
+                  <ToggleGroupItem
+                    value={"favourite"}
+                    aria-label={"favourite"}
+                    className="mx-1"
+                  >
+                    <Star size="16" />
+                  </ToggleGroupItem>
+                </>
+                {/* )} */}
+              </ToggleGroup>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <PopoverContent className="w-[350px] p-0">
+          <EmojiPicker onSelect={handleSelectEmoji} />
+        </PopoverContent>
+      </Popover>
+    </>
   )
 }
 

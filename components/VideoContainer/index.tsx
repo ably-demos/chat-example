@@ -13,7 +13,7 @@ type VideoContainerProps = {
   url: string
   views: number
   user: {
-    name: string
+    username: string
     avatar: string
     subscribers: number
   }
@@ -25,7 +25,7 @@ const VideoContainer = ({
   title,
   views,
   user,
-  onReaction,
+  onReaction: handleReaction,
 }: VideoContainerProps) => {
   const [playing, setPlaying] = React.useState(false)
   const videoRef = React.useRef<ReactPlayer>(null)
@@ -62,13 +62,13 @@ const VideoContainer = ({
               <Volume onChange={setVolume} />
             </div>
             <div>
-              <RoomReactions onClick={onReaction} />
+              <RoomReactions onClick={handleReaction} />
             </div>
           </div>
         </div>
         <VideoDetail
           views={views}
-          username={user.name}
+          username={user.username}
           avatar={user.avatar}
           subscribers={user.subscribers}
         />
