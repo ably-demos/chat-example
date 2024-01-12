@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { Maybe } from "@/types"
 import { Realtime } from "ably/promises"
 
@@ -13,6 +13,14 @@ export const useAblyClient = (username: Maybe<string>) => {
         })
       : undefined
   }, [username])
+
+  useEffect(() => {
+    console.debug("Opening Ably client connection")
+    return () => {
+      console.debug("Closing Ably client connection")
+      client?.close()
+    }
+  }, [client])
 
   return client
 }

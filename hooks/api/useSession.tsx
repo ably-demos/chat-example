@@ -2,29 +2,21 @@ import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
 
 import { fetchJson } from "@/lib/fetcher"
-import { defaultSession, getSession, SessionData } from "@/lib/session"
+import { SessionData } from "@/lib/session"
+import { POST } from "@/app/api/session/route"
 
 const sessionApiRoute = "/api/session"
 
 function doCreate(url: string) {
-  return fetchJson<SessionData>(url, {
+  return fetchJson<typeof POST>(url, {
     method: "POST",
-  })
-}
-
-function doReset(url: string) {
-  return fetchJson<SessionData>(url, {
-    method: "DELETE",
   })
 }
 
 export default function useSession() {
   const { data, ...getSession } = useSWR(
     sessionApiRoute,
-    fetchJson<SessionData>,
-    {
-      fallbackData: defaultSession,
-    }
+    fetchJson<SessionData>
   )
 
   const { trigger: create } = useSWRMutation(
@@ -36,11 +28,8 @@ export default function useSession() {
     }
   )
 
-  const { trigger: reset } = useSWRMutation(sessionApiRoute, doReset)
-
   return {
     session: data,
-    resetSession: reset,
     createSession: create,
     ...getSession,
   }

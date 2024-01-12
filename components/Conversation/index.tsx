@@ -3,20 +3,20 @@
 import { useCallback, useMemo, useState } from "react"
 import { Maybe } from "@/types"
 
-import { useConversation } from "@/hooks/useConversation"
-import { useMessages } from "@/hooks/useMessages"
+import { useConversation } from "@/hooks/chat/useConversation"
+import { useConversationId } from "@/hooks/chat/useConversationId"
+import { useMessages } from "@/hooks/chat/useMessages"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
 import ConversationHeader from "./ConversationHeader"
 
-type ConversationProps = {
-  conversationId: string
-}
+type ConversationProps = {}
 
-const Conversation = ({ conversationId }: ConversationProps) => {
-  const conversation = useConversation(conversationId)!
+const Conversation = (props: ConversationProps) => {
+  const conversationId = useConversationId()
+  const conversation = useConversation(conversationId)
 
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const messages = useMessages(conversationId)

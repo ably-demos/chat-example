@@ -4,16 +4,17 @@ import { useEffect, useState } from "react"
 import { redirect, useSearchParams } from "next/navigation"
 
 import { getRandomChannel, isValidChannel } from "@/lib/channel"
-import useSession from "@/hooks/useSession"
+import useSession from "@/hooks/api/useSession"
 import Spinner from "@/components/Spinner"
 
 export default function IndexPage() {
   const { session, isLoading, createSession } = useSession()
   const searchParams = useSearchParams()
 
-  const [channelId, setChannelId] = useState(searchParams.get("channel"))
+  const channelName = searchParams.get("channel")
 
-  const [channel, setChannel] = useState(channelId)
+  const [channel, setChannel] = useState(channelName)
+
   useEffect(() => {
     if (!session?.username && !isLoading) {
       createSession()
@@ -24,9 +25,9 @@ export default function IndexPage() {
     if (!session?.username) return
 
     if (!isValidChannel(channel)) {
-      const channelId = getRandomChannel()
+      const name = getRandomChannel()
 
-      setChannel(channelId)
+      setChannel(name)
     } else {
       redirect(`/watch?channel=${channel}`)
     }

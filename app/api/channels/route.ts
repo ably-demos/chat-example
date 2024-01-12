@@ -3,36 +3,26 @@ import { Rest } from "ably"
 
 import { getSession } from "@/lib/session"
 
-export async function GET(
-  request: Request,
-  { params: { channelId } }: { params: { channelId: string } }
-) {
-  const channel = prisma?.channel.findUniqueOrThrow({
-    where: {
-      channelId,
-    },
-  })
-  return Response.json(channel)
-}
-
-export async function POST(
-  request: Request,
-  { params: { channelId } }: { params: { channelId: string } }
-) {
+export async function POST(request: Request) {
   const session = await getSession(cookies())
+  const { name } = await request.json()
+
   if (!session) return Response.redirect("/login")
 
   const ably = new Rest.Promise({ key: process.env.ABLY_API_KEY! })
 
-  ably.channels.get("conversations:" + channelId)
+  /**
+   * This creates a channel, if it doesn't exist.
+   */
+  await ably.channels.get("conversations:" + name).status()
 
   const video = await prisma?.video.findFirstOrThrow({})
 
   if (!video) return Response.redirect("/")
 
-  const channel = prisma?.channel.create({
+  const channel = await prisma.channel.create({
     data: {
-      channelId,
+      name,
       video: {
         connect: {
           id: video.id,
@@ -40,7 +30,7 @@ export async function POST(
       },
       users: {
         connect: {
-          username: session.username!,
+          username: session.username,
         },
       },
     },

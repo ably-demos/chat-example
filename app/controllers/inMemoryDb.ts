@@ -41,7 +41,7 @@ export const createConversation = (id: string): Conversation => {
   if (existing) return existing
   const conversation = {
     id,
-    application_id: process.env.APP_ID || "",
+    application_id: process.env.APP_ID ?? "",
     ttl: null,
     created_at: Date.now(),
   }

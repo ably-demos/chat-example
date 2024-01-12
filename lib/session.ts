@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker/locale/en_GB"
 import { getIronSession } from "iron-session"
 
 export interface SessionData {
-  username: string | null
+  username: string
 }
 
 export const getSession = async (cookieStore: ReturnType<typeof cookies>) =>
@@ -14,10 +14,6 @@ export const getSession = async (cookieStore: ReturnType<typeof cookies>) =>
       secure: process.env.NODE_ENV === "production",
     },
   })
-
-export const defaultSession: SessionData = {
-  username: null,
-}
 
 /**
  * Generate a session for the user.

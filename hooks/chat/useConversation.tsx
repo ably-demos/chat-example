@@ -3,10 +3,10 @@
 import { useMemo } from "react"
 import { ConversationController as Conversation } from "@ably-labs/chat"
 
-import { useConversations } from "./useConversations"
+import { useChat } from "./useChat"
 
 export const useConversation = (conversationId: string): Conversation => {
-  const conversations = useConversations()
+  const { conversations } = useChat()
 
   return useMemo<Conversation>(
     () => conversations.get(conversationId),

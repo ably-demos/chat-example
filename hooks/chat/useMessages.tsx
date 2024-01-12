@@ -12,7 +12,7 @@ export const useMessages = (conversationId: string): Message[] => {
 
   const subscribeFn = useCallback(({ message }: { message: Message }) => {
     console.log("message created", message)
-    // TODO: This is a hack to prevent duplicate messages, can be removed after routes deployed
+    // TODO: This is a hack to prevent duplicate messages, can be removed with mock server
     setMessages((prev) => {
       if (prev.length && prev[prev.length - 1]?.id === message.id) {
         return prev

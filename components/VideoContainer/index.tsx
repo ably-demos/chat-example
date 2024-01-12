@@ -2,6 +2,7 @@ import React from "react"
 import { PauseIcon, PlayIcon } from "lucide-react"
 import ReactPlayer from "react-player/file"
 
+import { useConversation } from "@/hooks/chat/useConversation"
 import { Button } from "@/components/ui/button"
 
 import RoomReactions from "./RoomReactions"
@@ -17,22 +18,19 @@ type VideoContainerProps = {
     avatar: string
     subscribers: number
   }
-  onReaction: (emoji: string) => void
 }
 
-const VideoContainer = ({
-  url,
-  title,
-  views,
-  user,
-  onReaction: handleReaction,
-}: VideoContainerProps) => {
+const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
   const [playing, setPlaying] = React.useState(false)
   const videoRef = React.useRef<ReactPlayer>(null)
   const [volume, setVolume] = React.useState(0.5)
 
   const handlePlayPause = () => {
     setPlaying((prev) => !prev)
+  }
+
+  const handleReaction = (emoji: string) => {
+    // TODO: Room Level Reactions
   }
 
   return (

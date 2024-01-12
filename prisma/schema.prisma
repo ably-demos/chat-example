@@ -21,7 +21,7 @@ model User {
   username    String    @unique
   avatar      String
   subscribers Int       @default(0)
-  channels    Channel[] @relation(name: "Members")
+  channels    Channel[] @relation(name: "users")
 }
 
 model Channel {
@@ -29,9 +29,9 @@ model Channel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  channelId String @unique
+  name String @unique
 
-  users User[] @relation(name: "Members")
+  users User[] @relation(name: "users")
 
   video   Video @relation(fields: [videoId], references: [id])
   videoId Int

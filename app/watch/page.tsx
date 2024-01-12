@@ -1,16 +1,16 @@
 "use client"
 
-import { redirect, useSearchParams } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { ChatProvider } from "@/providers/ChatProvider"
 import { AblyProvider } from "ably/react"
 
-import { isValidChannel } from "@/lib/channel"
 /**
  * Hooks
  */
-import { useAblyClient } from "@/hooks/useAblyClient"
-import useSession from "@/hooks/useSession"
-import useVideo from "@/hooks/useVideo"
+import { useChannel } from "@/hooks/api/useChannel"
+import useSession from "@/hooks/api/useSession"
+import useVideo from "@/hooks/api/useVideo"
+import { useAblyClient } from "@/hooks/chat/useAblyClient"
 /**
  * Components
  */
@@ -20,52 +20,41 @@ import VideoContainer from "@/components/VideoContainer"
 
 const Watch = () => {
   const searchParams = useSearchParams()
-  const conversationId = searchParams.get("channel")
+  const { session } = useSession()
+
+  // TODO: Clean up channel id's/params
+
   const { video, isLoading: isVideoLoading } = useVideo()
-  const {
-    session: { username },
-  } = useSession()
 
-  if (!isValidChannel(conversationId)) {
-    redirect("/")
-  }
+  const channelParam = searchParams.get("channel")
 
-  const client = useAblyClient(username)
+  const { channel, isLoading: isChannelLoading } = useChannel(channelParam)
 
-  const handleReaction = (emoji: string) => {
-    console.log(emoji)
-  }
+  const client = useAblyClient(session?.username)
 
-  if (isVideoLoading || !client) {
+  if (isVideoLoading || isChannelLoading || !client || !channel) {
     return <Spinner />
   }
 
   if (!video) return <div>Video not found</div>
 
-  if (!conversationId) return <div>Conversation not found</div>
-
   return (
     <AblyProvider client={client}>
-      {client ? (
-        <ChatProvider conversationId={conversationId}>
-          <main className="flex flex-1 flex-col lg:flex-row">
-            <article className="flex h-full w-full">
-              <VideoContainer
-                title={video.title}
-                url={video.url}
-                views={video.views}
-                user={video.user}
-                onReaction={handleReaction}
-              />
-            </article>
-            <aside className="flex h-full w-full lg:w-128">
-              <Conversation conversationId={conversationId} />
-            </aside>
-          </main>
-        </ChatProvider>
-      ) : (
-        client
-      )}
+      <ChatProvider conversationId={channel.name}>
+        <main className="flex flex-1 flex-col lg:flex-row">
+          <article className="flex h-full w-full">
+            <VideoContainer
+              title={video.title}
+              url={video.url}
+              views={video.views}
+              user={video.user}
+            />
+          </article>
+          <aside className="flex h-full w-full lg:max-w-md">
+            <Conversation />
+          </aside>
+        </main>
+      </ChatProvider>
     </AblyProvider>
   )
 }
