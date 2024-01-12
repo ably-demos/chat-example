@@ -8,9 +8,10 @@ import Spinner from "../Spinner"
 
 type MessageListProps = {
   messages?: Message[]
-  onAddReaction: (messageId: string) => void
+  onAddReaction: (messageId: string, code: string) => void
   onDelete: (messageId: string) => void
   onEdit: (messageId: string) => void
+  onFavourite: (messageId: string) => void
 }
 
 const MessageList = ({
@@ -31,11 +32,11 @@ const MessageList = ({
       {messages.map((message) => {
         return (
           <MessageItem
-            key={`${message.created_at}_${message.client_id}`}
-            message={message}
+            key={message.id}
+            message={message.id}
             username={message.client_id}
+            onAddReaction={(code) => handleAddReaction(message.id, code)}
             onEdit={() => handleEdit(message.id)}
-            onAddReaction={() => handleAddReaction(message.id)}
             onDelete={() => handleDelete(message.id)}
           />
         )

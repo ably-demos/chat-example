@@ -17,11 +17,7 @@ const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
   return (
     <div className="flex">
       {Object.entries(reactions).map(([name, charCode]) => {
-        return (
-          <button key={name} className="p-2">
-            <Reaction onClick={handleClick} unified={charCode} />
-          </button>
-        )
+        return <Reaction key={name} onClick={handleClick} unified={charCode} />
       })}
     </div>
   )

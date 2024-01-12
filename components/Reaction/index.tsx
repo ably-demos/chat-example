@@ -14,9 +14,9 @@ const Reaction = ({ onClick, unified }: ReactionProps) => {
     <Button
       variant="ghost"
       onClick={() => onClick(unified)}
-      className="rounded-full px-[6px] pb-[1px] pt-[3px] transition-colors duration-150 hover:bg-gray-200 dark:hover:bg-gray-700"
+      className="h-11 w-11 rounded-full transition-colors duration-150"
     >
-      <Emoji size={22} emojiStyle={EmojiStyle.NATIVE} unified={unified} />
+      <Emoji size={24} emojiStyle={EmojiStyle.NATIVE} unified={unified} />
     </Button>
   )
 }

@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client"
 import * as dotenv from "dotenv"
 
+import { createUser } from "@/app/controllers/user"
+
 dotenv.config()
 
 const prisma = new PrismaClient()
@@ -8,15 +10,7 @@ const prisma = new PrismaClient()
 const seed = async () => {
   const username = "Sport News"
 
-  const user = await prisma.user.create({
-    data: {
-      username,
-      subscribers: 855721,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
-        username
-      )}&rounded=true&background=random`,
-    },
-  })
+  const user = await createUser(username, 855721)
 
   const video = await prisma.video.create({
     data: {

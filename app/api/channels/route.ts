@@ -1,10 +1,11 @@
-import { cookies } from "next/headers"
 import { Rest } from "ably"
 
+import prisma from "@/lib/prisma"
 import { getSession } from "@/lib/session"
+import { createChannel } from "@/app/controllers/channel"
 
 export async function POST(request: Request) {
-  const session = await getSession(cookies())
+  const session = await getSession()
   const { name } = await request.json()
 
   if (!session) return Response.redirect("/login")
@@ -20,21 +21,7 @@ export async function POST(request: Request) {
 
   if (!video) return Response.redirect("/")
 
-  const channel = await prisma.channel.create({
-    data: {
-      name,
-      video: {
-        connect: {
-          id: video.id,
-        },
-      },
-      users: {
-        connect: {
-          username: session.username,
-        },
-      },
-    },
-  })
+  const channel = await createChannel(name, video.id, session.username)
 
   return Response.json(channel)
 }

@@ -61,7 +61,7 @@ const MessageInput = React.memo(function MessagInputInner({
   const handleSelectEmoji = useCallback(
     (charCode: string) => {
       const fieldValue = contentValue
-      const emoji = String.fromCodePoint(parseInt(charCode, 16))
+      const emoji = getEmojiFromCode(charCode)
 
       form.setValue("content", `${fieldValue}${emoji}`)
     },

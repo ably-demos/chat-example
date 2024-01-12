@@ -1,8 +1,8 @@
-import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { Channel } from "@prisma/client"
+import { Channel, Prisma } from "@prisma/client"
 
 import { getSession } from "@/lib/session"
+import { getChannel } from "@/app/controllers/channel"
 
 const addUserToChannel = (name: string, username: string) => {
   return prisma.channel.update({
@@ -19,26 +19,11 @@ const addUserToChannel = (name: string, username: string) => {
   })
 }
 
-export const getChannel = async (name: string, username: string) => {
-  const channel = await prisma.channel.findUniqueOrThrow({
-    where: { name },
-    include: {
-      users: { where: { username: username } },
-    },
-  })
-
-  if (!channel) {
-    throw new Error("Channel not found")
-  }
-
-  return channel
-}
-
 export async function GET(
   _: Request,
   { params: { name } }: { params: { name: string } }
 ): Promise<NextResponse<Channel>> {
-  const session = await getSession(cookies())
+  const session = await getSession()
 
   const { users, ...channel } = await getChannel(name, session.username)
 
@@ -48,3 +33,9 @@ export async function GET(
 
   return NextResponse.json(channel)
 }
+
+export type GETVideoResponse = Prisma.Result<
+  typeof prisma.channel,
+  { include: { user: true } },
+  "findFirst"
+>

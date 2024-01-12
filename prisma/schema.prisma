@@ -13,37 +13,16 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   videos     Video[]
   favourited Message[] @relation(name: "favouritedBy")
+  channels   Channel[] @relation(name: "users")
 
-  updatedAt   DateTime  @updatedAt
   username    String    @unique
   avatar      String
   subscribers Int       @default(0)
-  channels    Channel[] @relation(name: "users")
-}
-
-model Channel {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name String @unique
-
-  users User[] @relation(name: "users")
-
-  video   Video @relation(fields: [videoId], references: [id])
-  videoId Int
-}
-
-model Message {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  text         String
-  favouritedBy User[] @relation(name: "favouritedBy")
+  Message     Message[]
 }
 
 model Video {
@@ -58,4 +37,67 @@ model Video {
   title String
   url   String
   views Int    @default(0)
+}
+
+model Channel {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[] @relation(name: "users")
+  video   Video  @relation(fields: [videoId], references: [id])
+  videoId Int
+
+  name String @unique
+
+  reactions ChannelReaction[]
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  favouritedBy User[] @relation(name: "favouritedBy")
+
+  content String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  reactions MessageReaction[]
+}
+
+model ChannelReaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Channel    Channel? @relation(fields: [channelId], references: [id])
+  channelId  Int?
+  reactionId Int
+  reaction   Reaction @relation(fields: [reactionId], references: [id])
+
+  timestamp DateTime
+}
+
+model MessageReaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messageId  Int
+  Message    Message  @relation(fields: [messageId], references: [id])
+  reactionId Int
+  reaction   Reaction @relation(fields: [reactionId], references: [id])
+}
+
+model Reaction {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type            String
+  ChannelReaction ChannelReaction[]
+  MessageReaction MessageReaction[]
 }

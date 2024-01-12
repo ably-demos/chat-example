@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
 
@@ -19,14 +20,20 @@ export default function useSession() {
     fetchJson<SessionData>
   )
 
-  const { trigger: create } = useSWRMutation(
-    sessionApiRoute,
-    (url) => doCreate(url),
-    {
-      // the login route already provides the updated information, no need to revalidate
-      revalidate: false,
-    }
+  const { trigger: create } = useSWRMutation(sessionApiRoute, (url) =>
+    doCreate(url)
   )
+
+  useEffect(() => {
+    console.log(getSession.error)
+    if (
+      !data?.username &&
+      getSession.error &&
+      getSession.error.status === 404
+    ) {
+      create()
+    }
+  }, [create, data?.username, getSession.error])
 
   return {
     session: data,

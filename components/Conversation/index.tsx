@@ -31,11 +31,11 @@ const Conversation = (props: ConversationProps) => {
     [conversation.messages, editingMessageId]
   )
 
-  const handleEditClick = useCallback(async (messageId: string) => {
+  const handleEditClick = useCallback((messageId: string) => {
     setEditingMessageId(messageId)
   }, [])
 
-  const handleClear = useCallback(async () => {
+  const handleClear = useCallback(() => {
     setEditingMessageId(null)
   }, [])
 
@@ -52,8 +52,15 @@ const Conversation = (props: ConversationProps) => {
   )
 
   const handleAddReaction = useCallback(
-    async (messageId: string) => {
-      await conversation.messages.addReaction(messageId, "👍")
+    (messageId: string, charCode: string) => {
+      conversation.messages.addReaction(messageId, getEmojiFromCode(charCode))
+    },
+    [conversation.messages]
+  )
+
+  const handleFavourite = useCallback(
+    (messageId: stringx) => {
+      messageId, getEmojiFromCode(charCode)
     },
     [conversation.messages]
   )

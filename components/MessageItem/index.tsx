@@ -5,6 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { Transition } from "@tailwindui/react"
 import { Laugh, Pencil, Reply, Star, Trash2 } from "lucide-react"
 
+import useMessage from "@/hooks/api/useMessage"
 import {
   Tooltip,
   TooltipContent,
@@ -17,8 +18,8 @@ import EmojiButton from "../EmojiButton"
 import { Popover, PopoverAnchor, PopoverTrigger } from "../ui/popover"
 
 type MessageItemProps = {
-  message: Message
-  username: string
+  messageId: string
+  userId: number
   onAddReaction: (emoji: string) => void
   onEdit: () => void
   onDelete: () => void
@@ -40,69 +41,66 @@ function stringToHue(str: string) {
 }
 
 const MessageItem = ({
-  message,
-  username,
+  messageId,
+  userId,
   onAddReaction,
   onEdit: handleEdit,
   onDelete: handleDelete,
 }: MessageItemProps) => {
+  const { message } = useMessage(messageId)
   const color = getUserColor(username)
-  const isOwnMessage = message.client_id === username
-  const [pickerOpen, setPickerOpen] = useState(false)
+  const isOwnMessage = message?.userId === userId
 
   const handleSelectEmoji = (emoji: string) => {
     onAddReaction(emoji)
-    setPickerOpen(false)
   }
 
   const reactions = message.reactions.counts
 
   return (
-    <>
-      <Popover>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <PopoverAnchor asChild>
-                <li
-                  className="mx-2 flex w-full rounded-sm px-2 py-1 hover:bg-muted"
-                  key={message.created_at}
-                >
-                  <h3 style={{ color }} className="pr-2">
-                    {username}
-                  </h3>
-                  <p>{message.content}</p>
-                  <div className="flex items-center">
-                    {Object.keys(reactions).map((reaction) => (
-                      <>
-                        <p className="pr-2">{reaction}</p>
-                        <p>{reactions[reaction]}</p>
-                      </>
-                    ))}
-                  </div>
-                </li>
-              </PopoverAnchor>
-            </TooltipTrigger>
-            <TooltipContent className="border bg-background">
-              <ToggleGroup type="multiple">
-                <PopoverTrigger asChild>
-                  <ToggleGroupItem
-                    value={"add-reaction"}
-                    aria-label={"Add Reaction"}
-                    className="mx-1"
-                    onClick={() => setPickerOpen((prev) => !prev)}
-                  >
-                    <Laugh size="16" />
-                  </ToggleGroupItem>
-                </PopoverTrigger>
+    <Popover>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverAnchor asChild>
+              <li
+                className="mx-2 flex w-full rounded-sm px-2 py-1 hover:bg-muted"
+                key={message.created_at}
+              >
+                <h3 style={{ color }} className="pr-2">
+                  {message?.user.username}
+                </h3>
+                <p>{message.content}</p>
+                <div className="flex items-center">
+                  {Object.keys(reactions).map((reaction) => (
+                    <>
+                      <p className="pr-2">{reaction}</p>
+                      <p>{reactions[reaction]}</p>
+                    </>
+                  ))}
+                </div>
+              </li>
+            </PopoverAnchor>
+          </TooltipTrigger>
+          <TooltipContent className="border bg-background">
+            <ToggleGroup type="multiple">
+              <PopoverTrigger asChild>
                 <ToggleGroupItem
-                  value={"reply"}
-                  aria-label={"reply"}
+                  value={"add-reaction"}
+                  aria-label={"Add Reaction"}
                   className="mx-1"
                 >
-                  <Reply size="16" />
+                  <Laugh size="16" />
                 </ToggleGroupItem>
-                {/* {isOwnMessage ? ( */}
+              </PopoverTrigger>
+              <ToggleGroupItem
+                value={"reply"}
+                aria-label={"reply"}
+                className="mx-1"
+              >
+                <Reply size="16" />
+              </ToggleGroupItem>
+              {isOwnMessage ? (
                 <>
                   <ToggleGroupItem
                     value={"edit"}
@@ -121,26 +119,24 @@ const MessageItem = ({
                     <Trash2 size="16" />
                   </ToggleGroupItem>
                 </>
-                {/*  ) : ( */}
-                <>
-                  <ToggleGroupItem
-                    value={"favourite"}
-                    aria-label={"favourite"}
-                    className="mx-1"
-                  >
-                    <Star size="16" />
-                  </ToggleGroupItem>
-                </>
-                {/* )} */}
-              </ToggleGroup>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <PopoverContent className="w-[350px] p-0">
-          <EmojiPicker onSelect={handleSelectEmoji} />
-        </PopoverContent>
-      </Popover>
-    </>
+              ) : (
+                <ToggleGroupItem
+                  value={"favourite"}
+                  aria-label={"favourite"}
+                  className="mx-1"
+                  onClick={handleFavourite}
+                >
+                  <Star size="16" />
+                </ToggleGroupItem>
+              )}
+            </ToggleGroup>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <PopoverContent className="w-[350px] p-0">
+        <EmojiPicker onSelect={handleSelectEmoji} />
+      </PopoverContent>
+    </Popover>
   )
 }
 

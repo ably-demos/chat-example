@@ -18,7 +18,7 @@ export const useAblyClient = (username: Maybe<string>) => {
     console.debug("Opening Ably client connection")
     return () => {
       console.debug("Closing Ably client connection")
-      client?.close()
+      // client?.close()
     }
   }, [client])
 
