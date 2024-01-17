@@ -1,7 +1,6 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { ChatProvider } from "@/providers/ChatProvider"
 import { AblyProvider } from "ably/react"
 
 /**
@@ -11,6 +10,7 @@ import { useChannel } from "@/hooks/api/useChannel"
 import useSession from "@/hooks/api/useSession"
 import useVideo from "@/hooks/api/useVideo"
 import { useAblyClient } from "@/hooks/chat/useAblyClient"
+import { ChatProvider } from "@/components/ChatProvider"
 /**
  * Components
  */
@@ -20,19 +20,18 @@ import VideoContainer from "@/components/VideoContainer"
 
 const Watch = () => {
   const searchParams = useSearchParams()
-  const { session } = useSession()
+  const channelParam = searchParams.get("channel")
 
   // TODO: Clean up channel id's/params
 
   const { video, isLoading: isVideoLoading } = useVideo()
-
-  const channelParam = searchParams.get("channel")
+  const { session } = useSession()
 
   const { channel, isLoading: isChannelLoading } = useChannel(channelParam)
 
   const client = useAblyClient(session?.username)
 
-  if (isVideoLoading || isChannelLoading || !client || !channel) {
+  if (isVideoLoading || isChannelLoading || !client || !channel || !session) {
     return <Spinner />
   }
 
@@ -42,7 +41,7 @@ const Watch = () => {
     <AblyProvider client={client}>
       <ChatProvider conversationId={channel.name}>
         <main className="flex flex-1 flex-col lg:flex-row">
-          <article className="flex h-full w-full">
+          <article className="flex size-full">
             <VideoContainer
               title={video.title}
               url={video.url}
@@ -50,7 +49,7 @@ const Watch = () => {
               user={video.user}
             />
           </article>
-          <aside className="flex h-full w-full lg:max-w-md">
+          <aside className="flex size-full lg:max-w-md">
             <Conversation />
           </aside>
         </main>

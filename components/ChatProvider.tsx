@@ -28,14 +28,3 @@ export const ChatProvider: FC<ChatProviderProps> = ({
   )
   return <ChatContext.Provider value={context}>{children}</ChatContext.Provider>
 }
-
-/**
- * Chat
- */
-// useAbly
-// useChat
-// useConversations
-// useConversation
-// useMessages
-// useMessage
-// usePresence

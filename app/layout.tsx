@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
  */
 import ActiveBreakpoint from "@/components/ActiveBreakpoint"
 import PageHeader from "@/components/PageHeader"
+import { SessionProvider } from "@/components/SessionProvider"
 import { ThemeProvider } from "@/components/ThemeProvider"
 
 export const metadata: Metadata = {
@@ -41,9 +42,11 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex h-full min-h-screen w-full flex-col">
+          <div className="flex size-full min-h-screen flex-col">
             <PageHeader />
-            <div className="flex flex-1">{children}</div>
+            <SessionProvider>
+              <div className="flex flex-1">{children}</div>
+            </SessionProvider>
           </div>
           <ActiveBreakpoint />
         </ThemeProvider>

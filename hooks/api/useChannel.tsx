@@ -30,7 +30,7 @@ export const useChannel = (name: string | null) => {
     isLoading,
   } = useSWR<Channel>(cacheKey, fetchJson<Channel>)
 
-  const { trigger: create } = useSWRMutation(`${cacheKey}/ad`, () =>
+  const { trigger: create } = useSWRMutation(`${cacheKey}`, () =>
     doCreate(channelApiRoute, { name })
   )
 

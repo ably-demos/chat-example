@@ -17,7 +17,7 @@ export const handleCreateMessage = async (
   const ablyToken = req.headers.get("authorization")?.split(" ")[1] ?? ""
 
   const body = await req.json()
-  const message = createMessage({
+  const message = await createMessage({
     ...body,
     client_id: req.headers.get("ably-clientid") ?? "",
     conversation_id: conversationId,
@@ -32,14 +32,14 @@ export const handleCreateMessage = async (
   return Response.json({ id: message.id }, { status: 201 })
 }
 
-export const handleQueryMessages = (
+export const handleQueryMessages = async (
   req: Request,
   { params }: { params: { conversationId: string } },
   res: Response
 ) => {
   const conversationId = params.conversationId
   return Response.json(
-    findMessages(conversationId, req.headers.get("ably-clientid") ?? "")
+    await findMessages(conversationId, req.headers.get("ably-clientid") ?? "")
   )
 }
 
@@ -52,7 +52,7 @@ export const handleEditMessages = async (
   const ablyToken = req.headers.get("authorization")?.split(" ")[1] ?? ""
 
   const body = await req.json()
-  const message = editMessage({
+  const message = await editMessage({
     id: params.messageId,
     conversation_id: conversationId,
     ...body,
@@ -67,7 +67,7 @@ export const handleEditMessages = async (
   return Response.json({ id: message.id }, { status: 201 })
 }
 
-export const handleDeleteMessages = (
+export const handleDeleteMessages = async (
   req: Request,
   { params }: { params: { conversationId: string; messageId: string } },
   res: Response
@@ -75,7 +75,7 @@ export const handleDeleteMessages = (
   const conversationId = params.conversationId
   const ablyToken = req.headers.get("authorization")?.split(" ")[1] ?? ""
 
-  const message = deleteMessage({
+  const message = await deleteMessage({
     id: params.messageId,
     conversation_id: conversationId,
   })

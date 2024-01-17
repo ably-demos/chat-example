@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
-import { Channel, Prisma } from "@prisma/client"
+import { Channel } from "@prisma/client"
 
 import { getSession } from "@/lib/session"
 import { getChannel } from "@/app/controllers/channel"
 
 const addUserToChannel = (name: string, username: string) => {
-  return prisma.channel.update({
+  return prisma?.channel.update({
     where: {
       name,
     },
@@ -20,7 +20,7 @@ const addUserToChannel = (name: string, username: string) => {
 }
 
 export async function GET(
-  _: Request,
+  _req: Request,
   { params: { name } }: { params: { name: string } }
 ): Promise<NextResponse<Channel>> {
   const session = await getSession()
@@ -33,9 +33,3 @@ export async function GET(
 
   return NextResponse.json(channel)
 }
-
-export type GETVideoResponse = Prisma.Result<
-  typeof prisma.channel,
-  { include: { user: true } },
-  "findFirst"
->

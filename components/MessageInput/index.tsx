@@ -14,7 +14,7 @@ import EmojiButton from "../EmojiButton"
 import MessageInputField from "./MessageInputField"
 
 type Props = {
-  defaultValue?: Maybe<string>
+  defaultValue: string | null
   onSubmit: (value: string) => void
   onClear: () => void
 }
@@ -59,10 +59,8 @@ const MessageInput = React.memo(function MessagInputInner({
   )
 
   const handleSelectEmoji = useCallback(
-    (charCode: string) => {
+    (emoji: string) => {
       const fieldValue = contentValue
-      const emoji = getEmojiFromCode(charCode)
-
       form.setValue("content", `${fieldValue}${emoji}`)
     },
     [contentValue, form]

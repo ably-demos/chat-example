@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect } from "react"
 import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
@@ -25,15 +27,15 @@ export default function useSession() {
   )
 
   useEffect(() => {
-    console.log(getSession.error)
     if (
       !data?.username &&
       getSession.error &&
-      getSession.error.status === 404
+      getSession.error.status === 404 &&
+      !getSession.isLoading
     ) {
       create()
     }
-  }, [create, data?.username, getSession.error])
+  }, [create, data?.username, getSession.error, getSession.isLoading])
 
   return {
     session: data,

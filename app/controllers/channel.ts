@@ -5,7 +5,7 @@ export const createChannel = async (
   videoId: number,
   username: string
 ) => {
-  return await prisma.channel.create({
+  return await prisma?.channel.create({
     data: {
       name,
       video: {
@@ -23,7 +23,7 @@ export const createChannel = async (
 }
 
 export const getChannel = async (name: string, username: string) => {
-  const channel = await prisma.channel.findUniqueOrThrow({
+  const channel = await prisma?.channel.findUnique({
     where: { name },
     include: {
       users: { where: { username: username } },

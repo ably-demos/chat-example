@@ -11,14 +11,13 @@ export const handleAddReaction = async (
       conversationId: string
       messageId: string
     }
-  },
-  res: Response
+  }
 ) => {
   const conversationId = params.conversationId
   const ablyToken = req.headers.get("authorization")?.split(" ")[1] ?? ""
 
   const body = await req.json()
-  const reaction = addReaction({
+  const reaction = await addReaction({
     message_id: params.messageId,
     conversation_id: conversationId,
     client_id: req.headers.get("ably-clientid") ?? "",
@@ -39,14 +38,14 @@ export const handleAddReaction = async (
   )
 }
 
-export const handleDeleteReaction = (
+export const handleDeleteReaction = async (
   req: Request,
   { params }: { params: { reactionId: string } }
 ) => {
   const reactionId = params.reactionId
   const ablyToken = req.headers.get("authorization")?.split(" ")[1] ?? ""
 
-  const reaction = deleteReaction(reactionId)
+  const reaction = await deleteReaction(reactionId)
 
   const client = new Ably.Rest(ablyToken)
 

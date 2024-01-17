@@ -1,0 +1,31 @@
+.FadingReaction {
+  animation: MoveUpFadeOut 2s ease-out forwards;
+  position: absolute;
+  left: 10px;
+  opacity: 1;
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0); /* Promote layer */
+}
+
+@keyframes MoveUpFadeOut {
+  0% {
+    transform: translate(0, -24px);
+    opacity: 1;
+  }
+  20% {
+    transform: translate(24px, -100px);
+  }
+  40% {
+    transform: translate(0, -150px);
+  }
+  60% {
+    transform: translate(5px, -180px);
+  }
+  80% {
+    transform: translate(0, -190px);
+  }
+  100% {
+    transform: translate(0, -200px);
+    opacity: 0;
+  }
+}

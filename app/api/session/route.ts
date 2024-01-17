@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { z } from "zod"
 
 import prisma from "@/lib/prisma"
 import { getSession, SessionData } from "@/lib/session"
 import { createUser, generateUsername } from "@/app/controllers/user"
+
+// TODO: handle user && channel cleanup on new session.destroy
 
 // read session
 export async function GET() {
@@ -24,22 +25,15 @@ export async function GET() {
   return Response.json(session)
 }
 
-const createSessionBodySchema = z.object({
-  channel: z.string().nullable(),
-})
-
-export type CreateSessionBodySchema = z.infer<typeof createSessionBodySchema>
-
 export async function POST(req: NextRequest, res: NextResponse<SessionData>) {
   const session = await getSession()
 
-  // TODO: Validate Typings for SessionData
   if (!session.username) {
     const username = await generateUsername()
     session.username = username
   }
 
-  let user = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { username: session.username },
   })
 
@@ -51,5 +45,3 @@ export async function POST(req: NextRequest, res: NextResponse<SessionData>) {
 
   return Response.json(session)
 }
-
-// TODO: handle user && channel cleanup on new session.destroy

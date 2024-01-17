@@ -1,3 +1,5 @@
+import React from "react"
+import { kv } from "@vercel/kv"
 import { nanoid } from "nanoid"
 
 export interface Conversation {
@@ -32,11 +34,28 @@ export interface Reaction {
   deleted_at: number | null
 }
 
-const conversations: Conversation[] = []
-const conversationIdToMessages: Record<string, Message[]> = {}
-const reactions: Reaction[] = []
+interface KVStore {
+  conversations: Conversation[]
+  conversationIdToMessages: Record<string, Message[]>
+  reactions: Reaction[]
+}
 
-export const createConversation = (id: string): Conversation => {
+// const conversations: Conversation[] = []
+// const conversationIdToMessages: Record<string, Message[]> = {}
+// const reactions: Reaction[] = []
+const getValueForKey = async <K extends keyof KVStore>(
+  key: K
+): Promise<KVStore[K]> => {
+  const v: KVStore[K] = await kv.json.get(key)
+  console.log(v)
+  if (!v) throw new Error("Value not found")
+  return v
+}
+
+export const createConversation = async (id: string): Promise<Conversation> => {
+  const conversations = await getValueForKey("conversations")
+
+  debugger
   const existing = conversations.find((conv) => conv.id === id)
   if (existing) return existing
   const conversation = {
@@ -45,27 +64,36 @@ export const createConversation = (id: string): Conversation => {
     ttl: null,
     created_at: Date.now(),
   }
-  conversationIdToMessages[id] = []
-  conversations.push(conversation)
+
+  await kv.json.set("conversationIdToMessages", `$.${id}`, "[]")
+  debugger
+  await kv.json.arrappend("conversations", "$", JSON.stringify(conversation))
+  debugger
+
   return conversation
 }
 
 createConversation("conversation1")
 
-export const getConversation = (id: string): Conversation => {
-  console.error(conversations)
+export const getConversation = async (id: string): Promise<Conversation> => {
+  const conversations = await getValueForKey("conversations")
   const conversation = conversations.find((conv) => conv.id === id)
   if (!conversation) throw new Error()
   return conversation
 }
 
-export const findMessages = (conversationId: string, clientId: string) =>
-  enrichMessagesWithReactions(
-    conversationIdToMessages[conversationId],
-    clientId
+export const findMessages = async (
+  conversationId: string,
+  clientId: string
+) => {
+  const messages = await kv.json.get(
+    "conversationIdToMessages",
+    `$.${conversationId}`
   )
+  return enrichMessagesWithReactions(messages, clientId)
+}
 
-export const createMessage = (
+export const createMessage = async (
   message: Pick<Message, "client_id" | "conversation_id" | "content">
 ) => {
   const created: Message = {
@@ -80,34 +108,50 @@ export const createMessage = (
     updated_at: null,
     deleted_at: null,
   }
-  conversationIdToMessages[created.conversation_id].push(created)
+
+  await kv.json.arrappend(
+    "conversationIdToMessages",
+    `$.${created.conversation_id}`,
+    JSON.stringify(created)
+  )
+
   return created
 }
 
-export const editMessage = (
+export const editMessage = async (
   message: Pick<Message, "id" | "conversation_id" | "content">
 ) => {
-  const edited = conversationIdToMessages[message.conversation_id].find(
-    ({ id }) => message.id === id
+  const messages: Message[] = await kv.json.get(
+    "conversationIdToMessages",
+    `$.${message.conversation_id}`
   )
+  const edited = messages.find(({ id }) => message.id === id)
+
   if (!edited) throw new Error("Message not found")
   edited.content = message.content
   return edited
 }
 
-export const deleteMessage = (
+export const deleteMessage = async (
   message: Pick<Message, "id" | "conversation_id">
-) => {
-  const deletedIndex = conversationIdToMessages[
-    message.conversation_id
-  ].findIndex(({ id }) => message.id === id)
-  const deleted =
-    conversationIdToMessages[message.conversation_id][deletedIndex]
-  conversationIdToMessages[message.conversation_id].splice(deletedIndex, 1)
-  return deleted
+): Promise<Message> => {
+  const messages: Message[] = await kv.json.get(
+    "conversationIdToMessages",
+    `$.${message.conversation_id}`
+  )
+
+  const deletedIndex = messages.findIndex(({ id }) => message.id === id)
+
+  return (
+    await kv.json.arrpop(
+      "conversationIdToMessages",
+      `$.${message.conversation_id}`,
+      deletedIndex
+    )
+  )[0] as Message
 }
 
-export const addReaction = (
+export const addReaction = async (
   reaction: Pick<
     Reaction,
     "id" | "message_id" | "type" | "client_id" | "conversation_id"
@@ -119,23 +163,25 @@ export const addReaction = (
     updated_at: null,
     deleted_at: null,
   }
-  reactions.push(created)
+  await kv.json.arrappend("reactions", "$", JSON.stringify(created))
   return created
 }
 
-export const deleteReaction = (reactionId: string) => {
+export const deleteReaction = async (reactionId: string) => {
+  const reactions: Reaction[] = await kv.json.get("reactions", "$")
+
   const deletedIndex = reactions.findIndex(
     (reaction) => reaction.id === reactionId
   )
-  const deleted = reactions[deletedIndex]
-  reactions.splice(deletedIndex, 1)
-  return deleted
+
+  return (await kv.json.arrpop("reactions", "$", deletedIndex))[0] as Reaction
 }
 
-const enrichMessageWithReactions = (
+const enrichMessageWithReactions = async (
   message: Message,
   clientId: string
-): Message => {
+): Promise<Message> => {
+  const reactions: Reaction[] = await kv.json.get("reactions", "$")
   try {
     const messageReactions = reactions.filter(
       (reaction) => reaction.message_id === message.id
@@ -175,15 +221,19 @@ const enrichMessageWithReactions = (
   }
 }
 
-const enrichMessagesWithReactions = (messages: Message[], clientId: string) => {
-  return messages ?? []
-  // .map((message) => {
-  //   try {
-  //     const msg = enrichMessageWithReactions(message, clientId)
-  //     return msg
-  //   } catch (e) {
-  //     console.log(e)
-  //     return message
-  //   }
-  // })
+const enrichMessagesWithReactions = async (
+  messages: Message[],
+  clientId: string
+) => {
+  const promises = (messages ?? []).map(async (message) => {
+    try {
+      const msg = await enrichMessageWithReactions(message, clientId)
+      return msg
+    } catch (e) {
+      console.log(e)
+      return message
+    }
+  })
+
+  return Promise.all(promises)
 }

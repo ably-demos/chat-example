@@ -1,14 +1,14 @@
 import React from "react"
-import { Emoji as ReactEmoji } from "emoji-picker-react"
+import { EmojiStyle, Emoji as ReactEmoji } from "emoji-picker-react"
 
 type Props = Parameters<typeof ReactEmoji>[0] & {
   className?: string
 }
 
-const Emoji = ({ className, ...props }: Props) => {
+const Emoji = ({ className, emojiStyle, ...props }: Props) => {
   return (
     <div className={className}>
-      <ReactEmoji {...props} />
+      <ReactEmoji emojiStyle={emojiStyle ?? EmojiStyle.NATIVE} {...props} />
     </div>
   )
 }

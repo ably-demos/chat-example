@@ -33,7 +33,6 @@ export default React.memo(function EmojiButton({
   className = "",
   ...props
 }: EmojiButtonProps) {
-  console.log("EmojiButton rerender")
   const windowSize = useWindowSize()
 
   const hidden = isMobile()

@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { Transition } from "@tailwindui/react"
 import clsx from "clsx"
 import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react"
@@ -6,11 +6,6 @@ import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react"
 import { useDebounce } from "@/hooks/utils/useDebounce"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-
-type Props = {
-  defaultVolume?: number
-  onChange: (volume: number) => void
-}
 
 const VolumeIcon = memo(function VolumeIcon({
   volume,
@@ -22,28 +17,46 @@ const VolumeIcon = memo(function VolumeIcon({
   if (muted || volume === 0) {
     return <VolumeXIcon />
   }
-  if (volume < 50) {
+  if (volume < 0.5) {
     return <Volume1Icon />
   }
   return <Volume2Icon />
 })
 
-const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
-  const volume = useRef(defaultVolume)
-  const [muted, setMuted] = useState(true)
-  const [isOpen, setIsOpen] = useState(false)
+type VolumeProps = {
+  defaultVolume?: number
+  defaultMuted?: boolean
+  onChange: (volume: number) => void
+}
+
+const Volume = ({
+  defaultVolume = 0.5,
+  defaultMuted,
+  onChange,
+}: VolumeProps) => {
+  const [volume, setVolume] = useState(defaultVolume)
+  const [muted, setMuted] = useState(defaultMuted ?? true)
+  const [sliderOpen, setSliderOpen] = useState(false)
+
+  useEffect(() => {
+    if (muted) {
+      onChange(0)
+    } else {
+      onChange(volume)
+    }
+  }, [volume, muted, onChange])
 
   const { fn: debouncedLeave, cancel: cancelLeave } = useDebounce(() => {
-    setIsOpen(false)
+    setSliderOpen(false)
   }, 2500)
 
   const handleVolumeClick = () => {
-    setIsOpen(true)
+    setSliderOpen(true)
     setMuted(!muted)
   }
 
   const handleMouseEnter = () => {
-    setIsOpen(true)
+    setSliderOpen(true)
     cancelLeave()
   }
 
@@ -51,10 +64,9 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
     debouncedLeave()
   }
 
-  const handleSliderChange = (value: number[]) => {
-    onChange(value[0])
+  const handleSliderChange = (value: [number]) => {
+    setVolume(value[0])
   }
-
   return (
     <div className="dark flex grow">
       <Button
@@ -62,13 +74,13 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
         size="icon"
         onClick={handleVolumeClick}
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={debouncedLeave}
+        onMouseLeave={handleMouseLeave}
         className="text-white/95"
       >
-        <VolumeIcon volume={volume.current} muted={muted} />
+        <VolumeIcon volume={volume} muted={muted} />
       </Button>
       <Transition
-        show={isOpen}
+        show={sliderOpen}
         enter="transition-opacity duration-75"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -78,13 +90,14 @@ const Volume = ({ defaultVolume = 0.5, onChange }: Props) => {
         className="ml-2 flex h-9 w-full items-center"
       >
         <Slider
+          key={sliderOpen ? "open" : "closed"}
           step={0.01}
-          defaultValue={[volume.current]}
+          value={[volume]}
           min={0}
           max={1}
           className={clsx("w-[60%] max-w-[200px]")}
           onValueChange={handleSliderChange}
-          onMouseEnter={cancelLeave}
+          onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
       </Transition>

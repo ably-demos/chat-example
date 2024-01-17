@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
 model User {
@@ -15,14 +15,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  videos     Video[]
-  favourited Message[] @relation(name: "favouritedBy")
-  channels   Channel[] @relation(name: "users")
+  Videos   Video[]
+  Channels Channel[] @relation(name: "users")
 
-  username    String    @unique
+  username    String @unique
   avatar      String
-  subscribers Int       @default(0)
-  Message     Message[]
+  subscribers Int    @default(0)
 }
 
 model Video {
@@ -49,55 +47,4 @@ model Channel {
   videoId Int
 
   name String @unique
-
-  reactions ChannelReaction[]
-}
-
-model Message {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  favouritedBy User[] @relation(name: "favouritedBy")
-
-  content String
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  reactions MessageReaction[]
-}
-
-model ChannelReaction {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Channel    Channel? @relation(fields: [channelId], references: [id])
-  channelId  Int?
-  reactionId Int
-  reaction   Reaction @relation(fields: [reactionId], references: [id])
-
-  timestamp DateTime
-}
-
-model MessageReaction {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  messageId  Int
-  Message    Message  @relation(fields: [messageId], references: [id])
-  reactionId Int
-  reaction   Reaction @relation(fields: [reactionId], references: [id])
-}
-
-model Reaction {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  type            String
-  ChannelReaction ChannelReaction[]
-  MessageReaction MessageReaction[]
 }

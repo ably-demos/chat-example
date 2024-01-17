@@ -27,7 +27,7 @@ const VideoDetail = ({ views, username, avatar, subscribers }: Props) => {
       </div>
       <div className="flex items-center space-x-4">
         <div className="relative w-12 rounded-full border border-primary-foreground p-1">
-          <Avatar className="h-12 w-12">
+          <Avatar className="size-12">
             <AvatarImage src={avatar} alt="Image" />
             <AvatarFallback>
               {username.split(" ").map((item) => item.charAt(0))}

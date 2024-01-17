@@ -2,6 +2,8 @@
 
 import { faker } from "@faker-js/faker/locale/en_GB"
 
+import prisma from "@/lib/prisma"
+
 export const generateUsername = async () => {
   let username
   do {

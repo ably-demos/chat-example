@@ -3,24 +3,21 @@
 import React, { useRef } from "react"
 import { Message } from "@ably-labs/chat"
 
+import { useMessages } from "@/hooks/chat/useMessages"
+
 import MessageItem from "../MessageItem"
 import Spinner from "../Spinner"
 
 type MessageListProps = {
   messages?: Message[]
-  onAddReaction: (messageId: string, code: string) => void
-  onDelete: (messageId: string) => void
+  username: string
   onEdit: (messageId: string) => void
-  onFavourite: (messageId: string) => void
 }
 
-const MessageList = ({
-  messages,
-  onAddReaction: handleAddReaction,
-  onDelete: handleDelete,
-  onEdit: handleEdit,
-}: MessageListProps) => {
+const MessageList = ({ username, onEdit: handleEdit }: MessageListProps) => {
   const messageListRef = useRef<HTMLOListElement>(null)
+  const { messages, addReaction, deleteMessage, removeReaction } =
+    useMessages(username)
 
   if (!messages) return <Spinner />
 
@@ -33,11 +30,12 @@ const MessageList = ({
         return (
           <MessageItem
             key={message.id}
-            message={message.id}
-            username={message.client_id}
-            onAddReaction={(code) => handleAddReaction(message.id, code)}
-            onEdit={() => handleEdit(message.id)}
-            onDelete={() => handleDelete(message.id)}
+            username={username}
+            message={message}
+            onAddReaction={addReaction}
+            onEditClick={handleEdit}
+            onDeleteClick={deleteMessage}
+            onRemoveReaction={removeReaction}
           />
         )
       })}

@@ -1,5 +1,4 @@
 import React from "react"
-import { EmojiStyle } from "emoji-picker-react"
 
 import Emoji from "@/components/Emoji"
 
@@ -14,9 +13,9 @@ const Reaction = ({ onClick, unified }: ReactionProps) => {
     <Button
       variant="ghost"
       onClick={() => onClick(unified)}
-      className="h-11 w-11 rounded-full transition-colors duration-150"
+      className="size-11 rounded-full transition-colors duration-150"
     >
-      <Emoji size={24} emojiStyle={EmojiStyle.NATIVE} unified={unified} />
+      <Emoji size={24} unified={unified} />
     </Button>
   )
 }

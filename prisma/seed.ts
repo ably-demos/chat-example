@@ -25,7 +25,18 @@ const seed = async () => {
     },
   })
 
-  console.info(user, video)
+  const channel = await prisma.channel.create({
+    data: {
+      name: "default",
+      video: {
+        connect: {
+          id: video.id,
+        },
+      },
+    },
+  })
+
+  console.info(user, video, channel)
 }
 
 seed()
