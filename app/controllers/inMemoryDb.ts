@@ -55,7 +55,6 @@ const getValueForKey = async <K extends keyof KVStore>(
 export const createConversation = async (id: string): Promise<Conversation> => {
   const conversations = await getValueForKey("conversations")
 
-  debugger
   const existing = conversations.find((conv) => conv.id === id)
   if (existing) return existing
   const conversation = {

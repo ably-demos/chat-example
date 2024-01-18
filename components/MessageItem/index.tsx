@@ -89,7 +89,7 @@ const MessageItem = ({
           <li className="w-full">
             <TooltipTrigger asChild>
               <PopoverAnchor asChild>
-                <div className="flex rounded-sm py-1 px-2 hover:bg-muted">
+                <div className="flex rounded-sm px-2 py-1 hover:bg-muted">
                   <h3 style={{ color }} className="pr-2">
                     {message.client_id}
                   </h3>

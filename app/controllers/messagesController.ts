@@ -38,9 +38,12 @@ export const handleQueryMessages = async (
   res: Response
 ) => {
   const conversationId = params.conversationId
-  return Response.json(
-    await findMessages(conversationId, req.headers.get("ably-clientid") ?? "")
+  const messages = await findMessages(
+    conversationId,
+    req.headers.get("ably-clientid") ?? ""
   )
+
+  return Response.json(messages, { status: 200 })
 }
 
 export const handleEditMessages = async (

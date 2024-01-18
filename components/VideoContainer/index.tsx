@@ -46,7 +46,7 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
             height={"100%"}
             className="m-auto aspect-video size-auto"
           />
-          <div className="absolute bottom-0 left-0 my-3 flex w-full justify-between bg-gradient-to-t from-black/75 px-3">
+          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-black/75 p-3">
             <div className="flex grow">
               <Button
                 variant="ghost"
