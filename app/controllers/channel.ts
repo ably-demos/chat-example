@@ -1,5 +1,7 @@
 "use server"
 
+import { createConversation } from "./inMemoryDb"
+
 export const createChannel = async (
   name: string,
   videoId: number,
@@ -29,6 +31,8 @@ export const getChannel = async (name: string, username: string) => {
       users: { where: { username: username } },
     },
   })
+
+  await createConversation(name)
 
   if (!channel) {
     throw new Error("Channel not found")

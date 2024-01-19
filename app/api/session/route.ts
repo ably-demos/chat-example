@@ -10,13 +10,13 @@ import { createUser, generateUsername } from "@/app/controllers/user"
 export async function GET() {
   const session = await getSession()
 
+  if (!session.username) {
+    return Response.json(null, { status: 404 })
+  }
+
   const user = await prisma.user.findUnique({
     where: { username: session.username },
   })
-
-  if (!session) {
-    return Response.json(null, { status: 401 })
-  }
 
   if (!user) {
     return Response.json(null, { status: 404 })

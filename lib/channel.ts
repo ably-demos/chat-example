@@ -1,11 +1,13 @@
-import { nanoid } from "nanoid"
+import { customAlphabet } from "nanoid"
+import { alphanumeric } from "nanoid-dictionary"
 
-export const getRandomChannel = () => {
-  if (process.env.NODE_ENV === "development") {
-    return "default"
-  }
+const nanoid = customAlphabet(alphanumeric, 12)
+export const generateChannelName = () => {
+  // if (process.env.NODE_ENV === "development") {
+  //   return "default"
+  // }
 
-  return nanoid(12)
+  return nanoid()
 }
 
 export const isValidChannel = (channel: string | null) => {
@@ -13,9 +15,9 @@ export const isValidChannel = (channel: string | null) => {
     return false
   }
 
-  if (process.env.NODE_ENV === "development") {
-    return channel === "default"
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   return channel === "default"
+  // }
 
   return channel.length === 12
 }

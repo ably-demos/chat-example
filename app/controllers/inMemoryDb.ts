@@ -47,7 +47,7 @@ const getValueForKey = async <K extends keyof KVStore>(
   key: K
 ): Promise<KVStore[K]> => {
   const v: KVStore[K] = await kv.json.get(key)
-  console.log(v)
+  console.debug(v)
   if (!v) throw new Error("Value not found")
   return v
 }
@@ -65,19 +65,16 @@ export const createConversation = async (id: string): Promise<Conversation> => {
   }
 
   await kv.json.set("conversationIdToMessages", `$.${id}`, "[]")
-  debugger
   await kv.json.arrappend("conversations", "$", JSON.stringify(conversation))
-  debugger
 
   return conversation
 }
-
-createConversation("conversation1")
+// createConversation("A2AJ_3VXNBYW")
 
 export const getConversation = async (id: string): Promise<Conversation> => {
   const conversations = await getValueForKey("conversations")
   const conversation = conversations.find((conv) => conv.id === id)
-  if (!conversation) throw new Error()
+  if (!conversation) throw new Error("Conversation not found")
   return conversation
 }
 
@@ -85,10 +82,9 @@ export const findMessages = async (
   conversationId: string,
   clientId: string
 ) => {
-  const messages = await kv.json.get(
-    "conversationIdToMessages",
-    `$.${conversationId}`
-  )
+  const messages = (
+    await kv.json.get("conversationIdToMessages", `$.${conversationId}`)
+  )[0]
   return enrichMessagesWithReactions(messages, clientId)
 }
 
@@ -111,7 +107,7 @@ export const createMessage = async (
   await kv.json.arrappend(
     "conversationIdToMessages",
     `$.${created.conversation_id}`,
-    JSON.stringify(created)
+    created
   )
 
   return created
@@ -167,7 +163,7 @@ export const addReaction = async (
 }
 
 export const deleteReaction = async (reactionId: string) => {
-  const reactions: Reaction[] = await kv.json.get("reactions", "$")
+  const reactions: Reaction[] = (await kv.json.get("reactions", "$"))?.[0] ?? []
 
   const deletedIndex = reactions.findIndex(
     (reaction) => reaction.id === reactionId
@@ -180,7 +176,7 @@ const enrichMessageWithReactions = async (
   message: Message,
   clientId: string
 ): Promise<Message> => {
-  const reactions: Reaction[] = await kv.json.get("reactions", "$")
+  const reactions: Reaction[] = (await kv.json.get("reactions", "$"))?.[0] ?? []
   try {
     const messageReactions = reactions.filter(
       (reaction) => reaction.message_id === message.id
@@ -208,7 +204,7 @@ const enrichMessageWithReactions = async (
       },
     }
   } catch (e) {
-    console.log(e)
+    console.debug(e)
     return {
       ...message,
       reactions: {
@@ -229,7 +225,7 @@ const enrichMessagesWithReactions = async (
       const msg = await enrichMessageWithReactions(message, clientId)
       return msg
     } catch (e) {
-      console.log(e)
+      console.debug(e)
       return message
     }
   })

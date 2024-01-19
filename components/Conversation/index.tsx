@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react"
 
+import useSession from "@/hooks/api/useSession"
 import { useConversation } from "@/hooks/chat/useConversation"
 import { useMessages } from "@/hooks/chat/useMessages"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -14,7 +15,8 @@ type ConversationProps = {}
 
 const Conversation = (props: ConversationProps) => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const messages = useMessages()
+  const { session } = useSession()
+  const { messages } = useMessages(session?.username!)
   const conversation = useConversation()
 
   const handleSend = useCallback(
@@ -50,7 +52,7 @@ const Conversation = (props: ConversationProps) => {
         <MessageList
           messages={messages}
           onEdit={handleEditClick}
-          username={""}
+          username={session?.username!}
         />
       </CardContent>
       <CardFooter>

@@ -80,6 +80,10 @@ const MessageItem = ({
   }, [message.id, onDeleteClick])
 
   if (!message) return null
+  if (!message.client_id) {
+    console.error("Message client_id is null", message)
+    return null
+  }
 
   const color = getUserColor(message.client_id)
   return (
@@ -89,39 +93,45 @@ const MessageItem = ({
           <li className="w-full">
             <TooltipTrigger asChild>
               <PopoverAnchor asChild>
-                <div className="flex rounded-sm px-2 py-1 hover:bg-muted">
-                  <h3 style={{ color }} className="pr-2">
-                    {message.client_id}
-                  </h3>
-                  <p>{message.content}</p>
-                </div>
+                <p className="rounded-sm px-2 py-1 hover:bg-muted">
+                  <span style={{ color }} className="pr-2">
+                    {message.client_id}{" "}
+                  </span>
+                  <span>{message.content}</span>
+                </p>
               </PopoverAnchor>
             </TooltipTrigger>
-            <div className="flex items-center">
-              {Object.entries(message.reactions.counts)?.map(
-                ([reaction, count]) => (
-                  <Button
-                    key={reaction}
-                    className={clsx(
-                      "relative flex flex-col h-8 w-8",
-                      message.reactions.mine.some((r) => r.type === reaction) &&
-                        "bg-white"
-                    )}
-                    variant={"ghost"}
-                  >
-                    <p className="">
-                      <Emoji size={18} unified={reaction} />
-                    </p>
-                    <Badge
-                      className="absolute -bottom-1/2 z-40 rounded-full px-1.5 py-0.5 text-xs"
-                      variant="outline"
+            {!!message.reactions.counts ? (
+              <div className="flex items-center space-x-1 px-2">
+                {Object.entries(message.reactions.counts)
+                  ?.filter(([_, count]) => !!count)
+                  .map(([reaction, count]) => (
+                    <Button
+                      key={reaction}
+                      className={clsx(
+                        "rounded-full h-6 flex justify-between content-between py-0 px-2 space-x-1.5 bg-secondary text-secondary-foreground hover:bg-primary/90 hover:text-secondary",
+                        message.reactions.mine.some(
+                          (r) => r.type === reaction
+                        ) && "border border-blue-500"
+                      )}
+                      onClick={() => {
+                        if (
+                          message.reactions.mine.some(
+                            (r) => r.type === reaction
+                          )
+                        ) {
+                          handleRemoveReaction(reaction)
+                        } else {
+                          handleAddReaction(reaction)
+                        }
+                      }}
                     >
-                      {count}
-                    </Badge>
-                  </Button>
-                )
-              )}
-            </div>
+                      <Emoji size={14} unified={reaction} />
+                      <span className="text-xs">{count}</span>
+                    </Button>
+                  ))}
+              </div>
+            ) : null}
           </li>
           <TooltipContent className="border bg-background p-1">
             <ToggleGroup type="multiple">
@@ -129,65 +139,41 @@ const MessageItem = ({
                 <ToggleGroupItem
                   value={"add-reaction"}
                   aria-label={"Add Reaction"}
+                  onClick={() => setOpen((prev) => !prev)}
+                  className="p-2"
                 >
-                  <Button
-                    variant="ghost"
-                    color="primary"
-                    size="sm"
-                    onClick={() => setOpen((prev) => !prev)}
-                  >
-                    <Laugh size="16" />
-                  </Button>
+                  <Laugh size="16" />
                 </ToggleGroupItem>
               </PopoverTrigger>
               <ToggleGroupItem
                 value={"reply"}
                 aria-label={"reply"}
-                disabled={true}
+                title="Coming soon"
+                disabled
               >
-                <Button variant="ghost" color="primary" size="sm" disabled>
-                  <Reply size="16" />
-                </Button>
+                <Reply size="16" />
               </ToggleGroupItem>
               {isOwnMessage ? (
                 <>
                   <ToggleGroupItem
                     value={"edit"}
                     aria-label={"edit"}
-                    className="mx-1"
+                    className="p-2"
                     onClick={handleEdit}
                   >
                     <Pencil size="16" />
                   </ToggleGroupItem>
-                  <ToggleGroupItem value={"delete"} aria-label={"delete"}>
-                    <Button
-                      variant="ghost"
-                      color="primary"
-                      size="sm"
-                      onClick={handleDelete}
-                      title="Coming soon"
-                    >
-                      <Trash2 size="16" />
-                    </Button>
+                  <ToggleGroupItem
+                    value={"delete"}
+                    aria-label={"delete"}
+                    onClick={handleDelete}
+                    title="Coming soon"
+                    className="p-2"
+                  >
+                    <Trash2 size="16" />
                   </ToggleGroupItem>
                 </>
-              ) : (
-                <ToggleGroupItem
-                  value={"favourite"}
-                  aria-label={"favourite"}
-                  asChild
-                >
-                  <Button
-                    variant="ghost"
-                    color="primary"
-                    size="sm"
-                    disabled
-                    title="Coming soon"
-                  >
-                    <Star size="16" />
-                  </Button>
-                </ToggleGroupItem>
-              )}
+              ) : null}
             </ToggleGroup>
           </TooltipContent>
         </Tooltip>
@@ -198,5 +184,14 @@ const MessageItem = ({
     </Popover>
   )
 }
+// <ToggleGroupItem
+//   value={"favourite"}
+//   aria-label={"favourite"}
+//   asChild
+//   disabled
+//   title="Coming soon"
+// >
+//   <Star size="16" />
+// </ToggleGroupItem>
 
 export default memo(MessageItem)

@@ -14,7 +14,6 @@ export async function POST(req: Request) {
   // /**
   //  * This creates a channel, if it doesn't exist.
   //  */
-  debugger
 
   const video = await prisma?.video.findFirst({})
 
@@ -27,8 +26,8 @@ export async function POST(req: Request) {
 
   const chat = new Chat(ablyClient)
 
-  await chat.conversations.get(name).create()
-  debugger
+  const c = chat.conversations.get(name)
+  await c.create()
   ablyClient.close()
 
   return Response.json(channel)

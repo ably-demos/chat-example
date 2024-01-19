@@ -11,7 +11,7 @@
 //   const [messages, setMessages] = useState<Message[]>([])
 
 //   const subscribeFn = useCallback(({ message }: { message: Message }) => {
-//     console.log("message created", message)
+//     console.debug("message created", message)
 //     // TODO: This is a hack to prevent duplicate messages, can be removed with mock server
 //     setMessages((prev) => {
 //       if (prev.length && prev[prev.length - 1]?.id === message.id) {

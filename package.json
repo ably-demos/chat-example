@@ -48,6 +48,7 @@
     "iron-session": "8.0.1",
     "lucide-react": "0.295.0",
     "nanoid": "5.0.4",
+    "nanoid-dictionary": "5.0.0-beta.1",
     "next": "14.0.4",
     "next-themes": "0.2.1",
     "random-words": "2.0.0",

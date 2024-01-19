@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { redirect, useSearchParams } from "next/navigation"
 
-import { getRandomChannel, isValidChannel } from "@/lib/channel"
+import { generateChannelName, isValidChannel } from "@/lib/channel"
 import useSession from "@/hooks/api/useSession"
 import Spinner from "@/components/Spinner"
 
@@ -25,7 +25,7 @@ export default function IndexPage() {
     if (!session?.username) return
 
     if (!isValidChannel(channel)) {
-      const name = getRandomChannel()
+      const name = generateChannelName()
 
       setChannel(name)
     } else {

@@ -7,6 +7,7 @@ import { Send } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { getReactionFromCode } from "@/lib/reaction"
 import { Button } from "@/components/ui/button"
 import { Form, FormDescription, FormField } from "@/components/ui/form"
 
@@ -61,7 +62,7 @@ const MessageInput = React.memo(function MessagInputInner({
   const handleSelectEmoji = useCallback(
     (emoji: string) => {
       const fieldValue = contentValue
-      form.setValue("content", `${fieldValue}${emoji}`)
+      form.setValue("content", `${fieldValue}${getReactionFromCode(emoji)}`)
     },
     [contentValue, form]
   )
