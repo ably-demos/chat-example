@@ -1,7 +1,9 @@
 import { customAlphabet } from "nanoid"
-import { alphanumeric } from "nanoid-dictionary"
 
+const alphanumeric =
+  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const nanoid = customAlphabet(alphanumeric, 12)
+
 export const generateChannelName = () => {
   // if (process.env.NODE_ENV === "development") {
   //   return "default"
@@ -15,9 +17,9 @@ export const isValidChannel = (channel: string | null) => {
     return false
   }
 
-  // if (process.env.NODE_ENV === "development") {
-  //   return channel === "default"
-  // }
+  if (process.env.NODE_ENV === "development") {
+    return channel === "default"
+  }
 
   return channel.length === 12
 }

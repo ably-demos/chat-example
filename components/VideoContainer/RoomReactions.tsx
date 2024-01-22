@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from "react"
 import { nanoid } from "nanoid"
 
-import Reaction from "@/components/Reaction"
-
-import Emoji from "../Emoji"
+import Reaction from "./Reaction"
 
 import "./styles.css"
 
