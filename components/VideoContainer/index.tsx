@@ -34,8 +34,8 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
 
   return (
     <div className="flex size-full justify-center bg-muted">
-      <div className="container m-4 flex w-full flex-col">
-        <div className="relative w-full ">
+      <div className="container m-4 flex w-full max-w-[1054px] flex-col">
+        <div className="relative m-auto  max-h-[550px] w-full">
           <ReactPlayer
             url={url}
             volume={volume}
@@ -44,7 +44,7 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
             controls={false}
             width={"100%"}
             height={"100%"}
-            className="m-auto aspect-video size-auto"
+            className="size-auto aspect-video"
           />
           <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-black/75 p-3">
             <div className="flex grow">

@@ -53,7 +53,7 @@ const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
     <ol className="flex">
       {Object.entries(reactions).map(([name, charCode]) => {
         return (
-          <li key={name} className="relative">
+          <li key={name} className="relative" title="Coming Soon">
             <div className="h-0">
               {activeReactions[name]?.map((reaction) => {
                 return (

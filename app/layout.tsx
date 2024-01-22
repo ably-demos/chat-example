@@ -1,6 +1,7 @@
 import "@/styles/globals.css"
 
 import { Metadata } from "next"
+import { Analytics } from "@vercel/analytics/react"
 
 import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"
@@ -50,6 +51,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           </div>
           <ActiveBreakpoint />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
