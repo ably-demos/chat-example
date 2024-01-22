@@ -3,19 +3,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
 import { Clock10Icon, UserIcon } from "lucide-react"
 
 type Props = {
+  title: string
   views: number
   username: string
   avatar: string
   subscribers: number
 }
 
-const VideoDetail = ({ views, username, avatar, subscribers }: Props) => {
+const VideoDetail = ({
+  title,
+  views,
+  username,
+  avatar,
+  subscribers,
+}: Props) => {
   return (
     <>
       <div className="my-4 flex w-full justify-between">
-        <h1 className="text-xl">
-          Teddy Makes a Cut Upfield - American Football
-        </h1>
+        <h1 className="text-xl">{title}</h1>
         <div className="inline-flex space-x-4">
           <span className="inline-flex text-primary-foreground">
             <UserIcon className="mr-1" /> {views}

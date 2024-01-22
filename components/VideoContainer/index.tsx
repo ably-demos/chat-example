@@ -1,4 +1,5 @@
 import React from "react"
+import clsx from "clsx"
 import { PauseIcon, PlayIcon } from "lucide-react"
 import ReactPlayer from "react-player/file"
 
@@ -35,7 +36,15 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
   return (
     <div className="flex size-full justify-center bg-muted">
       <div className="container m-4 flex w-full max-w-[1054px] flex-col">
-        <div className="relative m-auto  max-h-[550px] w-full">
+        <div className="relative mx-auto max-h-[550px] w-full">
+          <p
+            className={clsx(
+              "absolute right-3 animate-pulse  top-1 text-sm rounded-sm bg-primary-foreground px-1 border border-black/10 text-white",
+              { "animate-pulse": playing }
+            )}
+          >
+            LIVE
+          </p>
           <ReactPlayer
             url={url}
             volume={volume}
@@ -68,6 +77,7 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
           </div>
         </div>
         <VideoDetail
+          title={title}
           views={views}
           username={user.username}
           avatar={user.avatar}
