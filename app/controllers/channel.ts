@@ -1,5 +1,7 @@
 "use server"
 
+import prisma from "@/lib/prisma"
+
 import { createConversation } from "./inMemoryDb"
 
 export const createChannel = async (

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { Channel } from "@prisma/client"
 
+import prisma from "@/lib/prisma"
 import { getSession } from "@/lib/session"
 import { getChannel } from "@/app/controllers/channel"
 
