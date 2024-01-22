@@ -1,17 +1,15 @@
 "use client"
 
 import React, { useRef } from "react"
-import { Message } from "@ably-labs/chat"
 
-import { useMessages } from "@/hooks/chat/useMessages"
+import { useMessages } from "@/hooks/useMessages"
 
 import MessageItem from "../MessageItem"
 import Spinner from "../Spinner"
 
 type MessageListProps = {
-  messages?: Message[]
   username: string
-  onEdit: (messageId: string) => void
+  onEdit: (messageId: string, content: string) => void
 }
 
 const MessageList = ({ username, onEdit: handleEdit }: MessageListProps) => {

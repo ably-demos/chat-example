@@ -14,8 +14,8 @@ const seed = async () => {
 
   const video = await prisma.video.create({
     data: {
-      title: "Back To The Future",
-      url: "/videos/back_to_the_future.mp4",
+      title: "Chiefs vs. Buccaneers | Super Bowl LV Game Highlights",
+      url: "/videos/Chiefs_Buccaneers.mp4",
       views: 928,
       user: {
         connect: {

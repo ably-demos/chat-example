@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
-export default function useLocalStorage<T>(
+export const useLocalStorage = <T>(
   key: string,
   initialValue: T
-): [T, Dispatch<SetStateAction<T>>] {
+): [T, Dispatch<SetStateAction<T>>] => {
   const [storedValue, setStoredValue] = useState(initialValue)
   // We will use this flag to trigger the reading from localStorage
   const [firstLoadDone, setFirstLoadDone] = useState(false)

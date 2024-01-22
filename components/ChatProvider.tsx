@@ -17,14 +17,15 @@ interface ChatProviderProps {
   conversationId: string
 }
 
-export const ChatProvider: FC<ChatProviderProps> = ({
-  children,
-  conversationId,
-}) => {
+const ChatProvider: FC<ChatProviderProps> = ({ children, conversationId }) => {
   const client = useAbly()
+
   const context = useMemo(
     () => ({ chat: new Chat(client), conversationId }),
     [client, conversationId]
   )
+
   return <ChatContext.Provider value={context}>{children}</ChatContext.Provider>
 }
+
+export default ChatProvider

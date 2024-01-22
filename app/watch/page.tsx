@@ -3,18 +3,18 @@
 import { useSearchParams } from "next/navigation"
 import { AblyProvider } from "ably/react"
 
+import { useAblyClient } from "@/hooks/useAblyClient"
 /**
  * Hooks
  */
-import { useChannel } from "@/hooks/api/useChannel"
-import useSession from "@/hooks/api/useSession"
-import useVideo from "@/hooks/api/useVideo"
-import { useAblyClient } from "@/hooks/chat/useAblyClient"
-import { ChatProvider } from "@/components/ChatProvider"
+import { useChannel } from "@/hooks/useChannel"
+import { useSession } from "@/hooks/useSession"
+import { useVideo } from "@/hooks/useVideo"
 /**
  * Components
  */
-import Conversation from "@/components/Conversation"
+import Chat from "@/components/Chat"
+import ChatProvider from "@/components/ChatProvider"
 import Spinner from "@/components/Spinner"
 import VideoContainer from "@/components/VideoContainer"
 
@@ -47,10 +47,11 @@ const Watch = () => {
               url={video.url}
               views={video.views}
               user={video.user}
+              live={video.live}
             />
           </article>
           <aside className="flex size-full lg:max-w-md">
-            <Conversation />
+            <Chat />
           </aside>
         </main>
       </ChatProvider>

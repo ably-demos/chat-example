@@ -10,13 +10,13 @@ import { POST } from "@/app/api/session/route"
 
 const sessionApiRoute = "/api/session"
 
-function doCreate(url: string) {
+const doCreate = (url: string) => {
   return fetchJson<typeof POST>(url, {
     method: "POST",
   })
 }
 
-export default function useSession() {
+export const useSession = () => {
   const { data, ...getSession } = useSWR(
     sessionApiRoute,
     fetchJson<SessionData>

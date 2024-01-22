@@ -7,6 +7,8 @@ import Emoji from "../Emoji"
 
 import "./styles.css"
 
+import FloatingReaction from "./FloatingReaction"
+
 type RoomReactionProps = {
   onClick: (emoji: string) => void
 }
@@ -38,6 +40,7 @@ const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
           [name]: [...prev[name], id],
         }
       })
+
       setTimeout(() => {
         setActiveReactions((prev) => ({
           ...prev,
@@ -51,28 +54,19 @@ const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
 
   return (
     <ol className="flex">
-      {Object.entries(reactions).map(([name, charCode]) => {
-        return (
-          <li key={name} className="relative" title="Coming Soon">
-            <div className="h-0">
-              {activeReactions[name]?.map((reaction) => {
-                return (
-                  <Emoji
-                    key={reaction}
-                    size={24}
-                    className={`FadingReaction ${reaction}`}
-                    unified={reactions[name as keyof typeof reactions]}
-                  />
-                )
-              })}
-            </div>
-            <Reaction
-              unified={charCode}
-              onClick={() => handleAddReaction(name)}
-            />
-          </li>
-        )
-      })}
+      {Object.entries(reactions).map(([name, charCode]) => (
+        <li key={name} className="relative" title="Coming Soon">
+          <div className="h-0">
+            {activeReactions[name]?.map((id) => (
+              <FloatingReaction key={id} name={name} emoji={charCode} />
+            ))}
+          </div>
+          <Reaction
+            unified={charCode}
+            onClick={() => handleAddReaction(name)}
+          />
+        </li>
+      ))}
     </ol>
   )
 }

@@ -9,8 +9,6 @@ export async function POST(req: Request) {
   const session = await getSession()
   const { name } = await req.json()
 
-  // TODO: Validate with @andy, it looks a bit odd to me
-  // Potential Alternative
   // /**
   //  * This creates a channel, if it doesn't exist.
   //  */

@@ -1,10 +1,9 @@
 import { memo, useCallback, useState } from "react"
 import { Message } from "@ably-labs/chat"
-import { User } from "@prisma/client"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import clsx from "clsx"
-import { Laugh, Pencil, Reply, Star, Trash2 } from "lucide-react"
+import { Laugh, Pencil, Reply, Trash2 } from "lucide-react"
 
 import {
   Tooltip,
@@ -15,7 +14,6 @@ import {
 import EmojiPicker from "@/components/EmojiPicker"
 
 import Emoji from "../Emoji"
-import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { Popover, PopoverAnchor, PopoverTrigger } from "../ui/popover"
 
@@ -39,7 +37,7 @@ type MessageItemProps = {
   username: string
   onAddReaction: (messageId: string, unicode: string) => void
   onRemoveReaction: (messageId: string, unicode: string) => void
-  onEditClick: (messageId: string) => void
+  onEditClick: (messageId: string, content: string) => void
   onDeleteClick: (messageId: string) => void
 }
 
@@ -71,8 +69,8 @@ const MessageItem = ({
   )
 
   const handleEdit = useCallback(() => {
-    onEditClick(message.id)
-  }, [message.id, onEditClick])
+    onEditClick(message.id, message.content)
+  }, [message.content, message.id, onEditClick])
 
   const handleDelete = useCallback(() => {
     setOpen(false)
@@ -80,10 +78,6 @@ const MessageItem = ({
   }, [message.id, onDeleteClick])
 
   if (!message) return null
-  if (!message.client_id) {
-    console.error("Message client_id is null", message)
-    return null
-  }
 
   const color = getUserColor(message.client_id)
   return (
@@ -101,7 +95,7 @@ const MessageItem = ({
                 </p>
               </PopoverAnchor>
             </TooltipTrigger>
-            {!!message.reactions.counts ? (
+            {message.reactions.counts ? (
               <div className="flex items-center space-x-1 px-2">
                 {Object.entries(message.reactions.counts)
                   ?.filter(([_, count]) => !!count)

@@ -5,7 +5,7 @@ import { GETVideoResponse } from "@/app/api/video/route"
 
 const videoApiRoute = "/api/video"
 
-export default function useVideo() {
+export const useVideo = () => {
   const { data, isLoading } = useSWR(videoApiRoute, fetchJson<GETVideoResponse>)
 
   return { video: data, isLoading }

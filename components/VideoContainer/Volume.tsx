@@ -3,7 +3,7 @@ import { Transition } from "@tailwindui/react"
 import clsx from "clsx"
 import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react"
 
-import { useDebounce } from "@/hooks/utils/useDebounce"
+import { useDebounce } from "@/hooks/useDebounce"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 
@@ -67,6 +67,7 @@ const Volume = ({
   const handleSliderChange = (value: [number]) => {
     setVolume(value[0])
   }
+
   return (
     <div className="dark flex grow">
       <Button

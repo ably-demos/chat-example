@@ -2,7 +2,7 @@ import React from "react"
 import { EmojiStyle } from "emoji-picker-react"
 
 import { cn } from "@/lib/utils"
-import { useWindowSize, WindowSize } from "@/hooks/utils/useWindowSize"
+import { useWindowSize, WindowSize } from "@/hooks/useWindowSize"
 import { Button, ButtonProps } from "@/components/ui/button"
 import {
   Popover,

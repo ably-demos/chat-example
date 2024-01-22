@@ -1,53 +1,5 @@
 "use client"
 
-// import { useCallback, useEffect, useState } from "react"
-// import { ConversationController, Message, MessageEvents } from "@ably-labs/chat"
-
-// import { useConversation } from "./useConversation"
-
-// export const useMessages = (): Message[] => {
-//   const conversation = useConversation()
-
-//   const [messages, setMessages] = useState<Message[]>([])
-
-//   const subscribeFn = useCallback(({ message }: { message: Message }) => {
-//     console.debug("message created", message)
-//     // TODO: This is a hack to prevent duplicate messages, can be removed with mock server
-//     setMessages((prev) => {
-//       if (prev.length && prev[prev.length - 1]?.id === message.id) {
-//         return prev
-//       }
-//       return [...prev, message]
-//     })
-//   }, [])
-
-//   const init = useCallback(
-//     async (controller: ConversationController) => {
-//       const msgs = await controller.messages.query({ limit: 100 })
-//       setMessages(msgs)
-//       controller.messages.subscribe(MessageEvents.created, subscribeFn)
-//     },
-//     [subscribeFn]
-//   )
-
-//   useEffect(() => {
-//     if (!conversation) return
-//     init(conversation)
-//   }, [conversation, init])
-
-//   useEffect(() => {
-//     if (!conversation) {
-//       if (messages.length > 0) setMessages([])
-//       return
-//     }
-
-//     return () => {
-//       conversation.messages.unsubscribe(MessageEvents.created, subscribeFn)
-//     }
-//   }, [conversation, messages.length, subscribeFn])
-
-//   return messages
-// }
 import { useCallback, useEffect, useState } from "react"
 import {
   Message,
@@ -57,46 +9,46 @@ import {
   type ReactionListener,
 } from "@ably-labs/chat"
 
-import { useConversation } from "./useConversation"
+import { useChat } from "./useChat"
 
 export const useMessages = (username: string) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
-  const conversation = useConversation()
+  const chat = useChat()
 
   const sendMessage = useCallback(
     (text: string) => {
-      conversation.messages.send(text)
+      chat.messages.send(text)
     },
-    [conversation]
+    [chat]
   )
 
   const editMessage = useCallback(
     (messageId: string, text: string) => {
-      conversation.messages.edit(messageId, text)
+      chat.messages.edit(messageId, text)
     },
-    [conversation]
+    [chat]
   )
 
   const deleteMessage = useCallback(
     (messageId: string) => {
-      conversation.messages.delete(messageId)
+      chat.messages.delete(messageId)
     },
-    [conversation]
+    [chat]
   )
 
   const addReaction = useCallback(
     (messageId: string, type: string) => {
-      conversation.messages.addReaction(messageId, type)
+      chat.messages.addReaction(messageId, type)
     },
-    [conversation]
+    [chat]
   )
 
   const removeReaction = useCallback(
     (reactionId: string) => {
-      conversation.messages.removeReaction(reactionId)
+      chat.messages.removeReaction(reactionId)
     },
-    [conversation]
+    [chat]
   )
 
   useEffect(() => {
@@ -169,21 +121,13 @@ export const useMessages = (username: string) => {
       )
     }
 
-    conversation.messages.subscribe(MessageEvents.created, handleAdd)
-    conversation.messages.subscribe(MessageEvents.updated, handleUpdate)
-    conversation.messages.subscribe(MessageEvents.deleted, handleDelete)
-    conversation.messages.subscribeReactions(
-      ReactionEvents.added,
-      handleReactionAdd
-    )
-    conversation.messages.subscribeReactions(
-      ReactionEvents.deleted,
-      handleReactionDelete
-    )
+    chat.messages.subscribe(MessageEvents.created, handleAdd)
+    chat.messages.subscribe(MessageEvents.updated, handleUpdate)
+    chat.messages.subscribe(MessageEvents.deleted, handleDelete)
 
     let mounted = true
     const initMessages = async () => {
-      const lastMessages = await conversation.messages.query({ limit: 10 })
+      const lastMessages = await chat.messages.query({ limit: 10 })
       if (mounted) {
         setLoading(false)
         setMessages((prevMessages) => [...lastMessages, ...prevMessages])
@@ -194,19 +138,19 @@ export const useMessages = (username: string) => {
 
     return () => {
       mounted = false
-      conversation.messages.unsubscribe(MessageEvents.created, handleAdd)
-      conversation.messages.unsubscribe(MessageEvents.updated, handleUpdate)
-      conversation.messages.unsubscribe(MessageEvents.deleted, handleDelete)
-      conversation.messages.unsubscribeReactions(
+      chat.messages.unsubscribe(MessageEvents.created, handleAdd)
+      chat.messages.unsubscribe(MessageEvents.updated, handleUpdate)
+      chat.messages.unsubscribe(MessageEvents.deleted, handleDelete)
+      chat.messages.unsubscribeReactions(
         ReactionEvents.added,
         handleReactionAdd
       )
-      conversation.messages.unsubscribeReactions(
+      chat.messages.unsubscribeReactions(
         ReactionEvents.deleted,
         handleReactionDelete
       )
     }
-  }, [conversation, username])
+  }, [chat, username])
 
   return {
     loading,

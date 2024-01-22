@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useCallback, useId } from "react"
-import { Maybe } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Send } from "lucide-react"
 import { useForm } from "react-hook-form"
@@ -11,7 +10,7 @@ import { getReactionFromCode } from "@/lib/reaction"
 import { Button } from "@/components/ui/button"
 import { Form, FormDescription, FormField } from "@/components/ui/form"
 
-import EmojiButton from "../EmojiButton"
+import EmojiSelect from "./EmojiSelect"
 import MessageInputField from "./MessageInputField"
 
 type Props = {
@@ -80,7 +79,7 @@ const MessageInput = React.memo(function MessagInputInner({
             <MessageInputField id={textAreaId} {...field}>
               <div className="flex w-full items-center justify-between">
                 <div className="flex items-center">
-                  <EmojiButton
+                  <EmojiSelect
                     className="rounded-none"
                     disabled={contentState.error?.type === "too_long"}
                     onSelect={handleSelectEmoji}

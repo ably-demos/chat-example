@@ -1,4 +1,4 @@
-.FadingReaction {
+.FloatingReaction {
   animation: MoveUpFadeOut 2s ease-out forwards;
   position: absolute;
   left: 10px;

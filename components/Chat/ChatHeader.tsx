@@ -9,22 +9,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-type ConversationHeaderProps = {
+type ChatHeaderProps = {
   title: string
-  onlineUserCount: number
+  userCount: number
 }
 
-const ConversationHeader = ({
-  title,
-  onlineUserCount,
-}: ConversationHeaderProps) => {
+const ChatHeader = ({ title, userCount }: ChatHeaderProps) => {
   return (
     <div className="flex w-full flex-col">
       <div className="space-between flex w-full items-center space-x-4">
         <p className="grow text-lg font-medium leading-none">{title}</p>
         <span className="flex items-center text-sm">
           <Users size="16" className="mr-2" />
-          {onlineUserCount}
+          {userCount}
         </span>
       </div>
       <Separator className="my-4" />
@@ -54,4 +51,4 @@ const ConversationHeader = ({
   )
 }
 
-export default ConversationHeader
+export default ChatHeader

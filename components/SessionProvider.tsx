@@ -3,7 +3,7 @@
 import { createContext, FC, ReactNode, useMemo } from "react"
 
 import { SessionData } from "@/lib/session"
-import useSession from "@/hooks/api/useSession"
+import { useSession } from "@/hooks/useSession"
 
 import Spinner from "./Spinner"
 

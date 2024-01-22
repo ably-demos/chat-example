@@ -18,10 +18,10 @@ function debounce<FuncArgs extends any[]>(
   }
 }
 
-export function useDebounce<CallbackArgs extends any[]>(
+export const useDebounce = <CallbackArgs extends any[]>(
   callback: (...args: CallbackArgs) => void,
   delay: number
-) {
+) => {
   const callbackRef = useRef(callback)
   useLayoutEffect(() => {
     callbackRef.current = callback

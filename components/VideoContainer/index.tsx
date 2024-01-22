@@ -1,18 +1,15 @@
 import React from "react"
 import clsx from "clsx"
-import { PauseIcon, PlayIcon } from "lucide-react"
 import ReactPlayer from "react-player/file"
 
-import { Button } from "@/components/ui/button"
-
-import RoomReactions from "./RoomReactions"
+import VideoControls from "./VideoControls"
 import VideoDetail from "./VideoDetail"
-import Volume from "./Volume"
 
 type VideoContainerProps = {
   title: string
   url: string
   views: number
+  live: boolean
   user: {
     username: string
     avatar: string
@@ -20,7 +17,13 @@ type VideoContainerProps = {
   }
 }
 
-const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
+const VideoContainer = ({
+  live,
+  url,
+  title,
+  views,
+  user,
+}: VideoContainerProps) => {
   const [playing, setPlaying] = React.useState(false)
   const videoRef = React.useRef<ReactPlayer>(null)
   const [volume, setVolume] = React.useState<number>(0.5)
@@ -30,17 +33,18 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
   }
 
   const handleReaction = (emoji: string) => {
-    // TODO: Room Level Reactions
+    // XXX: Room Level Reactions
+    console.warn("unimplemented")
   }
 
   return (
     <div className="flex size-full justify-center bg-muted">
-      <div className="container m-4 flex w-full max-w-[1054px] flex-col">
+      <div className="container m-4 flex w-full flex-col lg:max-w-[1054px]">
         <div className="relative mx-auto max-h-[550px] w-full">
           <p
             className={clsx(
               "absolute right-3 animate-pulse  top-1 text-sm rounded-sm bg-primary-foreground px-1 border border-black/10 text-white",
-              { "animate-pulse": playing }
+              { "animate-pulse": live }
             )}
           >
             LIVE
@@ -53,28 +57,15 @@ const VideoContainer = ({ url, title, views, user }: VideoContainerProps) => {
             controls={false}
             width={"100%"}
             height={"100%"}
-            className="size-auto aspect-video"
+            className="aspect-video size-auto"
           />
-          <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-black/75 p-3">
-            <div className="flex grow">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handlePlayPause}
-                className="text-white/95"
-              >
-                {playing ? <PauseIcon /> : <PlayIcon />}
-              </Button>
-              <Volume
-                onChange={setVolume}
-                defaultVolume={volume}
-                defaultMuted
-              />
-            </div>
-            <div>
-              <RoomReactions onClick={handleReaction} />
-            </div>
-          </div>
+          <VideoControls
+            playing={playing}
+            volume={volume}
+            onPlayPause={handlePlayPause}
+            onVolumeChange={setVolume}
+            onReaction={handleReaction}
+          />
         </div>
         <VideoDetail
           title={title}

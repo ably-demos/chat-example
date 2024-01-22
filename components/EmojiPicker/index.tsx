@@ -5,7 +5,7 @@ import ReactEmojiPicker, {
   SuggestionMode,
 } from "emoji-picker-react"
 
-import { useTheme } from "@/hooks/utils/useTheme"
+import { useTheme } from "@/hooks/useTheme"
 import { Theme } from "@/components/ThemeProvider"
 
 import "./styles.css"

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { redirect, useSearchParams } from "next/navigation"
 
 import { generateChannelName, isValidChannel } from "@/lib/channel"
-import useSession from "@/hooks/api/useSession"
+import { useSession } from "@/hooks/useSession"
 import Spinner from "@/components/Spinner"
 
 export default function IndexPage() {
