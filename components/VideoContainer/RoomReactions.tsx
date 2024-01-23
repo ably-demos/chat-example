@@ -12,10 +12,10 @@ type RoomReactionProps = {
 }
 
 const reactions = {
-  smile: "1f603",
-  hushed: "1f62f",
+  openMouth: "1f62e",
+  heart: "2764-fe0f",
   thumbsUp: "1f44d",
-  redHeart: "2764-fe0f",
+  smile: "1f603",
 }
 
 const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
@@ -51,7 +51,7 @@ const RoomReactions = ({ onClick: handleClick }: RoomReactionProps) => {
   )
 
   return (
-    <ol className="flex">
+    <ol className="flex space-x-2">
       {Object.entries(reactions).map(([name, charCode]) => (
         <li key={name} className="relative" title="Coming Soon">
           <div className="h-0">

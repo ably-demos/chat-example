@@ -39,15 +39,12 @@ const VideoContainer = ({
 
   return (
     <div className="flex size-full justify-center bg-muted">
-      <div className="container m-4 flex w-full flex-col lg:max-w-[1054px]">
-        <div className="relative mx-auto max-h-[550px] w-full">
+      <div className="container my-10 flex w-full max-w-[1054px] flex-col">
+        <div className="relative mx-auto w-full overflow-hidden rounded-2xl">
           <p
-            className={clsx(
-              "absolute right-3 animate-pulse  top-1 text-sm rounded-sm bg-primary-foreground px-1 border border-black/10 text-white",
-              { "animate-pulse": live }
-            )}
+            className="absolute right-5 top-5 w-16 rounded-sm bg-live text-center "
           >
-            LIVE
+            <span className="font-semibold leading-6 text-white">LIVE</span>
           </p>
           <ReactPlayer
             url={url}

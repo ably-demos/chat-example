@@ -41,7 +41,7 @@ const Watch = () => {
     <AblyProvider client={client}>
       <ChatProvider conversationId={channel.name}>
         <main className="flex flex-1 flex-col lg:flex-row">
-          <article className="flex size-full">
+          <article className="flex w-full lg:h-full">
             <VideoContainer
               title={video.title}
               url={video.url}

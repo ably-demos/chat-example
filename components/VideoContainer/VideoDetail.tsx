@@ -20,34 +20,36 @@ const VideoDetail = ({
   return (
     <>
       <div className="my-4 flex w-full justify-between">
-        <h1 className="text-xl">{title}</h1>
-        <div className="inline-flex space-x-4">
-          <span className="inline-flex text-primary-foreground">
-            <UserIcon className="mr-1" /> {views}
-          </span>
-          <span className="inline-flex">
-            <Clock10Icon className="mr-1" /> 01:20:13
-          </span>
+        <h1 className="text-[20px]">{title}</h1>
+        <div className="hidden space-x-4 md:inline-flex">
+          <p className="inline-flex space-x-2.5 font-semibold text-red">
+            <UserIcon size={22} /> 
+            <span>{views}</span>
+          </p>
+          <p className="inline-flex space-x-2.5 font-semibold">
+            <Clock10Icon />
+            <span>01:20:13</span>
+          </p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <div className="relative w-12 rounded-full border border-primary-foreground p-1">
+        <div className="relative w-12 rounded-full border border-red p-1">
           <Avatar className="size-12">
-            <AvatarImage src={avatar} alt="Image" />
+            <AvatarImage src={avatar} alt="Image" className="rounded-full"/>
             <AvatarFallback>
               {username.split(" ").map((item) => item.charAt(0))}
             </AvatarFallback>
           </Avatar>
-          <div className="absolute -bottom-2 left-1 rounded-sm bg-muted p-1  text-center text-xs">
-            <p className="rounded-sm bg-primary-foreground px-1 text-white">
+          <div className="absolute -bottom-2 left-1.5 w-9 rounded-sm border-[1.5px] border-white bg-white text-center text-xs">
+            <p className="rounded-sm bg-live px-1 text-xs font-semibold text-white">
               LIVE
             </p>
           </div>
         </div>
-        <div>
-          <p className="p-2 text-sm font-medium leading-none">{username}</p>
-          <p className="p-2 text-sm font-medium leading-none text-muted-foreground">
-            {subscribers} Subscribers
+        <div className="leading-normal">
+          <p className="font-medium ">{username}</p>
+          <p className="text-muted-foreground text-xs lg:text-base">
+            { subscribers.toLocaleString('en-US')} Subscribers
           </p>
         </div>
       </div>

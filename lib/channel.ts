@@ -17,9 +17,9 @@ export const isValidChannel = (channel: string | null) => {
     return false
   }
 
-  if (process.env.NODE_ENV === "development") {
-    return channel === "default"
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   return channel === "default"
+  // }
 
   return channel.length === 12
 }

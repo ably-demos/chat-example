@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { redirect } from "next/navigation"
 import { Channel } from "@prisma/client"
 import useSWR from "swr"
@@ -19,7 +19,7 @@ function doCreate(url: string, body: { name: string | null }) {
 /**
  *
  * @param name The name of the channel
- * @returns
+ * @returns channel, error, isLoading
  */
 export const useChannel = (name: string | null) => {
   const cacheKey = name ? `${channelApiRoute}/${name}` : null
@@ -45,5 +45,9 @@ export const useChannel = (name: string | null) => {
     }
   }, [channel?.id, name, create, isLoading])
 
-  return { channel, error, isLoading }
+  return useMemo(() => ({ channel, error, isLoading }), [
+    channel,
+    error,
+    isLoading,
+  ])
 }

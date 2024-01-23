@@ -2,9 +2,9 @@
 
 import { useCallback, useState } from "react"
 
-import { useChat } from "@/hooks/useChat"
+import { useChatContext } from "@/hooks/useChatContext"
+import { useConversation } from "@/hooks/useConversation"
 import { useSession } from "@/hooks/useSession"
-import { useSimulatedUserCount } from "@/hooks/useSimulatedUserCount"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
@@ -19,18 +19,18 @@ const Chat = (props: ChatProps) => {
   const [inputValue, setInputValue] = useState<string>("")
 
   const { session } = useSession()
-  const chat = useChat()
-  const simulatedUserCount = useSimulatedUserCount()
+  const { conversationId } = useChatContext()
+  const conversation = useConversation(conversationId)
 
   const handleSend = useCallback(
     (content: string) => {
       if (editingMessageId) {
         setEditingMessageId(null)
-        return chat.messages.edit(editingMessageId, content)
+        return conversation.messages.edit(editingMessageId, content)
       }
-      return chat.messages.send(content)
+      return conversation.messages.send(content)
     },
-    [chat.messages, editingMessageId]
+    [conversation.messages, editingMessageId]
   )
 
   const handleEditClick = useCallback((messageId: string, content: string) => {
@@ -45,7 +45,7 @@ const Chat = (props: ChatProps) => {
   return (
     <Card className="flex size-full flex-col rounded-none border-t-0">
       <CardHeader className="flex flex-row items-center">
-        <ChatHeader title="Chat room" userCount={simulatedUserCount} />
+        <ChatHeader />
       </CardHeader>
       <CardContent className="size-full">
         <MessageList username={session?.username!} onEdit={handleEditClick} />
@@ -55,7 +55,6 @@ const Chat = (props: ChatProps) => {
           key={editingMessageId}
           defaultValue={inputValue}
           onSubmit={handleSend}
-          onClear={handleClear}
         />
       </CardFooter>
     </Card>

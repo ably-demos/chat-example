@@ -4,6 +4,13 @@ import { useEffect, useMemo } from "react"
 import { Maybe } from "@/types"
 import { Realtime } from "ably/promises"
 
+/**
+ * @param username The name of the user
+ * @returns Ably client
+ *
+ * @example
+ * const client = useAblyClient(username)
+ */
 export const useAblyClient = (username: Maybe<string>) => {
   const client = useMemo(() => {
     return username

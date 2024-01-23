@@ -91,7 +91,6 @@ const Volume = ({
         className="ml-2 flex h-9 w-full items-center"
       >
         <Slider
-          key={sliderOpen ? "open" : "closed"}
           step={0.01}
           value={[volume]}
           min={0}

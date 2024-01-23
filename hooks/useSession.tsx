@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import useSWR from "swr"
 import useSWRMutation from "swr/mutation"
 
@@ -37,9 +37,9 @@ export const useSession = () => {
     }
   }, [create, data?.username, getSession.error, getSession.isLoading])
 
-  return {
+  return useMemo(() => ({
     session: data,
     createSession: create,
     ...getSession,
-  }
+  }), [create, data, getSession])
 }

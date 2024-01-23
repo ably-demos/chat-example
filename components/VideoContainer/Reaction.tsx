@@ -11,11 +11,11 @@ type ReactionProps = {
 const Reaction = ({ onClick, unified }: ReactionProps) => {
   return (
     <Button
-      variant="ghost"
       onClick={() => onClick(unified)}
-      className="size-11 rounded-full transition-colors duration-150"
+      className="size-[34px] rounded-full bg-reaction hover:bg-reaction"
     >
-      <Emoji size={24} unified={unified} />
+      
+      <Emoji size={18} unified={unified} />
     </Button>
   )
 }

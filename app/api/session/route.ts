@@ -14,9 +14,14 @@ export async function GET() {
     return Response.json(null, { status: 404 })
   }
 
-  const user = await prisma.user.findUnique({
-    where: { username: session.username },
-  })
+  let user = null
+  try {
+     user = await prisma.user.findUnique({
+      where: { username: session.username },
+    })
+  } catch (error) {
+    console.log(error)
+  }
 
   if (!user) {
     return Response.json(null, { status: 404 })

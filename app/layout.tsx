@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils"
 import ActiveBreakpoint from "@/components/ActiveBreakpoint"
 import PageHeader from "@/components/PageHeader"
 import { SessionProvider } from "@/components/SessionProvider"
-import { ThemeProvider } from "@/components/ThemeProvider"
 
 export const metadata: Metadata = {
   title: {
@@ -37,20 +36,13 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           fontSans.variable
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="flex size-full min-h-screen flex-col">
-            <PageHeader />
-            <SessionProvider>
-              <div className="flex flex-1">{children}</div>
-            </SessionProvider>
-          </div>
-          <ActiveBreakpoint />
-        </ThemeProvider>
+        <div className="flex size-full min-h-screen flex-col">
+          <PageHeader />
+          <SessionProvider>
+            <div className="flex flex-1">{children}</div>
+          </SessionProvider>
+        </div>
+        <ActiveBreakpoint />
         <Analytics />
       </body>
     </html>

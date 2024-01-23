@@ -23,15 +23,24 @@ const isValidSession = (
   session: Partial<SessionData> | undefined
 ): session is SessionData => !!session?.username
 
+/**
+ * Provides the current session context, which includes the username.
+ * @returns children wrapped in a SessionContext.Provider, or a Spinner if the session is loading
+ * @example
+ * <SessionProvider>
+ *   <UserProfile />
+ * </SessionProvider>
+ */
 export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
-  const { session } = useSession()
-  console.debug("session", session)
+  const { session, isLoading, error } = useSession()
+  
   const context = useMemo(
     () => ({ username: session?.username }),
     [session?.username]
   )
 
-  if (!isValidSession(context)) return <Spinner />
+  if (isLoading || !isValidSession(context)) return <Spinner />
+
   return (
     <SessionContext.Provider value={context}>
       {children}

@@ -14,6 +14,7 @@ type MessageListProps = {
 
 const MessageList = ({ username, onEdit: handleEdit }: MessageListProps) => {
   const messageListRef = useRef<HTMLOListElement>(null)
+
   const { messages, addReaction, deleteMessage, removeReaction } =
     useMessages(username)
 

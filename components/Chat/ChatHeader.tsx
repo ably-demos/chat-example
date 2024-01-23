@@ -1,6 +1,7 @@
 import React from "react"
 import { InfoIcon, Users } from "lucide-react"
 
+import { useSimulatedUserCount } from "@/hooks/useSimulatedUserCount"
 import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,
@@ -10,19 +11,20 @@ import {
 } from "@/components/ui/tooltip"
 
 type ChatHeaderProps = {
-  title: string
-  userCount: number
+  title?: string
 }
 
-const ChatHeader = ({ title, userCount }: ChatHeaderProps) => {
+const ChatHeader = ({ title = "Chat Room" }: ChatHeaderProps) => {
+  const userCount = useSimulatedUserCount()
+
   return (
     <div className="flex w-full flex-col">
       <div className="space-between flex w-full items-center space-x-4">
         <p className="grow text-lg font-medium leading-none">{title}</p>
-        <span className="flex items-center text-sm">
-          <Users size="16" className="mr-2" />
-          {userCount}
-        </span>
+        <p className="flex items-center text-sm">
+          <Users size={16} className="mr-2 text-muted-foreground" />
+          <span className="min-w-8 font-semibold">{userCount}</span>
+        </p>
       </div>
       <Separator className="my-4" />
       <div className="flex">

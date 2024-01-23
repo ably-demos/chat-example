@@ -1,25 +1,38 @@
-import Image from "next/image"
 import Link from "next/link"
-import ablyLogo from "@/public/images/ably_logo.png"
+import { InfoCircledIcon } from "@radix-ui/react-icons"
+import { ExternalLink } from "lucide-react"
 
 import appConfig from "@/config/app"
-import ThemeToggle from "@/components/ThemeToggle"
+import { Button } from "@/components/ui/button"
 
 const PageHeader = () => {
   const { name } = appConfig
   return (
     <header className="w-full border-b bg-background">
-      <nav className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <div className="flex gap-6 md:gap-10">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src={ablyLogo.src} alt="Ably Logo" width={24} height={24} />
-            <span className="inline-block font-bold">{name}</span>
-          </Link>
-        </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <div className="flex items-center space-x-1">
-            <ThemeToggle />
+      <nav className="container flex h-16 space-x-4 sm:justify-between sm:space-x-0">
+        <Link
+          href="/"
+          className="text-md flex items-center gap-6 space-x-2 font-bold md:gap-10"
+        >
+          {name}
+        </Link>
+        <div className="flex  items-center justify-end space-x-6">
+          <div className="inline-flex items-center space-x-2 text-sm">
+            <InfoCircledIcon />
+            <span>How to try this demo</span>
           </div>
+          <Button asChild variant={"secondary"}>
+            <Link
+              href="#"
+              className="items-center space-x-2"
+            >
+              <span>Chat Docs</span>
+              <ExternalLink size={15} />
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="https://ably.com/sign-up">Sign Up</Link>
+          </Button>
         </div>
       </nav>
     </header>

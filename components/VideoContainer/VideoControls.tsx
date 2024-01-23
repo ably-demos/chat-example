@@ -1,5 +1,5 @@
 import React from "react"
-import { PauseIcon, PlayIcon } from "lucide-react"
+import { PauseIcon, PlayIcon, SkipForwardIcon } from "lucide-react"
 
 import { Button } from "../ui/button"
 import RoomReactions from "./RoomReactions"
@@ -21,7 +21,7 @@ const VideoControls = ({
   onReaction,
 }: Props) => {
   return (
-    <div className="absolute bottom-0 left-0 flex w-full justify-between bg-gradient-to-t from-black/75 p-3">
+    <div className="absolute bottom-0 left-0 flex w-full bg-gradient-to-t from-black/50 px-5 py-3">
       <div className="flex grow">
         <Button
           variant="ghost"
@@ -30,6 +30,13 @@ const VideoControls = ({
           className="text-white/95"
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-white/95"
+        >
+          {<SkipForwardIcon />}
         </Button>
         <Volume onChange={onVolumeChange} defaultVolume={volume} defaultMuted />
       </div>

@@ -1,5 +1,5 @@
-import React, { ForwardedRef } from "react"
-import { ControllerRenderProps } from "react-hook-form"
+import React, { ForwardedRef, useCallback } from "react"
+import { ControllerRenderProps, useForm } from "react-hook-form"
 
 import {
   FormControl,
@@ -7,43 +7,43 @@ import {
   FormMessage,
   useFormField,
 } from "@/components/ui/form"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
+import EmojiSelect from "./EmojiSelect"
+import { Textarea } from "../ui/textarea"
+import clsx from "clsx"
 
 type MessageInputFieldProps = Omit<
   ControllerRenderProps<{ content: string }, "content">,
   "ref"
 > & {
-  id?: HTMLElement["id"]
-  onClear?: () => void
-  showClear?: boolean
-  children: React.ReactNode
+  id?: HTMLElement["id"],
+  onEmoji: (emoji: string) => void
 }
 
 export default React.forwardRef(function MessageInputField(
-  { showClear, children, ...props }: MessageInputFieldProps,
+   { value, onEmoji, ...props }: MessageInputFieldProps,
   ref: ForwardedRef<any>
 ) {
   const formField = useFormField()
-
   return (
     <FormItem className="w-full">
       {formField.error?.type !== "too_small" ? <FormMessage /> : null}
-      <div className="relative flex w-full rounded-md border border-input bg-transparent pb-9 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
-        <FormControl>
+      <FormControl>
+        <div className="relative mt-2 rounded-md focus-within:ring-2 focus-within:ring-blue-600" >
           <Textarea
-            placeholder="Type your message..."
-            className="min-h-[80px] resize-none border-none focus-visible:ring-0"
+            placeholder="Send a message"
+            className={clsx(
+                "block max-h-[80px] w-full animate-accordion-up font-medium resize-none rounded-md border-0 bg-muted pr-10 text-sm leading-normal placeholder-shown:pt-4 focus-visible:ring-none placeholder-shown:leading-none ",
+              value ? "min-h-[80px]" : "min-h-min"
+            )}
+            value={value}
             ref={ref}
             {...props}
           />
-        </FormControl>
-
-        <div className="absolute bottom-0 left-0 w-full">
-          <Separator className="m-auto flex w-full" />
-          {children}
+          <div className="absolute inset-y-0 right-0 flex pt-1">
+            <EmojiSelect onSelect={onEmoji} />
+          </div>
         </div>
-      </div>
+      </FormControl>
     </FormItem>
   )
 })

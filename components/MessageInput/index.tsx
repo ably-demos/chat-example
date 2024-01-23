@@ -16,7 +16,6 @@ import MessageInputField from "./MessageInputField"
 type Props = {
   defaultValue: string | null
   onSubmit: (value: string) => void
-  onClear: () => void
 }
 
 const messageSchema = z.object({
@@ -29,7 +28,6 @@ export type MessageInputSchema = z.infer<typeof messageSchema>
 
 const MessageInput = React.memo(function MessagInputInner({
   onSubmit,
-  onClear: handleClear,
   defaultValue,
 }: Props) {
   const textAreaId = useId()
@@ -58,9 +56,11 @@ const MessageInput = React.memo(function MessagInputInner({
     [form, onSubmit]
   )
 
-  const handleSelectEmoji = useCallback(
+  const handleAddEmoji = useCallback(
     (emoji: string) => {
       const fieldValue = contentValue
+      console.log("emoji", emoji)
+      console.log("fieldValue", fieldValue)
       form.setValue("content", `${fieldValue}${getReactionFromCode(emoji)}`)
     },
     [contentValue, form]
@@ -70,49 +70,29 @@ const MessageInput = React.memo(function MessagInputInner({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-1 flex-col items-center space-x-2"
+        className="w-full space-y-2"
       >
         <FormField
           control={form.control}
           name="content"
           render={({ field }) => (
-            <MessageInputField id={textAreaId} {...field}>
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center">
-                  <EmojiSelect
-                    className="rounded-none"
-                    disabled={contentState.error?.type === "too_long"}
-                    onSelect={handleSelectEmoji}
-                  />
-                  <FormDescription className="px-2">
-                    {form.getValues("content")?.length ?? 0}/200
-                  </FormDescription>
-                </div>
-                <div className="flex items-center">
-                  {defaultValue ? (
-                    <Button
-                      onClick={handleClear}
-                      variant="ghost"
-                      size={"sm"}
-                      className="rounded-none text-muted-foreground"
-                    >
-                      Clear
-                    </Button>
-                  ) : null}
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    className="rounded-none text-primary-foreground"
-                    disabled={contentState.invalid || !contentValue?.length}
-                  >
-                    <Send size="20" className="" />
-                    <span className="sr-only">Send</span>
-                  </Button>
-                </div>
-              </div>
-            </MessageInputField>
+            <MessageInputField id={textAreaId} {...field} onEmoji={handleAddEmoji} />
           )}
         />
+        <div className="flex w-full items-center justify-between">
+            <FormDescription className="px-2">
+              <span>{form.getValues("content")?.length ?? 0}/200</span>
+            </FormDescription>
+          <div className="flex items-center">
+            <Button
+              type="submit"
+              size="sm"
+              className="bg-blue-700"
+            >
+              Send
+            </Button>
+          </div>
+        </div>
       </form>
     </Form>
   )

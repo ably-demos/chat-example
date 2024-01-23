@@ -88,7 +88,7 @@ const MessageItem = ({
             <TooltipTrigger asChild>
               <PopoverAnchor asChild>
                 <p className="rounded-sm px-2 py-1 hover:bg-muted">
-                  <span style={{ color }} className="pr-2">
+                  <span style={{ color }} className="pr-2 font-bold">
                     {message.client_id}{" "}
                   </span>
                   <span>{message.content}</span>
@@ -103,7 +103,7 @@ const MessageItem = ({
                     <Button
                       key={reaction}
                       className={clsx(
-                        "rounded-full h-6 flex justify-between content-between py-0 px-2 space-x-1.5 bg-secondary text-secondary-foreground hover:bg-primary/90 hover:text-secondary",
+                        "rounded-full h-6 flex justify-between content-between py-0 px-2 space-x-1.5  hover:bg-primary/90 hover:text-secondary",
                         message.reactions.mine.some(
                           (r) => r.type === reaction
                         ) && "border border-blue-500"
@@ -127,44 +127,43 @@ const MessageItem = ({
               </div>
             ) : null}
           </li>
-          <TooltipContent className="border bg-background p-1">
-            <ToggleGroup type="multiple">
+          <TooltipContent className="border bg-background p-2">
+            <ToggleGroup type="multiple" className="space-x-4">
               <PopoverTrigger asChild>
                 <ToggleGroupItem
                   value={"add-reaction"}
                   aria-label={"Add Reaction"}
                   onClick={() => setOpen((prev) => !prev)}
-                  className="p-2"
+                  className="text-gray-400"
                 >
-                  <Laugh size="16" />
+                  <Laugh size="18" />
                 </ToggleGroupItem>
               </PopoverTrigger>
               <ToggleGroupItem
                 value={"reply"}
                 aria-label={"reply"}
                 title="Coming soon"
-                disabled
+                className="text-gray-400"
               >
-                <Reply size="16" />
+                <Reply size="18" />
               </ToggleGroupItem>
               {isOwnMessage ? (
                 <>
                   <ToggleGroupItem
                     value={"edit"}
                     aria-label={"edit"}
-                    className="p-2"
+                    className="text-gray-400"
                     onClick={handleEdit}
                   >
-                    <Pencil size="16" />
+                    <Pencil size="18" />
                   </ToggleGroupItem>
                   <ToggleGroupItem
                     value={"delete"}
                     aria-label={"delete"}
                     onClick={handleDelete}
-                    title="Coming soon"
-                    className="p-2"
+                    className="text-gray-400"
                   >
-                    <Trash2 size="16" />
+                    <Trash2 size="18" />
                   </ToggleGroupItem>
                 </>
               ) : null}
@@ -178,14 +177,5 @@ const MessageItem = ({
     </Popover>
   )
 }
-// <ToggleGroupItem
-//   value={"favourite"}
-//   aria-label={"favourite"}
-//   asChild
-//   disabled
-//   title="Coming soon"
-// >
-//   <Star size="16" />
-// </ToggleGroupItem>
 
 export default memo(MessageItem)

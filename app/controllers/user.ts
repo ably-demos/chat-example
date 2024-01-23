@@ -12,11 +12,11 @@ export const generateUsername = async () => {
   return username
 }
 
-export const createUser = async (username: string, subscribers?: number) => {
+export const createUser = async (username: string, avatar?: string, subscribers?: number) => {
   return await prisma.user.create({
     data: {
       username,
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      avatar: avatar ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(
         username
       )}&rounded=true&background=random`,
       subscribers,

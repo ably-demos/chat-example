@@ -1,16 +1,16 @@
-import { useContext, useMemo } from "react"
-import { ConversationController as Conversation } from "@ably-labs/chat"
-
 import { ChatContext } from "@/components/ChatProvider"
+import { useContext, useMemo } from "react"
 
-export const useChat = () => {
-  const { chat, conversationId } = useContext(ChatContext) ?? {}
+
+/**
+ * @returns The current chat for the closest ChatProvider
+ * @example
+ * const {} = useChatContext()
+ */
+export const useChatContext = () => {
+  const { chat } = useContext(ChatContext) ?? {}
 
   if (!chat) throw new Error("Chat is not setup")
-  if (!conversationId) throw new Error("No conversationId is set")
 
-  return useMemo<Conversation>(
-    () => chat.conversations.get(conversationId),
-    [chat, conversationId]
-  )
+  return useMemo(() => chat, [chat])
 }

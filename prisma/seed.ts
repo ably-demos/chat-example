@@ -10,12 +10,12 @@ const prisma = new PrismaClient()
 const seed = async () => {
   const username = "Sport News"
 
-  const user = await createUser(username, 855721)
+  const user = await createUser(username, "/images/avatar.png", 855721)
 
   const video = await prisma.video.create({
     data: {
-      title: "Chiefs vs. Buccaneers | Super Bowl LV Game Highlights",
-      url: "/videos/Chiefs_Buccaneers.mp4",
+      title: "Teddy Makes a Cut Upfield - American Football",
+      url: "/videos/green_bay_minnesota.mp4",
       views: 928,
       user: {
         connect: {
@@ -40,3 +40,4 @@ const seed = async () => {
 }
 
 seed()
+

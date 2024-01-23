@@ -1,5 +1,5 @@
 import React from "react"
-import { Emoji } from "emoji-picker-react"
+import Emoji from "../Emoji"
 
 type Props = {
   name: string

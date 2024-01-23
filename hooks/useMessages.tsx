@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import {
   Message,
   MessageEvents,
@@ -9,46 +9,65 @@ import {
   type ReactionListener,
 } from "@ably-labs/chat"
 
-import { useChat } from "./useChat"
+import { useChatContext } from "./useChatContext"
+import { useConversation } from "./useConversation"
 
+/**
+ * @param username This will be the client_id - user id - on the message. It should likely be the unique username/id for the user in your system
+ *
+ * @returns The messages for the current conversation, and methods to send, edit, delete, add and remove reactions
+ *
+ * @example
+ * const {
+ *  messages,
+ *  loading,
+ *  sendMessage,
+ *  editMessage,
+ *  deleteMessage,
+ *  addReaction,
+ *  removeReaction,
+ * } = useMessages(username)
+ */
 export const useMessages = (username: string) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
-  const chat = useChat()
+
+  const { conversationId } = useChatContext()
+  const conversation = useConversation(conversationId)
 
   const sendMessage = useCallback(
     (text: string) => {
-      chat.messages.send(text)
+      conversation.messages.send(text)
     },
-    [chat]
+    [conversation]
   )
 
   const editMessage = useCallback(
     (messageId: string, text: string) => {
-      chat.messages.edit(messageId, text)
+      conversation.messages.edit(messageId, text)
     },
-    [chat]
+    [conversation]
   )
 
   const deleteMessage = useCallback(
     (messageId: string) => {
-      chat.messages.delete(messageId)
+      conversation.messages.delete(messageId)
     },
-    [chat]
+    [conversation]
   )
 
   const addReaction = useCallback(
     (messageId: string, type: string) => {
-      chat.messages.addReaction(messageId, type)
+      conversation.messages.addReaction(messageId, type)
     },
-    [chat]
+    [conversation]
   )
 
   const removeReaction = useCallback(
     (reactionId: string) => {
-      chat.messages.removeReaction(reactionId)
+      conversation.messages.removeReaction(reactionId)
     },
-    [chat]
+    [conversation]
   )
 
   useEffect(() => {
@@ -121,13 +140,13 @@ export const useMessages = (username: string) => {
       )
     }
 
-    chat.messages.subscribe(MessageEvents.created, handleAdd)
-    chat.messages.subscribe(MessageEvents.updated, handleUpdate)
-    chat.messages.subscribe(MessageEvents.deleted, handleDelete)
+    conversation.messages.subscribe(MessageEvents.created, handleAdd)
+    conversation.messages.subscribe(MessageEvents.updated, handleUpdate)
+    conversation.messages.subscribe(MessageEvents.deleted, handleDelete)
 
     let mounted = true
     const initMessages = async () => {
-      const lastMessages = await chat.messages.query({ limit: 10 })
+      const lastMessages = await conversation.messages.query({ limit: 10 })
       if (mounted) {
         setLoading(false)
         setMessages((prevMessages) => [...lastMessages, ...prevMessages])
@@ -138,21 +157,21 @@ export const useMessages = (username: string) => {
 
     return () => {
       mounted = false
-      chat.messages.unsubscribe(MessageEvents.created, handleAdd)
-      chat.messages.unsubscribe(MessageEvents.updated, handleUpdate)
-      chat.messages.unsubscribe(MessageEvents.deleted, handleDelete)
-      chat.messages.unsubscribeReactions(
+      conversation.messages.unsubscribe(MessageEvents.created, handleAdd)
+      conversation.messages.unsubscribe(MessageEvents.updated, handleUpdate)
+      conversation.messages.unsubscribe(MessageEvents.deleted, handleDelete)
+      conversation.messages.unsubscribeReactions(
         ReactionEvents.added,
         handleReactionAdd
       )
-      chat.messages.unsubscribeReactions(
+      conversation.messages.unsubscribeReactions(
         ReactionEvents.deleted,
         handleReactionDelete
       )
     }
-  }, [chat, username])
+  }, [conversation, username])
 
-  return {
+  return useMemo(() => ({ 
     loading,
     messages,
     editMessage,
@@ -160,5 +179,5 @@ export const useMessages = (username: string) => {
     deleteMessage,
     addReaction,
     removeReaction,
-  }
+  }), [addReaction, deleteMessage, editMessage, loading, messages, removeReaction, sendMessage])
 }
