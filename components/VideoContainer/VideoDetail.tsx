@@ -48,7 +48,7 @@ const VideoDetail = ({
         </div>
         <div className="leading-normal">
           <p className="font-medium ">{username}</p>
-          <p className="text-muted-foreground text-xs lg:text-base">
+          <p className="text-xs text-muted-foreground lg:text-base">
             { subscribers.toLocaleString('en-US')} Subscribers
           </p>
         </div>
