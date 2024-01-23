@@ -1,7 +1,5 @@
 import React from "react"
 
-import { cn } from "@/lib/utils"
-import { useWindowSize, WindowSize } from "@/hooks/useWindowSize"
 import { Button, ButtonProps } from "@/components/ui/button"
 import {
   Popover,
@@ -11,6 +9,7 @@ import {
 import Emoji from "@/components/Emoji"
 import EmojiPicker from "@/components/EmojiPicker"
 import { SmileIcon } from "lucide-react"
+import clsx from "clsx"
 
 type EmojiButtonProps = Omit<ButtonProps, "onSelect"> & {
   disabled?: boolean
@@ -28,21 +27,21 @@ export default React.memo(function EmojiButton({
   className = "",
   ...props
 }: EmojiButtonProps) {
-  const windowSize = useWindowSize()
 
   
   const popoverPositionProps = {
-    // alignOffset: -400,
-    sideOffset: -0,
-    // align: "start",
+    alignOffset: -295,
+    sideOffset: 15,
+    align: "start" as const,
   }
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant="link"
           disabled={disabled}
-          className={cn(className, "px-3")}
+          className={clsx(className, "px-2" )}
           {...props}
         >
           <SmileIcon className="size-5 text-gray-400"/>

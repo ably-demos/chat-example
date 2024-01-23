@@ -6,7 +6,6 @@ import { Separator } from "@/components/ui/separator"
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
@@ -31,7 +30,6 @@ const ChatHeader = ({ title = "Chat Room" }: ChatHeaderProps) => {
         <p className="content-center text-sm text-muted-foreground">
           Welcome to the chat room! Remember not to use any of the words from
           our{" "}
-          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
                 <span className="flex items-center text-foreground">
@@ -46,7 +44,6 @@ const ChatHeader = ({ title = "Chat Room" }: ChatHeaderProps) => {
                 </p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
         </p>
       </div>
     </div>

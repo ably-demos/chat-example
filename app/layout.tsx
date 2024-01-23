@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react"
 import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import { TooltipProvider } from "@/components/ui/tooltip"
 /**
  * Components
  */
@@ -32,16 +33,16 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
       <head />
       <body
         className={cn(
-          "min-h-screen max-w-full bg-background font-sans antialiased",
+          "h-screen max-w-full bg-background font-sans antialiased",
           fontSans.variable
         )}
       >
-        <div className="flex size-full min-h-screen flex-col">
-          <PageHeader />
-          <SessionProvider>
-            <div className="flex flex-1">{children}</div>
-          </SessionProvider>
-        </div>
+        <TooltipProvider>
+          <div className="flex size-full h-screen max-h-screen flex-col">
+            <PageHeader />
+            <SessionProvider>{children}</SessionProvider>
+          </div>
+        </TooltipProvider>
         <ActiveBreakpoint />
         <Analytics />
       </body>

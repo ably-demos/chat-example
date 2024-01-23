@@ -28,20 +28,21 @@ export default React.forwardRef(function MessageInputField(
     <FormItem className="w-full">
       {formField.error?.type !== "too_small" ? <FormMessage /> : null}
       <FormControl>
-        <div className="relative mt-2 rounded-md focus-within:ring-2 focus-within:ring-blue-600" >
+        <div className="relative mt-2 rounded-md shadow-sm placeholder:text-gray-400 focus-within:ring-2 focus-within:ring-indigo-600 " >
           <Textarea
             placeholder="Send a message"
             className={clsx(
-                "block max-h-[80px] w-full animate-accordion-up font-medium resize-none rounded-md border-0 bg-muted pr-10 text-sm leading-normal placeholder-shown:pt-4 focus-visible:ring-none placeholder-shown:leading-none ",
-              value ? "min-h-[80px]" : "min-h-min"
+                "block min-h-[45px] max-h-[80px] w-full font-medium resize-none rounded-md border-0 bg-muted pr-10 text-sm ring-none focus-visible:ring-none sm:leading-6 placeholder-shown:leading-8",
             )}
             value={value}
             ref={ref}
+            rows={value ? 3: 1}
             {...props}
+
           />
-          <div className="absolute inset-y-0 right-0 flex pt-1">
+        <div className="absolute right-0 top-0 flex pr-1 pt-1.5">
             <EmojiSelect onSelect={onEmoji} />
-          </div>
+        </div>
         </div>
       </FormControl>
     </FormItem>

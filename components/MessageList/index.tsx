@@ -1,11 +1,13 @@
 "use client"
 
 import React, { useRef } from "react"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
 
 import { useMessages } from "@/hooks/useMessages"
 
 import MessageItem from "../MessageItem"
 import Spinner from "../Spinner"
+import { ScrollBar } from "../ui/scroll-area"
 
 type MessageListProps = {
   username: string
@@ -20,20 +22,18 @@ const MessageList = ({ username, onEdit: handleEdit }: MessageListProps) => {
 
   if (!messages) return <Spinner />
 
+  // TODO: Virtualize
   return (
-    <ol
-      ref={messageListRef}
-      className="flex w-full grow flex-col items-start space-y-2"
-    >
+    <ol ref={messageListRef}>
       {messages.map((message) => {
         return (
           <MessageItem
             key={message.id}
             username={username}
             message={message}
-            onAddReaction={addReaction}
             onEditClick={handleEdit}
             onDeleteClick={deleteMessage}
+            onAddReaction={addReaction}
             onRemoveReaction={removeReaction}
           />
         )

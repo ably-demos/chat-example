@@ -47,7 +47,7 @@ const Chat = (props: ChatProps) => {
       <CardHeader className="flex flex-row items-center">
         <ChatHeader />
       </CardHeader>
-      <CardContent className="size-full">
+      <CardContent className="h-0 min-h-0 flex-auto space-y-2 overflow-y-auto">
         <MessageList username={session?.username!} onEdit={handleEditClick} />
       </CardContent>
       <CardFooter>

@@ -18,7 +18,6 @@ const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
       defaultSkinTone={SkinTones.NEUTRAL}
       onEmojiClick={({ unified: charCode, ...rest }) => onSelect(charCode)}
       skinTonesDisabled
-      lazyLoadEmojis
       suggestedEmojisMode={SuggestionMode.RECENT}
       width={"350px"}
     />

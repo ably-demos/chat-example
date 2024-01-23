@@ -33,21 +33,21 @@ const VideoDetail = ({
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <div className="relative w-12 rounded-full border border-red p-1">
-          <Avatar className="size-12">
+        <div className="relative w-14 rounded-full border border-red p-1">
+          <Avatar className="size-14">
             <AvatarImage src={avatar} alt="Image" className="rounded-full"/>
             <AvatarFallback>
               {username.split(" ").map((item) => item.charAt(0))}
             </AvatarFallback>
           </Avatar>
-          <div className="absolute -bottom-2 left-1.5 w-9 rounded-sm border-[1.5px] border-white bg-white text-center text-xs">
-            <p className="rounded-sm bg-live px-1 text-xs font-semibold text-white">
+          <div className="absolute -bottom-2 left-2.5 w-9 rounded-sm border-[1.5px] border-white bg-white text-center text-xs">
+            <p className="rounded-sm bg-live px-1 text-xs font-semibold leading-6 text-white">
               LIVE
             </p>
           </div>
         </div>
         <div className="leading-normal">
-          <p className="font-medium ">{username}</p>
+          <p className="text-lg font-medium">{username}</p>
           <p className="text-xs text-muted-foreground lg:text-base">
             { subscribers.toLocaleString('en-US')} Subscribers
           </p>
