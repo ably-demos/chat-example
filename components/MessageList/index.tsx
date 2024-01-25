@@ -1,26 +1,37 @@
 "use client"
 
 import React, { useRef } from "react"
-import { ScrollArea } from "@radix-ui/react-scroll-area"
+import {
+  ConversationController as Conversation,
+  Message,
+} from "@ably-labs/chat"
 
-import { useMessages } from "@/hooks/useMessages"
+import { useReactions } from "@/hooks/chat/useReactions"
 
 import MessageItem from "../MessageItem"
 import Spinner from "../Spinner"
-import { ScrollBar } from "../ui/scroll-area"
 
 type MessageListProps = {
+  conversation: Conversation
   username: string
+  loading: boolean
+  messages: Message[]
   onEdit: (messageId: string, content: string) => void
+  onDelete: (messageId: string) => void
 }
 
-const MessageList = ({ username, onEdit: handleEdit }: MessageListProps) => {
+const MessageList = ({
+  conversation,
+  username,
+  loading,
+  messages,
+  onEdit,
+  onDelete,
+}: MessageListProps) => {
   const messageListRef = useRef<HTMLOListElement>(null)
+  const { addReaction, removeReaction } = useReactions(conversation, username)
 
-  const { messages, addReaction, deleteMessage, removeReaction } =
-    useMessages(username)
-
-  if (!messages) return <Spinner />
+  if (loading) return <Spinner />
 
   // TODO: Virtualize
   return (
@@ -31,8 +42,8 @@ const MessageList = ({ username, onEdit: handleEdit }: MessageListProps) => {
             key={message.id}
             username={username}
             message={message}
-            onEditClick={handleEdit}
-            onDeleteClick={deleteMessage}
+            onEdit={onEdit}
+            onDelete={onDelete}
             onAddReaction={addReaction}
             onRemoveReaction={removeReaction}
           />

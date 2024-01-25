@@ -1,13 +1,18 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { Message, Reaction } from "@ably-labs/chat"
+import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { Message } from "@ably-labs/chat"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
-import clsx from "clsx"
-import { EmojiStyle } from "emoji-picker-react"
-import { Laugh, Pencil, Reply, SmilePlusIcon, Trash2 } from "lucide-react"
+import { Laugh, Pencil, Reply, Trash2 } from "lucide-react"
 
+/**
+ * Hooks
+ */
 import { useKeyboardDown } from "@/hooks/useKeyboardDown"
 import { useOutsideAlerter } from "@/hooks/useOutsideAlerter"
+/**
+ * Components
+ */
+import { Popover, PopoverAnchor, PopoverTrigger } from "@/components/ui/popover"
 import {
   Tooltip,
   TooltipContent,
@@ -15,9 +20,6 @@ import {
 } from "@/components/ui/tooltip"
 import EmojiPicker from "@/components/EmojiPicker"
 
-import Emoji from "../Emoji"
-import { Button } from "../ui/button"
-import { Popover, PopoverAnchor, PopoverTrigger } from "../ui/popover"
 import MessageReactions from "./MessageReactions"
 
 function getUserColor(username: string) {
@@ -45,28 +47,24 @@ const hasReactions = (message: Message) => {
 type MessageItemProps = {
   message: Message
   username: string
+  onEdit: (messageId: string, content: string) => void
+  onDelete: (messageId: string) => void
   onAddReaction: (messageId: string, unicode: string) => void
-  onRemoveReaction: (messageId: string, unicode: string) => void
-  onEditClick: (messageId: string, content: string) => void
-  onDeleteClick: (messageId: string) => void
+  onRemoveReaction: (reactionId: string) => void
 }
 
 const MessageItem = ({
   message,
   username,
+  onEdit,
+  onDelete,
   onAddReaction,
   onRemoveReaction,
-  onEditClick,
-  onDeleteClick,
 }: MessageItemProps) => {
   const [open, setOpen] = useState(false)
 
   const handleEscape = useCallback(() => setOpen(false), [setOpen])
-
-  const itemRef = useRef(null)
-  useKeyboardDown("Escape", handleEscape)
-  useOutsideAlerter(itemRef, handleEscape)
-
+  const handleOpenPicker = useCallback(() => setOpen(true), [])
   const handleAddReaction = useCallback(
     (unicode: string) => {
       setOpen(false)
@@ -75,25 +73,11 @@ const MessageItem = ({
     [message.id, onAddReaction]
   )
 
-  const handleRemoveReaction = useCallback(
-    (unicode: string) => onRemoveReaction(message.id, unicode),
-    [message.id, onRemoveReaction]
-  )
-
-  const handleEdit = useCallback(
-    () => onEditClick(message.id, message.content),
-    [message.content, message.id, onEditClick]
-  )
-
-  const handleDelete = useCallback(
-    () => onDeleteClick(message.id),
-    [message.id, onDeleteClick]
-  )
-
-  const handleOpenPicker = useCallback(() => setOpen(true), [])
+  const itemRef = useRef(null)
+  useKeyboardDown("Escape", handleEscape)
+  useOutsideAlerter(itemRef, handleEscape)
 
   const showReactions = useMemo(() => hasReactions(message), [message])
-
   const color = getUserColor(message.client_id)
   const isUsersMessage = message?.client_id === username
 
@@ -115,7 +99,7 @@ const MessageItem = ({
             <MessageReactions
               message={message}
               onAdd={handleAddReaction}
-              onRemove={handleRemoveReaction}
+              onRemove={onRemoveReaction}
               onAddClick={handleOpenPicker}
             />
           ) : null}
@@ -146,14 +130,14 @@ const MessageItem = ({
                   value={"edit"}
                   aria-label={"edit"}
                   className="text-gray-400"
-                  onClick={handleEdit}
+                  onClick={() => onEdit(message.id, message.content)}
                 >
                   <Pencil size="18" />
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value={"delete"}
                   aria-label={"delete"}
-                  onClick={handleDelete}
+                  onClick={() => onDelete(message.id)}
                   className="text-gray-400"
                 >
                   <Trash2 size="18" />

@@ -2,8 +2,8 @@
 
 import { useCallback, useState } from "react"
 
-import { useChatContext } from "@/hooks/useChatContext"
-import { useConversation } from "@/hooks/useConversation"
+import { useConversation } from "@/hooks/chat/useConversation"
+import { useMessages } from "@/hooks/chat/useMessages"
 import { useSession } from "@/hooks/useSession"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
@@ -11,35 +11,35 @@ import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
 import ChatHeader from "./ChatHeader"
 
-type ChatProps = {}
+type ChatProps = {
+  channel: string
+}
 
 // TODO: Review: Editing setup & useChat vs useConversation
-const Chat = (props: ChatProps) => {
+const Chat = ({ channel }: ChatProps) => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState<string>("")
 
   const { session } = useSession()
-  const { conversationId } = useChatContext()
-  const conversation = useConversation(conversationId)
+
+  const conversation = useConversation(channel)
+  const { messages, isLoading, sendMessage, editMessage, deleteMessage } =
+    useMessages(conversation)
 
   const handleSend = useCallback(
     (content: string) => {
       if (editingMessageId) {
         setEditingMessageId(null)
-        return conversation.messages.edit(editingMessageId, content)
+        return editMessage(editingMessageId, content)
       }
-      return conversation.messages.send(content)
+      return sendMessage(content)
     },
-    [conversation.messages, editingMessageId]
+    [editMessage, editingMessageId, sendMessage]
   )
 
   const handleEditClick = useCallback((messageId: string, content: string) => {
     setEditingMessageId(messageId)
     setInputValue(content)
-  }, [])
-
-  const handleClear = useCallback(() => {
-    setEditingMessageId(null)
   }, [])
 
   return (
@@ -48,7 +48,14 @@ const Chat = (props: ChatProps) => {
         <ChatHeader />
       </CardHeader>
       <CardContent className="h-0 min-h-0 flex-auto space-y-2 overflow-y-auto">
-        <MessageList username={session?.username!} onEdit={handleEditClick} />
+        <MessageList
+          messages={messages}
+          loading={isLoading}
+          username={session?.username!}
+          onEdit={handleEditClick}
+          onDelete={deleteMessage}
+          conversation={conversation}
+        />
       </CardContent>
       <CardFooter>
         <MessageInput

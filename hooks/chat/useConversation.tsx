@@ -1,7 +1,6 @@
-import { useContext, useMemo } from "react"
-import { ConversationController as Conversation } from "@ably-labs/chat"
-
-import { ChatContext } from "@/components/ChatProvider"
+import { useMemo } from "react"
+import { Chat, ConversationController as Conversation } from "@ably-labs/chat"
+import { useAbly } from "ably/react"
 
 /**
  * @returns The current chat for the closest ChatProvider
@@ -9,9 +8,10 @@ import { ChatContext } from "@/components/ChatProvider"
  * const conversation = useConversation("my-conversation-name")
  */
 export const useConversation = (conversationId: string) => {
-  const { chat } = useContext(ChatContext) ?? {}
+  const client = useAbly()
 
-  if (!chat) throw new Error("Chat is not setup")
+  const chat = useMemo(() => new Chat(client), [client])
+
   if (!conversationId) throw new Error("No conversationId is set")
 
   return useMemo<Conversation>(

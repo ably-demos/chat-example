@@ -30,20 +30,20 @@ const ChatHeader = ({ title = "Chat Room" }: ChatHeaderProps) => {
         <p className="content-center text-sm text-muted-foreground">
           Welcome to the chat room! Remember not to use any of the words from
           our{" "}
-            <Tooltip>
-              <TooltipTrigger>
-                <span className="flex items-center text-foreground">
-                  blocklisted words list <InfoIcon height={"16"} />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="border bg-background">
-                <p className="text-foreground">
-                  Blocklisted words:
-                  <br />
-                  cat, dog, shark
-                </p>
-              </TooltipContent>
-            </Tooltip>
+          <Tooltip>
+            <TooltipTrigger>
+              <span className="flex items-center text-foreground">
+                blocklisted words list <InfoIcon height={"16"} />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent className="border bg-background">
+              <p className="text-foreground">
+                Blocklisted words:
+                <br />
+                cat, dog, shark
+              </p>
+            </TooltipContent>
+          </Tooltip>
         </p>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { createContext, FC, ReactNode, useMemo } from "react"
 import { SessionData } from "@/lib/session"
 import { useSession } from "@/hooks/useSession"
 
-import Spinner from "./Spinner"
+import Spinner from "../components/Spinner"
 
 interface SessionContextProps {
   username: string
@@ -33,7 +33,7 @@ const isValidSession = (
  */
 export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
   const { session, isLoading, error } = useSession()
-  
+
   const context = useMemo(
     () => ({ username: session?.username }),
     [session?.username]

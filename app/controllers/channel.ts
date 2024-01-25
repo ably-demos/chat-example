@@ -2,14 +2,12 @@
 
 import prisma from "@/lib/prisma"
 
-import { createConversation } from "./inMemoryDb"
-
 export const createChannel = async (
   name: string,
   videoId: number,
   username: string
 ) => {
-  return await prisma?.channel.create({
+  return prisma?.channel.create({
     data: {
       name,
       video: {
@@ -33,8 +31,6 @@ export const getChannel = async (name: string, username: string) => {
       users: { where: { username: username } },
     },
   })
-
-  await createConversation(name)
 
   if (!channel) {
     throw new Error("Channel not found")

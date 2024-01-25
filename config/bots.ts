@@ -1,6 +1,7 @@
 export const botConfig = {
   channelName: "bots",
   botCount: 10,
-  messageCount: 100,
-  botPrefix: "BOT",
+  messageCount: 20,
+  usernamePrefix: "BOT",
 }
+export type BotConfig = typeof botConfig

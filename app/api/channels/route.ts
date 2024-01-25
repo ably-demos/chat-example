@@ -1,9 +1,7 @@
-import { Chat } from "@ably-labs/chat"
-import { Realtime } from "ably"
-
 import prisma from "@/lib/prisma"
 import { getSession } from "@/lib/session"
 import { createChannel } from "@/app/controllers/channel"
+import { getChatClient } from "@/app/controllers/chat"
 
 export async function POST(req: Request) {
   const session = await getSession()
@@ -19,14 +17,11 @@ export async function POST(req: Request) {
 
   const channel = await createChannel(name, video.id, session.username)
 
-  const ablyClient = new Realtime.Promise({ key: process.env.ABLY_API_KEY! })
-  ablyClient.connect()
+  const chat = await getChatClient()
 
-  const chat = new Chat(ablyClient)
+  await chat.conversations.get(name).create()
 
-  const c = chat.conversations.get(name)
-  await c.create()
-  ablyClient.close()
+  chat.connection.close()
 
   return Response.json(channel)
 }

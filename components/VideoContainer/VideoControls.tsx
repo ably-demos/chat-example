@@ -1,7 +1,8 @@
 import React from "react"
 import { PauseIcon, PlayIcon, SkipForwardIcon } from "lucide-react"
 
-import { Button } from "../ui/button"
+import { Button } from "@/components/ui/button"
+
 import RoomReactions from "./RoomReactions"
 import Volume from "./Volume"
 
@@ -31,11 +32,7 @@ const VideoControls = ({
         >
           {playing ? <PauseIcon /> : <PlayIcon />}
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-white/95"
-        >
+        <Button variant="ghost" size="icon" className="text-white/95">
           {<SkipForwardIcon />}
         </Button>
         <Volume onChange={onVolumeChange} defaultVolume={volume} defaultMuted />

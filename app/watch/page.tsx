@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import { AblyProvider } from "ably/react"
 
-import { useAblyClient } from "@/hooks/useAblyClient"
+import { useAblyClient } from "@/hooks/chat/useAblyClient"
 /**
  * Hooks
  */
@@ -14,7 +14,6 @@ import { useVideo } from "@/hooks/useVideo"
  * Components
  */
 import Chat from "@/components/Chat"
-import ChatProvider from "@/components/ChatProvider"
 import Spinner from "@/components/Spinner"
 import VideoContainer from "@/components/VideoContainer"
 
@@ -50,9 +49,7 @@ const Watch = () => {
           />
         </article>
         <aside className="flex h-full max-h-full lg:max-w-md">
-          <ChatProvider conversationId={channel.name}>
-            <Chat />
-          </ChatProvider>
+          <Chat channel={channel.name} />
         </aside>
       </main>
     </AblyProvider>

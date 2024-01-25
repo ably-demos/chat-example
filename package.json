@@ -41,6 +41,7 @@
     "@vercel/analytics": "^1.1.2",
     "@vercel/kv": "1.0.1",
     "@vercel/postgres": "0.5.1",
+    "@vercel/speed-insights": "1.0.7",
     "ably": "1.2.48",
     "axios": "1.6.5",
     "class-variance-authority": "0.7.0",

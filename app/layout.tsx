@@ -1,7 +1,9 @@
 import "@/styles/globals.css"
 
 import { Metadata } from "next"
+import { SessionProvider } from "@/providers/SessionProvider"
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import appConfig from "@/config/app"
 import { fontSans } from "@/lib/fonts"
@@ -12,7 +14,6 @@ import { TooltipProvider } from "@/components/ui/tooltip"
  */
 import ActiveBreakpoint from "@/components/ActiveBreakpoint"
 import PageHeader from "@/components/PageHeader"
-import { SessionProvider } from "@/components/SessionProvider"
 
 export const metadata: Metadata = {
   title: {
@@ -45,6 +46,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
         </TooltipProvider>
         <ActiveBreakpoint />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

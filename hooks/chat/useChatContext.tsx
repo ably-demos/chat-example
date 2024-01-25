@@ -1,6 +1,5 @@
-import { ChatContext } from "@/components/ChatProvider"
 import { useContext, useMemo } from "react"
-
+import { ChatContext } from "@/providers/ChatProvider"
 
 /**
  * @returns The current chat for the closest ChatProvider
@@ -8,9 +7,13 @@ import { useContext, useMemo } from "react"
  * const {} = useChatContext()
  */
 export const useChatContext = () => {
-  const { chat } = useContext(ChatContext) ?? {}
+  const { chat, conversationId } = useContext(ChatContext) ?? {}
 
   if (!chat) throw new Error("Chat is not setup")
+  if (!conversationId) throw new Error("No conversationId is set")
 
-  return useMemo(() => chat, [chat])
+  return {
+    chat,
+    conversationId,
+  }
 }
