@@ -27,7 +27,6 @@ export default function IndexPage() {
     if (!isValidChannel(channel)) {
       const name = generateChannelName()
 
-      debugger
       setChannel(name)
     } else {
       redirect(`/watch?channel=${channel}`)

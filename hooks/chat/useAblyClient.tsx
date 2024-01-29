@@ -16,7 +16,8 @@ export const useAblyClient = (username: Maybe<string>) => {
     return username
       ? new Realtime({
           authUrl: "/api/auth",
-          useTokenAuth: true,
+          restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+          realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
         })
       : undefined
   }, [username])

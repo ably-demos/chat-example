@@ -1,6 +1,6 @@
-import React, { ForwardedRef, useCallback } from "react"
+import React, { ForwardedRef } from "react"
 import clsx from "clsx"
-import { ControllerRenderProps, useForm } from "react-hook-form"
+import { ControllerRenderProps } from "react-hook-form"
 
 import {
   FormControl,
@@ -10,18 +10,18 @@ import {
 } from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
 
-import EmojiSelect from "./EmojiSelect"
+import ReactionSelect from "./ReactionSelect"
 
 type MessageInputFieldProps = Omit<
   ControllerRenderProps<{ content: string }, "content">,
   "ref"
 > & {
   id?: HTMLElement["id"]
-  onEmoji: (emoji: string) => void
+  onReaction: (emoji: string) => void
 }
 
 export default React.forwardRef(function MessageInputField(
-  { value, onEmoji, ...props }: MessageInputFieldProps,
+  { value, onReaction, ...props }: MessageInputFieldProps,
   ref: ForwardedRef<any>
 ) {
   const formField = useFormField()
@@ -41,7 +41,7 @@ export default React.forwardRef(function MessageInputField(
             {...props}
           />
           <div className="absolute right-0 top-0 flex pr-1 pt-1.5">
-            <EmojiSelect onSelect={onEmoji} />
+            <ReactionSelect onSelect={onReaction} />
           </div>
         </div>
       </FormControl>

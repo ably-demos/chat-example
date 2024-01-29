@@ -1,15 +1,35 @@
+import { NextRequest } from "next/server"
 import { Rest } from "ably"
 
 import { getSession } from "@/lib/session"
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const session = await getSession()
-  const ably = new Rest.Promise({ key: process.env.ABLY_API_KEY! })
+  console.error(request.nextUrl.searchParams.get("clientId"))
+  const ably = new Rest.Promise({
+    key: process.env.ABLY_API_KEY!,
+    restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+    realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+  })
 
   const token = await ably.auth.createTokenRequest({
     clientId: session.username,
     capability: {
-      "conversations:*": ["publish", "subscribe", "presence"],
+      "conversations:*": [
+        "publish",
+        "subscribe",
+        "presence",
+        "create" as "subscribe",
+        "delete" as "subscribe",
+      ],
+      "[conversation]*": [
+        "publish",
+        "subscribe",
+        "presence",
+        "history",
+        "create" as "subscribe",
+        "delete" as "subscribe",
+      ],
     },
   })
 

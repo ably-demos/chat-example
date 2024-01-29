@@ -17,11 +17,11 @@ export async function POST(req: Request) {
 
   const channel = await createChannel(name, video.id, session.username)
 
-  const chat = await getChatClient()
+  const client = await getChatClient()
 
-  await chat.conversations.get(name).create()
+  await client.conversations.get(name).create()
 
-  chat.connection.close()
+  client.connection.close()
 
   return Response.json(channel)
 }

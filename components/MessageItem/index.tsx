@@ -1,8 +1,8 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react"
+import { memo, useCallback, useRef, useState } from "react"
 import { Message } from "@ably-labs/chat"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
-import { Laugh, Pencil, Reply, Trash2 } from "lucide-react"
+import { Laugh, Pencil, Reply, StarIcon, Trash2 } from "lucide-react"
 
 /**
  * Hooks
@@ -18,7 +18,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import EmojiPicker from "@/components/EmojiPicker"
+import ReactionPicker from "@/components/ReactionPicker"
 
 import MessageReactions from "./MessageReactions"
 
@@ -38,7 +38,7 @@ function stringToHue(str: string) {
 }
 
 const hasReactions = (message: Message) => {
-  return Object.entries(message.reactions.counts).some(
+  return Object.entries(message.reactions?.counts ?? {}).some(
     ([, count]) => count > 0,
     false
   )
@@ -49,37 +49,30 @@ type MessageItemProps = {
   username: string
   onEdit: (messageId: string, content: string) => void
   onDelete: (messageId: string) => void
-  onAddReaction: (messageId: string, unicode: string) => void
-  onRemoveReaction: (reactionId: string) => void
+  onAddReaction: (messageId: string, reaction: string) => void
+  onRemoveReaction: (messageId: string, reactionId: string) => void
 }
 
 const MessageItem = ({
   message,
-  username,
   onEdit,
   onDelete,
+  username,
   onAddReaction,
   onRemoveReaction,
 }: MessageItemProps) => {
   const [open, setOpen] = useState(false)
 
-  const handleEscape = useCallback(() => setOpen(false), [setOpen])
+  const handleEscape = useCallback(() => setOpen(false), [])
   const handleOpenPicker = useCallback(() => setOpen(true), [])
-  const handleAddReaction = useCallback(
-    (unicode: string) => {
-      setOpen(false)
-      onAddReaction(message.id, unicode)
-    },
-    [message.id, onAddReaction]
-  )
 
   const itemRef = useRef(null)
   useKeyboardDown("Escape", handleEscape)
   useOutsideAlerter(itemRef, handleEscape)
 
-  const showReactions = useMemo(() => hasReactions(message), [message])
-  const color = getUserColor(message.client_id)
-  const isUsersMessage = message?.client_id === username
+  const showReactions = hasReactions(message)
+  const color = getUserColor(message.created_by)
+  const isUsersMessage = message?.created_by === username
 
   return (
     <Popover open={open}>
@@ -89,7 +82,7 @@ const MessageItem = ({
             <PopoverAnchor asChild>
               <p className="space-x-3 rounded-sm px-2 py-1 leading-6 hover:bg-muted">
                 <span style={{ color }} className="font-bold">
-                  {message.client_id}
+                  {message.created_by}
                 </span>
                 <span>{message.content}</span>
               </p>
@@ -98,8 +91,8 @@ const MessageItem = ({
           {showReactions ? (
             <MessageReactions
               message={message}
-              onAdd={handleAddReaction}
-              onRemove={onRemoveReaction}
+              onAdd={() => {}}
+              onRemove={() => {}}
               onAddClick={handleOpenPicker}
             />
           ) : null}
@@ -143,12 +136,26 @@ const MessageItem = ({
                   <Trash2 size="18" />
                 </ToggleGroupItem>
               </>
-            ) : null}
+            ) : (
+              <ToggleGroupItem
+                value={"favourite"}
+                aria-label={"favourite"}
+                className="text-gray-400"
+                title="Coming soon"
+              >
+                <StarIcon size="18" />
+              </ToggleGroupItem>
+            )}
           </ToggleGroup>
         </TooltipContent>
       </Tooltip>
       <PopoverContent className="w-[350px] p-0" ref={itemRef}>
-        <EmojiPicker onSelect={handleAddReaction} />
+        <ReactionPicker
+          onSelect={(reaction) => {
+            console.log("SELECTED REACTION", reaction)
+            onAddReaction(message.id, reaction)
+          }}
+        />
       </PopoverContent>
     </Popover>
   )

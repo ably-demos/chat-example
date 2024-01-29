@@ -1,4 +1,6 @@
 import React from "react"
+import clsx from "clsx"
+import { SmileIcon } from "lucide-react"
 
 import { Button, ButtonProps } from "@/components/ui/button"
 import {
@@ -6,12 +8,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import Emoji from "@/components/Emoji"
-import EmojiPicker from "@/components/EmojiPicker"
-import { SmileIcon } from "lucide-react"
-import clsx from "clsx"
+import ReactionPicker from "@/components/ReactionPicker"
 
-type EmojiButtonProps = Omit<ButtonProps, "onSelect"> & {
+type ReactionButtonProps = Omit<ButtonProps, "onSelect"> & {
   disabled?: boolean
   onSelect: (emoji: string) => void
 }
@@ -21,14 +20,12 @@ export const isMobile = () => {
   return /Android|Mobi/i.test(ua)
 }
 
-export default React.memo(function EmojiButton({
+export default React.memo(function ReactionButton({
   onSelect: handleSelect,
   disabled = false,
   className = "",
   ...props
-}: EmojiButtonProps) {
-
-  
+}: ReactionButtonProps) {
   const popoverPositionProps = {
     alignOffset: -295,
     sideOffset: 15,
@@ -41,14 +38,14 @@ export default React.memo(function EmojiButton({
         <Button
           variant="link"
           disabled={disabled}
-          className={clsx(className, "px-2" )}
+          className={clsx(className, "px-2")}
           {...props}
         >
-          <SmileIcon className="size-5 text-gray-400"/>
+          <SmileIcon className="size-5 text-gray-400" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px] p-0" {...popoverPositionProps} >
-        <EmojiPicker onSelect={handleSelect} />
+      <PopoverContent className="w-[350px] p-0" {...popoverPositionProps}>
+        <ReactionPicker onSelect={handleSelect} />
       </PopoverContent>
     </Popover>
   )

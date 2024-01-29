@@ -4,20 +4,19 @@ import {
   FC,
   ReactNode,
   SetStateAction,
-  useCallback,
   useMemo,
   useState,
 } from "react"
 import { Message } from "@ably-labs/chat"
 
 interface MessageContextProps {
-  messages: Message[]
-  setMessages: Dispatch<SetStateAction<Message[]>>
+  messageStore: Message[]
+  updateMessageStore: Dispatch<SetStateAction<Message[]>>
 }
 
 export const MessageContext = createContext<MessageContextProps>({
-  messages: [],
-  setMessages: () => {},
+  messageStore: [],
+  updateMessageStore: () => {},
 })
 
 interface MessageProviderProps {
@@ -40,11 +39,12 @@ interface MessageProviderProps {
  * </AblyProvider>
  **/
 const MessageProvider: FC<MessageProviderProps> = ({ children }) => {
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messageStore, setMessageStore] = useState<Message[]>([])
 
   const context = useMemo(
-    () => ({ messages, setMessages }),
-    [messages, setMessages]
+    // REVIEW: updateMessageStore/setMessageStore. Maybe YAGNI, but simple enough to help future proof
+    () => ({ messageStore, updateMessageStore: setMessageStore }),
+    [messageStore]
   )
 
   return (

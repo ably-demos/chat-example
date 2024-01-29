@@ -1,80 +1,49 @@
-import { useContext, useEffect, useState } from "react"
-import { MessageContext } from "@/providers/MessageProvider"
-import { Message, ReactionEvents, ReactionListener } from "@ably-labs/chat"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Message } from "@ably-labs/chat"
+import { Types } from "ably/promises"
+import { sortBy } from "underscore"
 
-import { botConfig } from "@/config/bots"
-
-import { useInterval } from "../useInterval"
+import { botConfig } from "../../config/bots"
 import { useConversation } from "./useConversation"
-import { useReactionEvent } from "./useReactions"
 
-export const useBots = () => {
-  const [loading, setLoading] = useState(false)
+const sortByCreated = (messages: Message[]) => {
+  return sortBy(messages, ({ created_at }) => created_at)
+}
 
-  const { messages, setMessages } = useContext(MessageContext)
-  const botConversation = useConversation(botConfig.channelName)
-  const [messageCursor, setMessageCursor] = useState<string>()
-
+export const useBots = (setMessages: Dispatch<SetStateAction<Message[]>>) => {
+  const [pageCursor, setPageCursor] = useState<string | null>(null)
   const conversation = useConversation(botConfig.channelName)
-  const { addReaction, removeReaction } = conversation.messages
 
   useEffect(() => {
-    if (process.env.WITH_BOTS !== "true") {
-      return
-    }
-
-    setLoading(true)
-
-    const handleReactionAdd: ReactionListener = ({ reaction }) => {}
-    const handleReactionDelete: ReactionListener = ({ reaction }) => {}
-
     let mounted = true
-
     const initMessages = async () => {
-      const firstMessages = await botConversation.messages.query({
-        limit: 10,
-        startId: messageCursor,
+      const nextMessages = await conversation.messages.query({
+        limit: 2,
+        // REVIEW
+        ...(pageCursor && { startId: pageCursor }),
       })
       if (mounted) {
-        setLoading(false)
-        setMessages((prevMessages: Message[]) => [
-          ...firstMessages,
-          ...prevMessages,
-        ])
-        setMessageCursor(firstMessages.at(-1)?.id)
+        /**
+         * Filter messages by bot username prefix or members of the users conversation
+         */
+
+        let lastItem = nextMessages.at(-1)
+        if (lastItem?.id) {
+          setPageCursor(lastItem.id)
+        }
+
+        setMessages((prevMessages) =>
+          sortByCreated([...prevMessages, ...nextMessages])
+        )
       }
     }
-
-    setMessages([])
+    setPageCursor(null)
     initMessages()
-  }, [botConversation, messageCursor, setMessages])
 
-  useReactionEvent(botConversation, ReactionEvents.added, ({ reaction }) => {})
-  useReactionEvent(
-    botConversation,
-    ReactionEvents.deleted,
-    ({ reaction }) => {}
-  )
-
-  useInterval(() => {
-    if (process.env.WITH_BOTS !== "true" || !messages.length) {
-      return
+    return () => {
+      mounted = false
     }
-    botConversation.messages
-      .query({
-        limit: 10,
-        startId: messageCursor,
-      })
-      .then((newMessages) => {
-        setMessages((prevMessages) => [...newMessages, ...prevMessages])
-        setMessageCursor(newMessages.at(-1)?.id)
-      })
-  }, 1000)
+  }, [conversation, pageCursor, setMessages])
 
-  return {
-    loading,
-    messages,
-    addReaction,
-    removeReaction,
-  }
+  return null
 }

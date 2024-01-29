@@ -6,7 +6,7 @@ const nanoid = customAlphabet(alphanumeric, 12)
 
 export const generateChannelName = () => {
   if (process.env.NODE_ENV === "development") {
-    return "default"
+    return "bots"
   }
 
   return nanoid()
@@ -18,7 +18,7 @@ export const isValidChannel = (channel: string | null) => {
   }
 
   if (process.env.NODE_ENV === "development") {
-    return channel === "default"
+    return channel === "bots"
   }
 
   return channel.length === 12

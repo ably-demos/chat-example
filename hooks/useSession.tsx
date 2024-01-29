@@ -37,9 +37,12 @@ export const useSession = () => {
     }
   }, [create, data?.username, getSession.error, getSession.isLoading])
 
-  return useMemo(() => ({
-    session: data,
-    createSession: create,
-    ...getSession,
-  }), [create, data, getSession])
+  return useMemo(
+    () => ({
+      session: data,
+      createSession: create,
+      ...getSession,
+    }),
+    [create, data, getSession]
+  )
 }

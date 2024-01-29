@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react"
 import { nanoid } from "nanoid"
 
-import Reaction from "./Reaction"
+import Reaction from "./ReactionButton"
 
 import "./styles.css"
 

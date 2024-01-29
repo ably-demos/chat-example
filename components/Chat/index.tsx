@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react"
 
-import { useConversation } from "@/hooks/chat/useConversation"
 import { useMessages } from "@/hooks/chat/useMessages"
 import { useSession } from "@/hooks/useSession"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -11,20 +10,24 @@ import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
 import ChatHeader from "./ChatHeader"
 
-type ChatProps = {
-  channel: string
-}
+type ChatProps = {}
 
 // TODO: Review: Editing setup & useChat vs useConversation
-const Chat = ({ channel }: ChatProps) => {
+const Chat = (props: ChatProps) => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState<string>("")
 
   const { session } = useSession()
 
-  const conversation = useConversation(channel)
-  const { messages, isLoading, sendMessage, editMessage, deleteMessage } =
-    useMessages(conversation)
+  const {
+    messages,
+    isLoading,
+    addReaction,
+    removeReaction,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+  } = useMessages(session?.username!)
 
   const handleSend = useCallback(
     (content: string) => {
@@ -54,7 +57,8 @@ const Chat = ({ channel }: ChatProps) => {
           username={session?.username!}
           onEdit={handleEditClick}
           onDelete={deleteMessage}
-          conversation={conversation}
+          onAddReaction={addReaction}
+          onRemoveReaction={removeReaction}
         />
       </CardContent>
       <CardFooter>

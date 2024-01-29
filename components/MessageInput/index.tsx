@@ -10,8 +10,8 @@ import { getReactionFromCode } from "@/lib/reaction"
 import { Button } from "@/components/ui/button"
 import { Form, FormDescription, FormField } from "@/components/ui/form"
 
-import EmojiSelect from "./EmojiSelect"
 import MessageInputField from "./MessageInputField"
+import ReactionSelect from "./ReactionSelect"
 
 type Props = {
   defaultValue: string | null
@@ -56,7 +56,7 @@ const MessageInput = React.memo(function MessagInputInner({
     [form, onSubmit]
   )
 
-  const handleAddEmoji = useCallback(
+  const handleAddReaction = useCallback(
     (emoji: string) => {
       const fieldValue = contentValue
       console.log("emoji", emoji)
@@ -76,19 +76,19 @@ const MessageInput = React.memo(function MessagInputInner({
           control={form.control}
           name="content"
           render={({ field }) => (
-            <MessageInputField id={textAreaId} {...field} onEmoji={handleAddEmoji} />
+            <MessageInputField
+              id={textAreaId}
+              {...field}
+              onReaction={handleAddReaction}
+            />
           )}
         />
         <div className="flex w-full items-center justify-between">
-            <FormDescription className="px-2">
-              <span>{form.getValues("content")?.length ?? 0}/200</span>
-            </FormDescription>
+          <FormDescription className="px-2">
+            <span>{form.getValues("content")?.length ?? 0}/200</span>
+          </FormDescription>
           <div className="flex items-center">
-            <Button
-              type="submit"
-              size="sm"
-              className="bg-blue-700"
-            >
+            <Button type="submit" size="sm" className="bg-blue-700">
               Send
             </Button>
           </div>

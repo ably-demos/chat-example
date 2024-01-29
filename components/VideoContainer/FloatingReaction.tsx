@@ -1,5 +1,6 @@
 import React from "react"
-import Emoji from "../Emoji"
+
+import Reaction from "../Reaction"
 
 type Props = {
   name: string
@@ -9,7 +10,7 @@ type Props = {
 const FloatingReaction = ({ name, emoji }: Props) => {
   return (
     <div className={`FloatingReaction`}>
-      <Emoji size={24} unified={emoji} />
+      <Reaction size={24} unified={emoji} />
     </div>
   )
 }

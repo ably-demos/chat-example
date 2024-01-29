@@ -1,11 +1,11 @@
 import { Chat, ConversationController as Conversation } from "@ably-labs/chat"
 import { faker } from "@faker-js/faker"
-import { Realtime, Types } from "ably/promises"
+import { Realtime, Rest, Types } from "ably/promises"
 import dotenv, { config } from "dotenv"
 import invariant from "tiny-invariant"
 
 import { BotConfig, botConfig } from "@/config/bots"
-import { generateMessage } from "@/lib/message"
+import { generateMessage } from "@/lib/bot"
 
 dotenv.config()
 
@@ -35,7 +35,7 @@ const assertEmptyConversation = async (conversation: Conversation) => {
 
 const generateBot = async (
   { usernamePrefix, channelName }: BotConfig,
-  client: Realtime
+  client: Rest
 ): Promise<Bot> => {
   const clientId = faker.internet.userName({ firstName: usernamePrefix })
 
@@ -43,9 +43,6 @@ const generateBot = async (
     clientId,
     tokenDetails: await client.auth.requestToken({
       clientId,
-      capability: {
-        [`conversations:${channelName}`]: ["publish", "subscribe", "presence"],
-      },
     }),
   }
 }
@@ -90,46 +87,50 @@ const main = async (config: BotConfig) => {
     `Seeding ${channelName} with ${messageCount} messages from ${botCount} bots...`
   )
 
-  const rootClient = new Realtime.Promise({
+  const rootClient = new Rest.Promise({
     key: process.env.ABLY_API_KEY,
+    restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+    realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
     /**
      * @see https://ably.com/docs/auth/token?lang=javascript#auth-callback
      */
   })
-  rootClient.close()
 
   const bots: Bot[] = await Promise.all(
     Array.from({ length: botCount }, () => generateBot(config, rootClient))
   )
 
-  const client = new Realtime.Promise({
-    authCallback: (tokenParams, cb) => getTokenDetails(tokenParams, cb, bots),
-  })
-
   try {
-    const chat = new Chat(client)
-    const conversation = await getConversation(channelName, chat)
     // await createConversation(conversation)
     // await assertEmptyConversation(conversation)
 
     for (let i = 0; i < messageCount; i++) {
-      const message = generateMessage()
       const bot = getRandomBot(bots)
-      console.log("reandom bot", bot)
-      console.log("Previous client id", client.clientId)
+      const client = new Realtime({
+        restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+        realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+        useTokenAuth: true,
+        ...bot,
+      })
+
+      console.log("Using token details for", bot)
+      const chat = new Chat(client)
+      const conversation = await getConversation(channelName, chat)
+      const message = generateMessage()
+      // console.log("reandom bot", bot)
+      // console.log("Previous client id", client.clientId)
       console.log(`Sending message ${message} as ${bot.clientId}`)
       debugger
-      await client.auth.authorize({ clientId: bot.clientId })
-      // await sleep(2000)
       const result = await conversation.messages.send(message)
       console.log(result)
+      client.close()
+      await sleep(1000)
     }
   } catch (error) {
     console.error(error)
   }
 
   console.info("Closing client...")
-  client.close()
 
   process.exit(0)
 }

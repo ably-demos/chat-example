@@ -1,6 +1,8 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
+import ChatProvider from "@/providers/ChatProvider"
+import MessageProvider from "@/providers/MessageProvider"
 import { AblyProvider } from "ably/react"
 
 import { useAblyClient } from "@/hooks/chat/useAblyClient"
@@ -49,7 +51,11 @@ const Watch = () => {
           />
         </article>
         <aside className="flex h-full max-h-full lg:max-w-md">
-          <Chat channel={channel.name} />
+          <ChatProvider conversationId={channel.name}>
+            <MessageProvider>
+              <Chat />
+            </MessageProvider>
+          </ChatProvider>
         </aside>
       </main>
     </AblyProvider>
