@@ -2,11 +2,11 @@ import { TypeToZod } from "@/types"
 import { Message, Reaction } from "@ably-labs/chat"
 import z from "zod"
 
-const reactionSchema = z.object<TypeToZod<Reaction>>({
+const messageReactionSchema = z.object<TypeToZod<Reaction>>({
   id: z.string(),
   message_id: z.string(),
   type: z.string(),
-  client_id: z.string(),
+  created_by: z.string(),
   updated_at: z.number().nullable(),
   deleted_at: z.number().nullable(),
 })
@@ -21,8 +21,8 @@ const messageSchema = z.object<TypeToZod<Message>>({
   deleted_at: z.number().nullable(),
   reactions: z.object({
     counts: z.record(z.number()),
-    latest: z.array(reactionSchema),
-    mine: z.array(reactionSchema),
+    latest: z.array(messageReactionSchema),
+    mine: z.array(messageReactionSchema),
   }),
 })
 

@@ -1,11 +1,11 @@
 "use client"
 
-import React, { useRef } from "react"
+import React, { CSSProperties, useMemo, useRef } from "react"
 import { Message } from "@ably-labs/chat"
+import AutoSizer from "react-virtualized-auto-sizer"
+import { VariableSizeList } from "react-window"
 
-// import { useReactions } from "@/hooks/chat/useReactions"
-
-import MessageItem from "../MessageItem"
+import MessageItem, { MessageItemProps } from "../MessageItem"
 import Spinner from "../Spinner"
 
 type MessageListProps = {
@@ -27,27 +27,75 @@ const MessageList = ({
   onAddReaction,
   onRemoveReaction,
 }: MessageListProps) => {
-  const messageListRef = useRef<HTMLOListElement>(null)
+  const messageListRef = useRef<VariableSizeList<Message[]>>(null)
 
+  const itemData = useMemo(
+    () => ({
+      messages,
+      onEdit,
+      onDelete,
+      onAddReaction,
+      onRemoveReaction,
+    }),
+    [messages, onAddReaction, onDelete, onEdit, onRemoveReaction]
+  )
   if (loading) return <Spinner />
 
-  // TODO: Virtualize
   return (
-    <ol ref={messageListRef}>
-      {messages.map((message) => {
-        return (
-          <MessageItem
-            username={username}
-            key={message.id}
-            message={message}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onAddReaction={onAddReaction}
-            onRemoveReaction={onRemoveReaction}
-          />
-        )
-      })}
-    </ol>
+    <AutoSizer>
+      {({ height, width }) => (
+        <VariableSizeList
+          itemData={itemData}
+          itemSize={(index) => getItemSize(messages[index], width)}
+          itemCount={messages.length}
+          itemKey={(index) => messages[index].id}
+          height={height}
+          width={width}
+          ref={messageListRef}
+          outerElementType={"ol"}
+        >
+          {MessageRow}
+        </VariableSizeList>
+      )}
+    </AutoSizer>
+  )
+}
+const MessageRow = ({
+  data: {
+    username,
+    message,
+    onEdit,
+    onDelete,
+    onAddReaction,
+    onRemoveReaction,
+  },
+  style,
+  index,
+}: {
+  data: MessageItemProps
+  style: CSSProperties
+  index: number
+}) => (
+  <MessageItem
+    username={username}
+    message={messages[index]}
+    style={style}
+    onEdit={onEdit}
+    onDelete={onDelete}
+    onAddReaction={onAddReaction}
+    onRemoveReaction={onRemoveReaction}
+  />
+)
+
+/* Needs some work doesn't take into account glyph width */
+const getItemSize = (message: Message, width: number) => {
+  return (
+    Math.ceil(
+      (message.created_by.length + 2 /* Space */ + message.content.length) /
+        width
+    ) *
+      24 /* Line height */ +
+    8 /* Y padding */
   )
 }
 

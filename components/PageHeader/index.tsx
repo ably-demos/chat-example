@@ -16,16 +16,13 @@ const PageHeader = () => {
         >
           {name}
         </Link>
-        <div className="flex  items-center justify-end space-x-6">
+        <div className="flex items-center justify-end space-x-6">
           <div className="inline-flex items-center space-x-2 text-sm">
             <InfoCircledIcon />
             <span>How to try this demo</span>
           </div>
           <Button asChild variant={"secondary"}>
-            <Link
-              href="#"
-              className="items-center space-x-2"
-            >
+            <Link href="#" className="items-center space-x-2">
               <span>Chat Docs</span>
               <ExternalLink size={15} />
             </Link>

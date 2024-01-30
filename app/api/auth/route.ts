@@ -14,23 +14,23 @@ export async function GET(request: NextRequest) {
 
   const token = await ably.auth.createTokenRequest({
     clientId: session.username,
-    capability: {
-      "conversations:*": [
-        "publish",
-        "subscribe",
-        "presence",
-        "create" as "subscribe",
-        "delete" as "subscribe",
-      ],
-      "[conversation]*": [
-        "publish",
-        "subscribe",
-        "presence",
-        "history",
-        "create" as "subscribe",
-        "delete" as "subscribe",
-      ],
-    },
+    // capability: {
+    //   "conversations:*": [
+    //     "publish",
+    //     "subscribe",
+    //     "presence",
+    //     "create" as "subscribe",
+    //     "delete" as "subscribe",
+    //   ],
+    //   "[conversation]*": [
+    //     "publish",
+    //     "subscribe",
+    //     "presence",
+    //     "history",
+    //     "create" as "subscribe",
+    //     "delete" as "subscribe",
+    //   ],
+    // },
   })
 
   return Response.json(token)

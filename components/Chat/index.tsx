@@ -28,6 +28,7 @@ const Chat = (props: ChatProps) => {
     editMessage,
     deleteMessage,
   } = useMessages(session?.username!)
+  console.log("messages", messages)
 
   const handleSend = useCallback(
     (content: string) => {
@@ -46,7 +47,7 @@ const Chat = (props: ChatProps) => {
   }, [])
 
   return (
-    <Card className="flex size-full flex-col rounded-none border-t-0">
+    <Card className="flex flex-col rounded-none border-t-0 md:size-full">
       <CardHeader className="flex flex-row items-center">
         <ChatHeader />
       </CardHeader>

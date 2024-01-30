@@ -190,7 +190,7 @@ function generateMessage() {
 
   const randomComment = getRandomElement(comments)
   const emoji = getRandomElement(emojis)
-  return `${randomComment} ${emoji}`
+  return `${randomComment}`
 }
 
 export { generateMessage }

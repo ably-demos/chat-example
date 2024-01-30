@@ -5,9 +5,9 @@ export const getReactionFromCode = (code: string) => {
 }
 
 export const mapFromUpdate = (
-  username: string,
   message: Message,
-  reaction: Reaction
+  reaction: Reaction,
+  username?: string
 ) => {
   if (message.id !== reaction.message_id) {
     return message
@@ -19,7 +19,7 @@ export const mapFromUpdate = (
     counts: {},
   }
 
-  const isMine = reaction.client_id === username
+  const isMine = reaction.created_by === username
   const updatedMineReactions = isMine ? [...mine, reaction] : mine
   const updatedLatestReactions = [...latest, reaction]
   const updatedCounts = {
@@ -38,15 +38,15 @@ export const mapFromUpdate = (
 }
 
 export const mapFromDelete = (
-  username: string,
   message: Message,
-  reaction: Reaction
+  reaction: Reaction,
+  username?: string
 ): Message => {
   if (message.id !== reaction.message_id) {
     return message
   }
 
-  const isMine = reaction.client_id === username
+  const isMine = reaction.created_by === username
 
   const { mine, latest, counts } = message.reactions ?? {
     mine: [],

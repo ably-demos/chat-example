@@ -44,7 +44,7 @@ export default React.memo(function ReactionButton({
           <SmileIcon className="size-5 text-gray-400" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px] p-0" {...popoverPositionProps}>
+      <PopoverContent className="z-10 w-[350px] p-0" {...popoverPositionProps}>
         <ReactionPicker onSelect={handleSelect} />
       </PopoverContent>
     </Popover>

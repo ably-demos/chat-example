@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { Message } from "@ably-labs/chat"
-import { Types } from "ably/promises"
 import { sortBy } from "underscore"
 
 import { botConfig } from "../../config/bots"

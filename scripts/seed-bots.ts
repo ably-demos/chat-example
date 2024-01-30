@@ -60,17 +60,8 @@ const getRandomBot = (bots: Bot[]) => {
   return bots[randomIndex]
 }
 
-const getTokenDetails = (
-  { clientId }: Types.TokenParams,
-  callback: AuthCallback,
-  bots: Bot[]
-) => {
-  const bot = bots.find(({ clientId: botId }) => botId === clientId)
-
-  if (!bot) {
-    return callback(`No bot found, ${clientId}`, null)
-  }
-
+const getTokenDetails = (callback: AuthCallback, bots: Bot[]) => {
+  const bot = getRandomBot(bots)
   console.log("Using token details for ", bot.clientId)
 
   try {
@@ -91,9 +82,6 @@ const main = async (config: BotConfig) => {
     key: process.env.ABLY_API_KEY,
     restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
     realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
-    /**
-     * @see https://ably.com/docs/auth/token?lang=javascript#auth-callback
-     */
   })
 
   const bots: Bot[] = await Promise.all(
@@ -106,33 +94,42 @@ const main = async (config: BotConfig) => {
 
     for (let i = 0; i < messageCount; i++) {
       const bot = getRandomBot(bots)
-      const client = new Realtime({
-        restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
-        realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
-        useTokenAuth: true,
-        ...bot,
-      })
-
-      console.log("Using token details for", bot)
-      const chat = new Chat(client)
-      const conversation = await getConversation(channelName, chat)
-      const message = generateMessage()
-      // console.log("reandom bot", bot)
-      // console.log("Previous client id", client.clientId)
-      console.log(`Sending message ${message} as ${bot.clientId}`)
-      debugger
-      const result = await conversation.messages.send(message)
-      console.log(result)
-      client.close()
+      sendMessage(bots, channelName)
+      console.info(`Sent message ${i + 1} of ${messageCount}`)
       await sleep(1000)
     }
   } catch (error) {
     console.error(error)
+    throw new Error("Failed to seed bots")
   }
 
   console.info("Closing client...")
 
   process.exit(0)
+}
+
+const sendMessage = async (bots: Bot[], channelName: string) => {
+  let client: Realtime
+  try {
+    const client = new Realtime({
+      restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+      realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+      /**
+       * @see https://ably.com/docs/auth/token?lang=javascript#auth-callback
+       */
+      authCallback: (_, callback) => getTokenDetails(callback, bots),
+    })
+    const chat = new Chat(client)
+    const conversation = await getConversation(channelName, chat)
+    const message = generateMessage()
+
+    console.log("Sending message", message)
+    return conversation.messages
+      .send(message)
+      .finally(() => chat.connection.close())
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 main(botConfig)
@@ -161,16 +158,4 @@ const destroy = async (config: BotConfig) => {
   process.exit(0)
 }
 
-// destroy(botConfig)
-// const getBotChats = async (
-//   bots: string[],
-//   channelName: string,
-//   client: Realtime
-// ) => {
-//   return Promise.all(
-//     bots.map(async (bot: string) => {
-//       return new Chat(client)
-//     })
-//   )
-// }
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))

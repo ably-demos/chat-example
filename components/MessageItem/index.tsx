@@ -3,6 +3,7 @@ import { Message } from "@ably-labs/chat"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { Laugh, Pencil, Reply, StarIcon, Trash2 } from "lucide-react"
+import { areEqual } from "react-window"
 
 /**
  * Hooks
@@ -44,8 +45,9 @@ const hasReactions = (message: Message) => {
   )
 }
 
-type MessageItemProps = {
+export type MessageItemProps = {
   message: Message
+  style: React.CSSProperties
   username: string
   onEdit: (messageId: string, content: string) => void
   onDelete: (messageId: string) => void
@@ -55,9 +57,10 @@ type MessageItemProps = {
 
 const MessageItem = ({
   message,
+  style,
+  username,
   onEdit,
   onDelete,
-  username,
   onAddReaction,
   onRemoveReaction,
 }: MessageItemProps) => {
@@ -73,6 +76,15 @@ const MessageItem = ({
   const showReactions = hasReactions(message)
   const color = getUserColor(message.created_by)
   const isUsersMessage = message?.created_by === username
+  const reactions = message.reactions ?? {}
+  reactions
+
+  const handleAddReaction = useCallback(
+    (reaction: string) => {
+      onAddReaction(message.id, reaction)
+    },
+    [message.id, onAddReaction]
+  )
 
   return (
     <Popover open={open}>
@@ -91,8 +103,10 @@ const MessageItem = ({
           {showReactions ? (
             <MessageReactions
               message={message}
-              onAdd={() => {}}
-              onRemove={() => {}}
+              onAdd={(reaction) => onAddReaction(message.id, reaction)}
+              onRemove={(reactionId) =>
+                onRemoveReaction(message.id, reactionId)
+              }
               onAddClick={handleOpenPicker}
             />
           ) : null}
@@ -150,15 +164,10 @@ const MessageItem = ({
         </TooltipContent>
       </Tooltip>
       <PopoverContent className="w-[350px] p-0" ref={itemRef}>
-        <ReactionPicker
-          onSelect={(reaction) => {
-            console.log("SELECTED REACTION", reaction)
-            onAddReaction(message.id, reaction)
-          }}
-        />
+        <ReactionPicker onSelect={handleAddReaction} />
       </PopoverContent>
     </Popover>
   )
 }
 
-export default memo(MessageItem)
+export default memo(MessageItem, areEqual)

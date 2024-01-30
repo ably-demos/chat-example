@@ -1,4 +1,4 @@
-import { use, useCallback, useEffect, useState } from "react"
+import { use, useCallback, useEffect, useMemo, useState } from "react"
 import {
   ConversationController as Conversation,
   Message,
@@ -12,7 +12,7 @@ import { create, sortBy, uniq } from "underscore"
 import { botConfig } from "@/config/bots"
 import { mapFromDelete, mapFromUpdate } from "@/lib/reaction"
 
-import { useBots } from "./useBots"
+import { useChat } from "./useChat"
 import { useConversation } from "./useConversation"
 
 /**
@@ -75,16 +75,15 @@ export const useReactionEvent = (
  *   sendMessage,
  *   editMessage,
  *   deleteMessage,
- * } = useMessage(username)
- *
+ * } = useMessagesWrapped(conversationId, username)
  */
-const useMessagesWrapped = (username: string) => {
+const useMessagesWrapped = (channelName: string, username?: string) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [pageCursor, setPageCursor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   // REVIEW
-  const conversation = useConversation()
+  const conversation = useConversation(channelName)
 
   useEffect(() => {
     setIsLoading(true)
@@ -93,7 +92,7 @@ const useMessagesWrapped = (username: string) => {
     const initMessages = async () => {
       const lastMessages = await conversation.messages.query({
         // REVIEW It would be good to be able to query for messages from/to a given time
-        limit: 10,
+        limit: 200,
         // REVIEW, startId is not working as expected.
         ...(pageCursor && { startId: pageCursor }),
       })
@@ -101,14 +100,14 @@ const useMessagesWrapped = (username: string) => {
         setIsLoading(false)
         setMessages((prevMessages) =>
           sortBy(
-            [...lastMessages, ...prevMessages],
+            uniq([...lastMessages, ...prevMessages], ({ id }) => id),
             ({ created_at }) => created_at
           )
         )
       }
     }
 
-    setMessages([])
+    // setMessages([])
     setPageCursor(null)
     initMessages()
 
@@ -126,9 +125,7 @@ const useMessagesWrapped = (username: string) => {
   const handleUpdate: MessageListener = useCallback(({ message: updated }) => {
     setMessages((prevMessage) =>
       prevMessage.map((message) =>
-        message.id !== updated.id
-          ? message
-          : { ...updated, reactions: message.reactions }
+        message.id !== updated.id ? message : updated
       )
     )
   }, [])
@@ -142,8 +139,9 @@ const useMessagesWrapped = (username: string) => {
   const handleReactionAdd: ReactionListener = useCallback(
     ({ reaction }) => {
       console.log("NEW REACTION", reaction)
+      debugger
       setMessages((prevMessage) =>
-        prevMessage.map((message) => mapFromUpdate(username, message, reaction))
+        prevMessage.map((message) => mapFromUpdate(message, reaction, username))
       )
     },
     [username]
@@ -152,7 +150,7 @@ const useMessagesWrapped = (username: string) => {
   const handleReactionDelete: ReactionListener = useCallback(
     ({ reaction }) => {
       setMessages((prevMessage) =>
-        prevMessage.map((message) => mapFromDelete(username, message, reaction))
+        prevMessage.map((message) => mapFromDelete(message, reaction, username))
       )
     },
     [username]
@@ -161,7 +159,7 @@ const useMessagesWrapped = (username: string) => {
   useMessageEvent(conversation, MessageEvents.created, handleAdd)
   useMessageEvent(conversation, MessageEvents.edited, handleUpdate)
   useMessageEvent(conversation, MessageEvents.deleted, handleDelete)
-  useReactionEvent(conversation, ReactionEvents.added, handleReactionAdd)
+  useReactionEvent(conversation, ReactionEvents.created, handleReactionAdd)
   useReactionEvent(conversation, ReactionEvents.deleted, handleReactionDelete)
 
   const sendMessage = useCallback(
@@ -189,7 +187,7 @@ const useMessagesWrapped = (username: string) => {
     (messageId: string, type: string) => {
       conversation.messages.addReaction(messageId, type)
     },
-    [conversation]
+    [conversation.messages]
   )
 
   const removeReaction = useCallback(
@@ -211,17 +209,20 @@ const useMessagesWrapped = (username: string) => {
 const WITH_BOTS = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
 
 export const useMessages = (username: string) => {
-  const {
-    isLoading,
-    messages,
-    editMessage,
-    sendMessage,
-    deleteMessage,
-    addReaction: addReactionWrapped,
-    removeReaction: removeReactionWrapped,
-  } = useMessagesWrapped(username)
+  const { conversationId } = useChat()
 
-  const botConversation = useConversation(botConfig.channelName)
+  const userConversation = useMessagesWrapped(conversationId, username)
+  const botConversation = useMessagesWrapped(botConfig.channelName)
+
+  console.log("botConversation", botConversation)
+  const messages = useMemo(() => {
+    return WITH_BOTS
+      ? sortBy(
+          [...userConversation.messages, ...botConversation.messages],
+          ({ created_at }) => created_at
+        )
+      : userConversation.messages
+  }, [botConversation.messages, userConversation.messages])
 
   const addReaction = useCallback(
     (messageId: string, type: string) => {
@@ -230,32 +231,30 @@ export const useMessages = (username: string) => {
         WITH_BOTS &&
         message?.created_by.startsWith(botConfig.usernamePrefix)
       ) {
-        botConversation.messages.addReaction(messageId, type)
+        botConversation.addReaction(messageId, type)
       } else {
-        addReactionWrapped(messageId, type)
+        userConversation.addReaction(messageId, type)
       }
     },
-    [addReactionWrapped, botConversation.messages, messages]
+    [botConversation, messages, userConversation]
   )
 
   const removeReaction = useCallback(
     (messageId: string, reactionId: string) => {
       const message = messages.find(({ id }) => id === messageId)
       if (WITH_BOTS && message?.conversation_id === botConfig.channelName) {
-        botConversation.messages.removeReaction(reactionId)
+        botConversation.removeReaction(reactionId)
       } else {
-        removeReactionWrapped(reactionId)
+        userConversation.removeReaction(reactionId)
       }
     },
-    [botConversation.messages, messages, removeReactionWrapped]
+    [botConversation, messages, userConversation]
   )
 
   return {
-    isLoading,
+    ...userConversation,
     messages,
-    editMessage,
-    sendMessage,
-    deleteMessage,
+    isLoading: userConversation.isLoading || botConversation.isLoading,
     addReaction,
     removeReaction,
   }

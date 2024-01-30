@@ -38,12 +38,14 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
           fontSans.variable
         )}
       >
-        <TooltipProvider>
-          <div className="flex size-full h-screen max-h-screen flex-col">
-            <PageHeader />
-            <SessionProvider>{children}</SessionProvider>
-          </div>
-        </TooltipProvider>
+        <SessionProvider>
+          <TooltipProvider>
+            <div className="flex size-full h-screen flex-col">
+              <PageHeader />
+              {children}
+            </div>
+          </TooltipProvider>
+        </SessionProvider>
         <ActiveBreakpoint />
         <Analytics />
         <SpeedInsights />
