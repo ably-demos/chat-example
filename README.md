@@ -15,17 +15,15 @@ A Fullstack Chat Application, showing some of the ways that tj
 
 ### Getting Started
 
-> Note: The conversations package hasn't been published on npm, as at the t
-
-```bash
-git clone git@github.com:ably-demos/chat-example.git
-npm i
-cp .env.template .env
-```
-
-### Local Development
+> Note: The conversations package hasn't been published on npm, and is currently being included via the packages directory.
 
 #### Setup
+
+First
+
+```bash
+cp .env.template .env
+```
 
 ```bash
 git clone https://github.com/ably-demos/chat-example
@@ -34,19 +32,25 @@ npm run db:start # You can skip this if you have a local postgres server
 npm run db:seed
 ```
 
-### Running
+#### Running
 
 ```bash
 npm run dev
 ```
 
-### Building
+#### Building
 
 ```bash
 npm run build
 ```
 
-# Deploying to Vercel
+#### Updating Conversations
+
+```bash
+npm run update:chat
+```
+
+### Deploying to Vercel
 
 Prequisites:
 
@@ -72,10 +76,12 @@ vercel link --yes
 
 3. Update the PRISMA_POSTGRES_URL, with the newly created environment variable with the same name
 
-```
+```bash
 vercel # Will deploy to dev
 vercel --prod # Fairly obvious, it will deploy to you guessed it, prod.
 ```
+
+Alternatively, if you're using github - add the [vercel git integration](https://vercel.com/docs/deployments/git/vercel-for-github).
 
 Known Issues:
 
