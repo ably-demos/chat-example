@@ -26,6 +26,8 @@
     "format:write": "prettier --write \"**/*.{ts,tsx,mdx}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,mdx}\" --cache",
     "update:chat": "./scripts/update-chat.sh",
+    "db:start": "./scripts/db/start",
+    "db:seed": "npx prisma db seed",
     "prepare": "husky install"
   },
   "dependencies": {

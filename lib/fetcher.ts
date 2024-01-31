@@ -19,12 +19,12 @@ export async function fetchJson<JSON = unknown>(
   })
 
   if (!res.ok) {
+    // Attach extra info to the error object.
     const error = new SWRError(
       "An error occurred while fetching the data.",
       res.status
     )
 
-    // Attach extra info to the error object.
     console.trace(error)
     try {
       console.error(await res.text())
