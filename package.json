@@ -1,17 +1,20 @@
 {
-  "name": "reference-app",
+  "name": "example-chat",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "keywords": [
     "ably",
+    "sdk",
     "chat",
     "chat ui",
     "chat-app",
+    "example",
     "nextjs",
+    "react",
+    "shadcn",
     "typescript",
     "tailwindcss",
-    "react",
     "prisma",
     "vercel"
   ],
