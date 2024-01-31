@@ -1,4 +1,4 @@
-import { use, useCallback, useEffect, useMemo, useState } from "react"
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   ConversationController as Conversation,
   Message,
@@ -7,11 +7,13 @@ import {
   type MessageListener,
   type ReactionListener,
 } from "@ably-labs/chat"
+import { set } from "cypress/types/lodash"
 import { create, sortBy, uniq } from "underscore"
 
 import { botConfig } from "@/config/bots"
 import { mapFromDelete, mapFromUpdate } from "@/lib/reaction"
 
+import { useBots } from "./useBots"
 import { useChat } from "./useChat"
 import { useConversation } from "./useConversation"
 
@@ -79,42 +81,43 @@ export const useReactionEvent = (
  */
 const useMessagesWrapped = (channelName: string, username?: string) => {
   const [messages, setMessages] = useState<Message[]>([])
-  const [pageCursor, setPageCursor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  // REVIEW
+  const pageCursor = useRef<string | null>(null)
   const conversation = useConversation(channelName)
+
+  useEffect(() => {
+    setMessages([])
+  }, [channelName])
 
   useEffect(() => {
     setIsLoading(true)
 
     let mounted = true
     const initMessages = async () => {
-      const lastMessages = await conversation.messages.query({
+      const nextMessages = await conversation.messages.query({
         // REVIEW It would be good to be able to query for messages from/to a given time
         limit: 200,
+        direction: "backwards",
         // REVIEW, startId is not working as expected.
-        ...(pageCursor && { startId: pageCursor }),
+        ...(pageCursor.current && { startId: pageCursor.current }),
       })
       if (mounted) {
         setIsLoading(false)
+        pageCursor.current = nextMessages.at(-1)?.id ?? null
         setMessages((prevMessages) =>
-          sortBy(
-            uniq([...lastMessages, ...prevMessages], ({ id }) => id),
-            ({ created_at }) => created_at
-          )
+          uniq([...nextMessages, ...prevMessages], ({ id }) => id)
         )
       }
     }
 
-    // setMessages([])
-    setPageCursor(null)
+    pageCursor.current = null
     initMessages()
 
     return () => {
       mounted = false
     }
-  }, [conversation, pageCursor, username])
+  }, [conversation, username])
 
   const handleAdd: MessageListener = useCallback(({ message }) => {
     setMessages((prevMessage) =>
@@ -138,8 +141,6 @@ const useMessagesWrapped = (channelName: string, username?: string) => {
 
   const handleReactionAdd: ReactionListener = useCallback(
     ({ reaction }) => {
-      console.log("NEW REACTION", reaction)
-      debugger
       setMessages((prevMessage) =>
         prevMessage.map((message) => mapFromUpdate(message, reaction, username))
       )
@@ -196,6 +197,7 @@ const useMessagesWrapped = (channelName: string, username?: string) => {
     },
     [conversation]
   )
+
   return {
     isLoading,
     messages,
@@ -206,22 +208,26 @@ const useMessagesWrapped = (channelName: string, username?: string) => {
     removeReaction,
   }
 }
+
 const WITH_BOTS = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
 
 export const useMessages = (username: string) => {
   const { conversationId } = useChat()
 
   const userConversation = useMessagesWrapped(conversationId, username)
-  const botConversation = useMessagesWrapped(botConfig.channelName)
+  const botConversation = useBots(
+    botConfig,
+    userConversation?.messages?.[0]?.created_at
+  )
 
   console.log("botConversation", botConversation)
   const messages = useMemo(() => {
-    return WITH_BOTS
-      ? sortBy(
-          [...userConversation.messages, ...botConversation.messages],
-          ({ created_at }) => created_at
-        )
-      : userConversation.messages
+    return uniq(
+      userConversation.messages.concat(
+        WITH_BOTS ? botConversation.messages : []
+      ),
+      ({ id }) => id
+    )
   }, [botConversation.messages, userConversation.messages])
 
   const addReaction = useCallback(
@@ -253,9 +259,9 @@ export const useMessages = (username: string) => {
 
   return {
     ...userConversation,
-    messages,
-    isLoading: userConversation.isLoading || botConversation.isLoading,
     addReaction,
     removeReaction,
+    messages,
+    isLoading: userConversation.isLoading || botConversation.isLoading,
   }
 }

@@ -19,13 +19,17 @@ export const useAblyClient = (username: Maybe<string>) => {
           restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
           realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
         })
-      : undefined
+      : null
   }, [username])
 
   useEffect(() => {
-    console.debug("Opening Ably client connection")
     return () => {
-      console.debug("Closing Ably client connection")
+      // if (
+      //   client?.connection.state === "connected" ||
+      //   client?.connection.state === "connecting"
+      // ) {
+      //   client.close()
+      // }
     }
   }, [client])
 

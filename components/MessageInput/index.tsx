@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button"
 import { Form, FormDescription, FormField } from "@/components/ui/form"
 
 import MessageInputField from "./MessageInputField"
-import ReactionSelect from "./ReactionSelect"
 
 type Props = {
   defaultValue: string | null
@@ -40,7 +39,6 @@ const MessageInput = React.memo(function MessagInputInner({
     mode: "onChange",
   })
 
-  const contentState = form.getFieldState("content")
   const contentValue = form.watch("content")
 
   const handleSubmit = useCallback(
@@ -59,8 +57,6 @@ const MessageInput = React.memo(function MessagInputInner({
   const handleAddReaction = useCallback(
     (emoji: string) => {
       const fieldValue = contentValue
-      console.log("emoji", emoji)
-      console.log("fieldValue", fieldValue)
       form.setValue("content", `${fieldValue}${getReactionFromCode(emoji)}`)
     },
     [contentValue, form]

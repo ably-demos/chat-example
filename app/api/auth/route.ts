@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
 
   const token = await ably.auth.createTokenRequest({
     clientId: session.username,
+    // REVIEW: The capabilities seem to be changing daily, and they're not documented.
     // capability: {
     //   "conversations:*": [
     //     "publish",

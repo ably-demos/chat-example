@@ -1,9 +1,10 @@
-import React from 'react'
-import MessageInput from './index'
+import React from "react"
 
-describe('<MessageInput />', () => {
-  it('renders', () => {
+import MessageInput from "./index"
+
+describe("<MessageInput />", () => {
+  it("renders", () => {
     // see: https://on.cypress.io/mounting-react
-    cy.mount(<MessageInput />)
+    cy.mount(<MessageInput defaultValue={""} onSubmit={() => {}} />)
   })
 })

@@ -45,9 +45,8 @@ export const useChannel = (name: string | null) => {
     }
   }, [channel?.id, name, create, isLoading])
 
-  return useMemo(() => ({ channel, error, isLoading }), [
-    channel,
-    error,
-    isLoading,
-  ])
+  return useMemo(
+    () => ({ channel, error, isLoading }),
+    [channel, error, isLoading]
+  )
 }

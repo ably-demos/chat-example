@@ -1,48 +1,84 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { Message } from "@ably-labs/chat"
-import { sortBy } from "underscore"
+import { set } from "cypress/types/lodash"
+import { sortBy, uniq } from "underscore"
 
-import { botConfig } from "../../config/bots"
+import { BotConfig, botConfig } from "../../config/bots"
+import { useInterval } from "../useInterval"
 import { useConversation } from "./useConversation"
 
-const sortByCreated = (messages: Message[]) => {
-  return sortBy(messages, ({ created_at }) => created_at)
-}
+const BOT_INTERVAL = 2000
 
-export const useBots = (setMessages: Dispatch<SetStateAction<Message[]>>) => {
-  const [pageCursor, setPageCursor] = useState<string | null>(null)
+export const useBots = (botConfig: BotConfig, startTime?: number) => {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const pageCursor = useRef<string | null>(null)
   const conversation = useConversation(botConfig.channelName)
 
   useEffect(() => {
-    let mounted = true
+    setMessages([])
+  }, [botConfig.channelName])
+
+  useInterval(() => {
+    if (!startTime) return
+
     const initMessages = async () => {
       const nextMessages = await conversation.messages.query({
-        limit: 2,
-        // REVIEW
-        ...(pageCursor && { startId: pageCursor }),
+        limit: 1,
+        direction: "backwards",
+        ...(pageCursor.current && { startId: pageCursor.current }),
       })
-      if (mounted) {
-        /**
-         * Filter messages by bot username prefix or members of the users conversation
-         */
+      setIsLoading(false)
 
-        let lastItem = nextMessages.at(-1)
-        if (lastItem?.id) {
-          setPageCursor(lastItem.id)
-        }
+      pageCursor.current = nextMessages.at(-1)?.id ?? null
+      const adjustedMessages = nextMessages.map((message, index) =>
+        updateMessageTime(message, index, startTime)
+      )
 
-        setMessages((prevMessages) =>
-          sortByCreated([...prevMessages, ...nextMessages])
-        )
-      }
+      setMessages((prevMessages) =>
+        uniq([...prevMessages, ...adjustedMessages], ({ id }) => id)
+      )
     }
-    setPageCursor(null)
+
     initMessages()
+  }, BOT_INTERVAL)
+  const addReaction = useCallback(
+    (messageId: string, type: string) => {
+      conversation.messages.addReaction(messageId, type)
+    },
+    [conversation.messages]
+  )
 
-    return () => {
-      mounted = false
-    }
-  }, [conversation, pageCursor, setMessages])
+  const removeReaction = useCallback(
+    (reactionId: string) => {
+      conversation.messages.removeReaction(reactionId)
+    },
+    [conversation]
+  )
 
-  return null
+  return {
+    messages,
+    isLoading,
+    removeReaction,
+    addReaction,
+  }
+}
+
+const updateMessageTime = (
+  message: Message,
+  index: number,
+  startTime: number
+): Message => {
+  return {
+    ...message,
+    created_at: startTime + index * BOT_INTERVAL,
+  }
 }

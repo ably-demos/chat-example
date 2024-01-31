@@ -21,6 +21,7 @@ export const metadata: Metadata = {
     template: `%s - ${appConfig.name}`,
   },
   description: appConfig.description,
+  // TODO: Change this to an env variable
   metadataBase: new URL("https://chat-app.ably.com"),
 }
 

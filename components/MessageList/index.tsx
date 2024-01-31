@@ -1,9 +1,9 @@
 "use client"
 
-import React, { CSSProperties, useMemo, useRef } from "react"
+import React, { CSSProperties, memo, useMemo, useRef } from "react"
 import { Message } from "@ably-labs/chat"
 import AutoSizer from "react-virtualized-auto-sizer"
-import { VariableSizeList } from "react-window"
+import { areEqual, VariableSizeList } from "react-window"
 
 import MessageItem, { MessageItemProps } from "../MessageItem"
 import Spinner from "../Spinner"
@@ -27,18 +27,18 @@ const MessageList = ({
   onAddReaction,
   onRemoveReaction,
 }: MessageListProps) => {
-  const messageListRef = useRef<VariableSizeList<Message[]>>(null)
-
   const itemData = useMemo(
     () => ({
+      username,
       messages,
       onEdit,
       onDelete,
       onAddReaction,
       onRemoveReaction,
     }),
-    [messages, onAddReaction, onDelete, onEdit, onRemoveReaction]
+    [messages, onAddReaction, onDelete, onEdit, onRemoveReaction, username]
   )
+
   if (loading) return <Spinner />
 
   return (
@@ -51,7 +51,6 @@ const MessageList = ({
           itemKey={(index) => messages[index].id}
           height={height}
           width={width}
-          ref={messageListRef}
           outerElementType={"ol"}
         >
           {MessageRow}
@@ -60,10 +59,11 @@ const MessageList = ({
     </AutoSizer>
   )
 }
-const MessageRow = ({
+
+const MessageRow = memo(function MessageRowInner({
   data: {
     username,
-    message,
+    messages,
     onEdit,
     onDelete,
     onAddReaction,
@@ -72,22 +72,24 @@ const MessageRow = ({
   style,
   index,
 }: {
-  data: MessageItemProps
+  data: { messages: Message[] } & Omit<MessageItemProps, "message" | "style">
   style: CSSProperties
   index: number
-}) => (
-  <MessageItem
-    username={username}
-    message={messages[index]}
-    style={style}
-    onEdit={onEdit}
-    onDelete={onDelete}
-    onAddReaction={onAddReaction}
-    onRemoveReaction={onRemoveReaction}
-  />
-)
+}) {
+  return (
+    <MessageItem
+      username={username}
+      message={messages[index]}
+      style={style}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      onAddReaction={onAddReaction}
+      onRemoveReaction={onRemoveReaction}
+    />
+  )
+}, areEqual)
 
-/* Needs some work doesn't take into account glyph width */
+/* Needs some work, assumes monospaced glyphs */
 const getItemSize = (message: Message, width: number) => {
   return (
     Math.ceil(

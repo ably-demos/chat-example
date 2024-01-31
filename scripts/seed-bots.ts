@@ -14,12 +14,9 @@ invariant(process.env.ABLY_API_KEY, "ABLY_API_KEY is required")
 const getConversation = async (conversationId: string, chat: Chat) => {
   const conversation = chat.conversations.get(conversationId)
 
-  return conversation
-}
-
-const createConversation = async (conversation: Conversation) => {
-  console.info("Creating conversation...")
   await conversation.create()
+
+  return conversation
 }
 
 const assertEmptyConversation = async (conversation: Conversation) => {
@@ -89,11 +86,9 @@ const main = async (config: BotConfig) => {
   )
 
   try {
-    // await createConversation(conversation)
     // await assertEmptyConversation(conversation)
 
     for (let i = 0; i < messageCount; i++) {
-      const bot = getRandomBot(bots)
       sendMessage(bots, channelName)
       console.info(`Sent message ${i + 1} of ${messageCount}`)
       await sleep(1000)
@@ -109,7 +104,6 @@ const main = async (config: BotConfig) => {
 }
 
 const sendMessage = async (bots: Bot[], channelName: string) => {
-  let client: Realtime
   try {
     const client = new Realtime({
       restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
@@ -119,14 +113,14 @@ const sendMessage = async (bots: Bot[], channelName: string) => {
        */
       authCallback: (_, callback) => getTokenDetails(callback, bots),
     })
+
     const chat = new Chat(client)
     const conversation = await getConversation(channelName, chat)
     const message = generateMessage()
 
     console.log("Sending message", message)
-    return conversation.messages
-      .send(message)
-      .finally(() => chat.connection.close())
+    await conversation.messages.send(message)
+    chat.connection.close()
   } catch (error) {
     console.error(error)
   }

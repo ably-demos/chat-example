@@ -76,8 +76,6 @@ const MessageItem = ({
   const showReactions = hasReactions(message)
   const color = getUserColor(message.created_by)
   const isUsersMessage = message?.created_by === username
-  const reactions = message.reactions ?? {}
-  reactions
 
   const handleAddReaction = useCallback(
     (reaction: string) => {
@@ -89,7 +87,7 @@ const MessageItem = ({
   return (
     <Popover open={open}>
       <Tooltip>
-        <li className="w-full" ref={itemRef}>
+        <li className="w-full" style={style} ref={itemRef}>
           <TooltipTrigger asChild>
             <PopoverAnchor asChild>
               <p className="space-x-3 rounded-sm px-2 py-1 leading-6 hover:bg-muted">
@@ -170,4 +168,4 @@ const MessageItem = ({
   )
 }
 
-export default memo(MessageItem, areEqual)
+export default MessageItem

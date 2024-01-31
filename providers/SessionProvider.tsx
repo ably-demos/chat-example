@@ -39,7 +39,12 @@ export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
     [session?.username]
   )
 
-  if (isLoading || !isValidSession(context)) return <Spinner />
+  if (isLoading || !isValidSession(context))
+    return (
+      <div className="flex size-full">
+        <Spinner />
+      </div>
+    )
 
   return (
     <SessionContext.Provider value={context}>

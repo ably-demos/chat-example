@@ -9,7 +9,8 @@ const EmojiPicker = ({ onSelect }: EmojiPickerProps) => {
       onEmojiClick={({ unified: charCode }) => onSelect(charCode)}
       skinTonesDisabled
       suggestedEmojisMode={SuggestionMode.RECENT}
-      width={"350px"}
+      lazyLoadEmojis
+      width="350px"
     />
   )
 }
