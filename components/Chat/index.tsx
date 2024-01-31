@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react"
 
-import { useBots } from "@/hooks/chat/useBots"
 import { useChat } from "@/hooks/chat/useChat"
 import { useMessages } from "@/hooks/chat/useMessages"
 import { useSession } from "@/hooks/useSession"
