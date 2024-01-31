@@ -91,7 +91,7 @@ export const useMessages = (channelName: string, username?: string) => {
     const initMessages = async () => {
       const nextMessages = await conversation.messages.query({
         limit: 200,
-        direction: "backwards",
+        direction: "forwards",
         ...(pageCursor.current && { startId: pageCursor.current }),
       })
       if (mounted) {

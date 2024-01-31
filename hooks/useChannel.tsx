@@ -38,7 +38,6 @@ export const useChannel = (name: string | null) => {
     if (isLoading || channel?.id) return
 
     if (isValidChannel(name)) {
-      console.debug("Creating channel", name)
       create()
     } else {
       redirect("/")

@@ -4,9 +4,6 @@ import prisma from "@/lib/prisma"
 import { getSession, SessionData } from "@/lib/session"
 import { createUser, generateUsername } from "@/app/controllers/user"
 
-// TODO: handle user && channel cleanup on new session.destroy
-
-// read session
 export async function GET() {
   const session = await getSession()
 
@@ -16,11 +13,11 @@ export async function GET() {
 
   let user = null
   try {
-     user = await prisma.user.findUnique({
+    user = await prisma.user.findUnique({
       where: { username: session.username },
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 
   if (!user) {

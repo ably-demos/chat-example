@@ -33,3 +33,26 @@ npm run build
 ```bash
 ABLY_API_KEY= // This can be found on your https://ably.com
 ```
+
+# Deploying a New Instance
+
+Prequisites:
+
+- A vercel account
+
+```bash
+git clone https://
+vercel link
+```
+
+Add Postgres Storage with default values
+
+Add Env vars from the template
+
+```bash
+vercel env pull .env.development.local
+```
+
+```
+vercel  deploy
+```

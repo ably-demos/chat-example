@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { faker } from "@faker-js/faker"
 import { Rest } from "ably/promises"
@@ -11,13 +13,14 @@ const generateBot = (prefix: string) =>
   faker.internet.userName({ firstName: prefix })
 
 const BOTS_ENABLED = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
+const BOT_INTERVAL = 5000
 
 export const useBots = (channelName?: string) => {
   const [clientId, setClientId] = useState(generateBot(botConfig.idPrefix))
 
   useInterval(() => {
     setClientId(generateBot(botConfig.idPrefix))
-  }, 5000)
+  }, BOT_INTERVAL)
 
   useEffect(() => {
     if (!BOTS_ENABLED && channelName) return

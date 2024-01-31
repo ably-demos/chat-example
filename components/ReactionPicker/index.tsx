@@ -1,19 +1,14 @@
-import ReactReactionPicker, {
-  SkinTones,
-  SuggestionMode,
-} from "emoji-picker-react"
+import data from "@emoji-mart/data"
+import Picker from "@emoji-mart/react"
 
 type ReactionPickerProps = { onSelect: (charCode: string) => void }
 
 const ReactionPicker = ({ onSelect }: ReactionPickerProps) => {
   return (
-    <ReactReactionPicker
-      defaultSkinTone={SkinTones.NEUTRAL}
-      onEmojiClick={({ unifiedWithoutSkinTone: charCode }) =>
-        onSelect(charCode)
-      }
-      skinTonesDisabled
-      width={"350px"}
+    <Picker
+      data={data}
+      theme="light"
+      onEmojiSelect={({ unified }: { unified: string }) => onSelect(unified)}
     />
   )
 }

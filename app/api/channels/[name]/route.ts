@@ -26,11 +26,15 @@ export async function GET(
 ): Promise<NextResponse<Channel>> {
   const session = await getSession()
 
-  const { users, ...channel } = await getChannel(name, session.username)
+  try {
+    const { users, ...channel } = await getChannel(name, session.username)
 
-  if (!users.length) {
-    await addUserToChannel(name, session.username)
+    if (!users.length) {
+      await addUserToChannel(name, session.username)
+    }
+
+    return NextResponse.json(channel)
+  } catch (error) {
+    return new NextResponse(null, { status: 404 })
   }
-
-  return NextResponse.json(channel)
 }

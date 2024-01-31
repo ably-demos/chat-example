@@ -25,6 +25,7 @@ export async function fetchJson<JSON = unknown>(
     )
 
     // Attach extra info to the error object.
+    console.trace(error)
     try {
       console.error(await res.text())
     } catch (e) {

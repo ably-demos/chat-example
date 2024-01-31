@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     clientId = clientIdParam
   }
 
-  if (!clientId) {
-    return Response.json({ error: "No client ID provided" }, { status: 400 })
+  if (!session.username) {
+    return Response.redirect("/")
   }
 
   const ably = new Rest.Promise({
@@ -25,9 +25,9 @@ export async function GET(request: NextRequest) {
   })
 
   const token = await ably.auth.createTokenRequest({
-    clientId: clientId,
+    clientId,
     capability: {
-      "conversations:*": ["publish", "subscribe", "presence"],
+      "conversations:*": ["*" as "subscribe"],
       "[conversation]*": ["*" as "subscribe"],
     },
   })

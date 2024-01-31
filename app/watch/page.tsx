@@ -25,8 +25,8 @@ const Watch = () => {
 
   const { video, isLoading: isVideoLoading } = useVideo()
   const { session } = useSession()
-
   const { channel, isLoading: isChannelLoading } = useChannel(channelParam)
+
   useBots(channel?.name)
 
   const client = useAblyClient(session?.username)

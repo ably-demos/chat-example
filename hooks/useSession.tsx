@@ -16,6 +16,9 @@ const doCreate = (url: string) => {
   })
 }
 
+/**
+ * @returns The current session for the closest SessionProvider
+ */
 export const useSession = () => {
   const { data, ...getSession } = useSWR(
     sessionApiRoute,

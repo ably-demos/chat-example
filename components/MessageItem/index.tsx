@@ -1,9 +1,8 @@
-import { memo, useCallback, useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { Message } from "@ably-labs/chat"
 import { PopoverContent } from "@radix-ui/react-popover"
 import { ToggleGroup, ToggleGroupItem } from "@radix-ui/react-toggle-group"
 import { Laugh, Pencil, Reply, StarIcon, Trash2 } from "lucide-react"
-import { areEqual } from "react-window"
 
 /**
  * Hooks
