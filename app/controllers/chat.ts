@@ -1,5 +1,5 @@
 import { Chat } from "@ably-labs/chat"
-import { Realtime, Rest } from "ably/promises"
+import { Realtime } from "ably/promises"
 
 export const getChatClient = async () => {
   const client = new Realtime({

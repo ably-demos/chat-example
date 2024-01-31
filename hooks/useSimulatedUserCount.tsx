@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useInterval } from "./useInterval"
 
 const increaseUserCount = (count: number) => {
-  return Math.ceil(count * (1 + (Math.random() /10)))
+  return Math.ceil(count * (1 + Math.random() / 10))
 }
 
 const decreaseUserCount = (count: number) => {

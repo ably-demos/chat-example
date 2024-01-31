@@ -4,10 +4,10 @@
 
 - Ably Chat SDK
 - Next.js 14 App Directory
-- Radix UI Primitives
+- Prisma
+- Radix UI Primitives / Shadcn
 - Tailwind CSS
 - Icons from [Lucide](https://lucide.dev)
-- Tailwind CSS class sorting, merging and linting.
 
 ## Usage
 
@@ -22,6 +22,8 @@ npm run dev
 ```bash
 npm run build
 ```
+
+Deploying to vercel
 
 # Things to note
 

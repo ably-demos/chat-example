@@ -3,9 +3,21 @@ import { Rest } from "ably"
 
 import { getSession } from "@/lib/session"
 
+const BOTS_ENABLED = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
+
 export async function GET(request: NextRequest) {
   const session = await getSession()
-  console.error(request.nextUrl.searchParams.get("clientId"))
+  const clientIdParam = request.nextUrl.searchParams.get("clientId")
+  let clientId = session.username
+
+  if (BOTS_ENABLED && clientIdParam) {
+    clientId = clientIdParam
+  }
+
+  if (!clientId) {
+    return Response.json({ error: "No client ID provided" }, { status: 400 })
+  }
+
   const ably = new Rest.Promise({
     key: process.env.ABLY_API_KEY!,
     restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
@@ -13,25 +25,11 @@ export async function GET(request: NextRequest) {
   })
 
   const token = await ably.auth.createTokenRequest({
-    clientId: session.username,
-    // REVIEW: The capabilities seem to be changing daily, and they're not documented.
-    // capability: {
-    //   "conversations:*": [
-    //     "publish",
-    //     "subscribe",
-    //     "presence",
-    //     "create" as "subscribe",
-    //     "delete" as "subscribe",
-    //   ],
-    //   "[conversation]*": [
-    //     "publish",
-    //     "subscribe",
-    //     "presence",
-    //     "history",
-    //     "create" as "subscribe",
-    //     "delete" as "subscribe",
-    //   ],
-    // },
+    clientId: clientId,
+    capability: {
+      "conversations:*": ["publish", "subscribe", "presence"],
+      "[conversation]*": ["*" as "subscribe"],
+    },
   })
 
   return Response.json(token)

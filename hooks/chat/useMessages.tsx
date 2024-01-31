@@ -1,4 +1,4 @@
-import { use, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { use, useCallback, useEffect, useRef, useState } from "react"
 import {
   ConversationController as Conversation,
   Message,
@@ -7,14 +7,10 @@ import {
   type MessageListener,
   type ReactionListener,
 } from "@ably-labs/chat"
-import { set } from "cypress/types/lodash"
-import { create, sortBy, uniq } from "underscore"
+import { uniq } from "underscore"
 
-import { botConfig } from "@/config/bots"
 import { mapFromDelete, mapFromUpdate } from "@/lib/reaction"
 
-import { useBots } from "./useBots"
-import { useChat } from "./useChat"
 import { useConversation } from "./useConversation"
 
 /**
@@ -79,7 +75,7 @@ export const useReactionEvent = (
  *   deleteMessage,
  * } = useMessagesWrapped(conversationId, username)
  */
-const useMessagesWrapped = (channelName: string, username?: string) => {
+export const useMessages = (channelName: string, username?: string) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -91,15 +87,11 @@ const useMessagesWrapped = (channelName: string, username?: string) => {
   }, [channelName])
 
   useEffect(() => {
-    setIsLoading(true)
-
     let mounted = true
     const initMessages = async () => {
       const nextMessages = await conversation.messages.query({
-        // REVIEW It would be good to be able to query for messages from/to a given time
         limit: 200,
         direction: "backwards",
-        // REVIEW, startId is not working as expected.
         ...(pageCursor.current && { startId: pageCursor.current }),
       })
       if (mounted) {
@@ -112,6 +104,7 @@ const useMessagesWrapped = (channelName: string, username?: string) => {
     }
 
     pageCursor.current = null
+    setIsLoading(true)
     initMessages()
 
     return () => {
@@ -206,62 +199,5 @@ const useMessagesWrapped = (channelName: string, username?: string) => {
     deleteMessage,
     addReaction,
     removeReaction,
-  }
-}
-
-const WITH_BOTS = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
-
-export const useMessages = (username: string) => {
-  const { conversationId } = useChat()
-
-  const userConversation = useMessagesWrapped(conversationId, username)
-  const botConversation = useBots(
-    botConfig,
-    userConversation?.messages?.[0]?.created_at
-  )
-
-  console.log("botConversation", botConversation)
-  const messages = useMemo(() => {
-    return uniq(
-      userConversation.messages.concat(
-        WITH_BOTS ? botConversation.messages : []
-      ),
-      ({ id }) => id
-    )
-  }, [botConversation.messages, userConversation.messages])
-
-  const addReaction = useCallback(
-    (messageId: string, type: string) => {
-      const message = messages.find(({ id }) => id === messageId)
-      if (
-        WITH_BOTS &&
-        message?.created_by.startsWith(botConfig.usernamePrefix)
-      ) {
-        botConversation.addReaction(messageId, type)
-      } else {
-        userConversation.addReaction(messageId, type)
-      }
-    },
-    [botConversation, messages, userConversation]
-  )
-
-  const removeReaction = useCallback(
-    (messageId: string, reactionId: string) => {
-      const message = messages.find(({ id }) => id === messageId)
-      if (WITH_BOTS && message?.conversation_id === botConfig.channelName) {
-        botConversation.removeReaction(reactionId)
-      } else {
-        userConversation.removeReaction(reactionId)
-      }
-    },
-    [botConversation, messages, userConversation]
-  )
-
-  return {
-    ...userConversation,
-    addReaction,
-    removeReaction,
-    messages,
-    isLoading: userConversation.isLoading || botConversation.isLoading,
   }
 }

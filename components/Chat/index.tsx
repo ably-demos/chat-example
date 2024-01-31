@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from "react"
 
+import { useBots } from "@/hooks/chat/useBots"
+import { useChat } from "@/hooks/chat/useChat"
 import { useMessages } from "@/hooks/chat/useMessages"
 import { useSession } from "@/hooks/useSession"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -13,9 +15,10 @@ import ChatHeader from "./ChatHeader"
 type ChatProps = {}
 
 // TODO: Review: Editing setup & useChat vs useConversation
-const Chat = (props: ChatProps) => {
+const Chat = (_props: ChatProps) => {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState<string>("")
+  const { conversationId } = useChat()
 
   const { session } = useSession()
 
@@ -27,8 +30,7 @@ const Chat = (props: ChatProps) => {
     sendMessage,
     editMessage,
     deleteMessage,
-  } = useMessages(session?.username!)
-  console.log("messages", messages)
+  } = useMessages(conversationId, session?.username)
 
   const handleSend = useCallback(
     (content: string) => {

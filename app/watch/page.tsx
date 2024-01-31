@@ -5,6 +5,7 @@ import ChatProvider from "@/providers/ChatProvider"
 import { AblyProvider } from "ably/react"
 
 import { useAblyClient } from "@/hooks/chat/useAblyClient"
+import { useBots } from "@/hooks/chat/useBots"
 /**
  * Hooks
  */
@@ -22,12 +23,11 @@ const Watch = () => {
   const searchParams = useSearchParams()
   const channelParam = searchParams.get("channel")
 
-  // TODO: Clean up channel id's/params
-
   const { video, isLoading: isVideoLoading } = useVideo()
   const { session } = useSession()
 
   const { channel, isLoading: isChannelLoading } = useChannel(channelParam)
+  useBots(channel?.name)
 
   const client = useAblyClient(session?.username)
 

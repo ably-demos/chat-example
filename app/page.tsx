@@ -8,7 +8,7 @@ import { useSession } from "@/hooks/useSession"
 import Spinner from "@/components/Spinner"
 
 export default function IndexPage() {
-  const { session, isLoading, createSession } = useSession()
+  const { session, isLoading } = useSession()
   const searchParams = useSearchParams()
 
   const channelName = searchParams.get("channel")
@@ -16,13 +16,7 @@ export default function IndexPage() {
   const [channel, setChannel] = useState(channelName)
 
   useEffect(() => {
-    if (!session?.username && !isLoading) {
-      createSession()
-    }
-  }, [createSession, isLoading, session?.username])
-
-  useEffect(() => {
-    if (!session?.username) return
+    if (!session?.username || isLoading) return
 
     if (!isValidChannel(channel)) {
       const name = generateChannelName()
@@ -31,7 +25,7 @@ export default function IndexPage() {
     } else {
       redirect(`/watch?channel=${channel}`)
     }
-  }, [channel, session?.username])
+  }, [channel, isLoading, session?.username])
 
   return (
     <section className="container grid items-center justify-center gap-6 pb-8 pt-6 md:py-10">

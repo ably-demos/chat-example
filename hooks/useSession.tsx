@@ -29,9 +29,9 @@ export const useSession = () => {
   useEffect(() => {
     if (
       !data?.username &&
+      !getSession.isLoading &&
       getSession.error &&
-      getSession.error.status === 404 &&
-      !getSession.isLoading
+      getSession.error.status === 404
     ) {
       create()
     }

@@ -32,7 +32,7 @@ const isValidSession = (
  * </SessionProvider>
  */
 export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
-  const { session, isLoading, error } = useSession()
+  const { session, isLoading } = useSession()
 
   const context = useMemo(
     () => ({ username: session?.username }),

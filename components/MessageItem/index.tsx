@@ -47,7 +47,6 @@ const hasReactions = (message: Message) => {
 
 export type MessageItemProps = {
   message: Message
-  style: React.CSSProperties
   username: string
   onEdit: (messageId: string, content: string) => void
   onDelete: (messageId: string) => void
@@ -57,7 +56,6 @@ export type MessageItemProps = {
 
 const MessageItem = ({
   message,
-  style,
   username,
   onEdit,
   onDelete,
@@ -87,7 +85,7 @@ const MessageItem = ({
   return (
     <Popover open={open}>
       <Tooltip>
-        <li className="w-full" style={style} ref={itemRef}>
+        <li className="w-full" ref={itemRef}>
           <TooltipTrigger asChild>
             <PopoverAnchor asChild>
               <p className="space-x-3 rounded-sm px-2 py-1 leading-6 hover:bg-muted">

@@ -1,84 +1,38 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
-import { Message } from "@ably-labs/chat"
-import { set } from "cypress/types/lodash"
-import { sortBy, uniq } from "underscore"
+import { useEffect, useState } from "react"
+import { faker } from "@faker-js/faker"
+import { Rest } from "ably/promises"
 
-import { BotConfig, botConfig } from "../../config/bots"
+import { botConfig } from "@/config/bots"
+import { generateMessage } from "@/lib/bot"
+
 import { useInterval } from "../useInterval"
-import { useConversation } from "./useConversation"
 
-const BOT_INTERVAL = 2000
+const generateBot = (prefix: string) =>
+  faker.internet.userName({ firstName: prefix })
 
-export const useBots = (botConfig: BotConfig, startTime?: number) => {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+const BOTS_ENABLED = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
 
-  const pageCursor = useRef<string | null>(null)
-  const conversation = useConversation(botConfig.channelName)
-
-  useEffect(() => {
-    setMessages([])
-  }, [botConfig.channelName])
+export const useBots = (channelName?: string) => {
+  const [clientId, setClientId] = useState(generateBot(botConfig.idPrefix))
 
   useInterval(() => {
-    if (!startTime) return
+    setClientId(generateBot(botConfig.idPrefix))
+  }, 5000)
 
-    const initMessages = async () => {
-      const nextMessages = await conversation.messages.query({
-        limit: 1,
-        direction: "backwards",
-        ...(pageCursor.current && { startId: pageCursor.current }),
-      })
-      setIsLoading(false)
+  useEffect(() => {
+    if (!BOTS_ENABLED && channelName) return
+    const client = new Rest({
+      authUrl: "/api/auth",
+      restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+      realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+      clientId,
+    })
 
-      pageCursor.current = nextMessages.at(-1)?.id ?? null
-      const adjustedMessages = nextMessages.map((message, index) =>
-        updateMessageTime(message, index, startTime)
-      )
-
-      setMessages((prevMessages) =>
-        uniq([...prevMessages, ...adjustedMessages], ({ id }) => id)
-      )
-    }
-
-    initMessages()
-  }, BOT_INTERVAL)
-  const addReaction = useCallback(
-    (messageId: string, type: string) => {
-      conversation.messages.addReaction(messageId, type)
-    },
-    [conversation.messages]
-  )
-
-  const removeReaction = useCallback(
-    (reactionId: string) => {
-      conversation.messages.removeReaction(reactionId)
-    },
-    [conversation]
-  )
-
-  return {
-    messages,
-    isLoading,
-    removeReaction,
-    addReaction,
-  }
-}
-
-const updateMessageTime = (
-  message: Message,
-  index: number,
-  startTime: number
-): Message => {
-  return {
-    ...message,
-    created_at: startTime + index * BOT_INTERVAL,
-  }
+    client.request(
+      "POST",
+      `/conversations/v1/conversations/${channelName}/messages`,
+      {},
+      { content: generateMessage() }
+    )
+  })
 }
