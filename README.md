@@ -92,9 +92,18 @@ vercel --prod # Fairly obvious, it will deploy to you guessed it, prod.
 
 Alternatively, if you're using github - add the [vercel git integration](https://vercel.com/docs/deployments/git/vercel-for-github).
 
+# BOTS
+
+They are setup to run out of the scope of the usual message flow, aside from the pollution in the network logs, they should be relatively obfuscated.
+
+The Bots are controlled by two variables,
+
+1. `NEXT_PUBLIC_WITH_BOTS` setting this to true will enable the bots
+2. A const variable `BOT_INTERVAL` determines the frequency of the message posting.
+
 ## Postgres
 
-This app, to show an end to end experience, uses postgres as it's db.
+This app - to show an end to end experience - uses postgres as it's db.
 
 The scripts to run/create the postgres container can be found in scripts/db.
 
