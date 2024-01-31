@@ -4,7 +4,7 @@
 
 - Ably Chat SDK
 - Next.js 14 App Directory
-- Prisma
+- Prisma | SQLite
 - Radix UI Primitives / Shadcn
 - Tailwind CSS
 - Icons from [Lucide](https://lucide.dev)
@@ -22,8 +22,6 @@ npm run dev
 ```bash
 npm run build
 ```
-
-Deploying to vercel
 
 # Things to note
 
