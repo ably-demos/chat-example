@@ -7,15 +7,15 @@ import { ChatContext } from "@/providers/ChatProvider"
  * const {} = useChatContext()
  */
 export const useChat = () => {
-  const { client, conversationId, conversation } = useContext(ChatContext) ?? {}
+  const { chatClient, roomId, room } = useContext(ChatContext) ?? {}
 
-  if (!client) throw new Error("Chat is not setup")
-  if (!conversation) throw new Error("Conversation is not set")
-  if (!conversationId) throw new Error("No conversationId is set")
+  if (!chatClient) throw new Error("Chat client is not setup")
+  if (!room) throw new Error("Room is not set")
+  if (!roomId) throw new Error("No roomId is set")
 
   return {
-    client,
-    conversationId,
-    conversation,
+    chatClient,
+    roomId,
+    room,
   }
 }

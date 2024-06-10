@@ -7,35 +7,24 @@ type Props = {
   views: number
   username: string
   avatar: string
-  subscribers: number
 }
 
-const VideoDetail = ({
-  title,
-  views,
-  username,
-  avatar,
-  subscribers,
-}: Props) => {
+const VideoDetail = ({ title, views, username, avatar }: Props) => {
   return (
     <>
       <div className="my-4 flex w-full justify-between">
         <h1 className="text-[20px]">{title}</h1>
         <div className="hidden space-x-4 md:inline-flex">
           <p className="inline-flex space-x-2.5 font-semibold text-red">
-            <UserIcon size={22} /> 
+            <UserIcon size={22} />
             <span>{views}</span>
-          </p>
-          <p className="inline-flex space-x-2.5 font-semibold">
-            <Clock10Icon />
-            <span>01:20:13</span>
           </p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
         <div className="relative w-14 rounded-full border border-red p-1">
           <Avatar className="size-14">
-            <AvatarImage src={avatar} alt="Image" className="rounded-full"/>
+            <AvatarImage src={avatar} alt="Image" className="rounded-full" />
             <AvatarFallback>
               {username.split(" ").map((item) => item.charAt(0))}
             </AvatarFallback>
@@ -48,9 +37,6 @@ const VideoDetail = ({
         </div>
         <div className="leading-normal">
           <p className="text-lg font-medium">{username}</p>
-          <p className="text-xs text-muted-foreground lg:text-base">
-            { subscribers.toLocaleString('en-US')} Subscribers
-          </p>
         </div>
       </div>
     </>

@@ -17,6 +17,9 @@ build
 .DS_Store
 *.pem
 
+# local ide files
+.idea
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -28,10 +31,11 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
-
+.env*.local
 # turbo
 .turbo
 
 .contentlayer
 .env
 .vercel
+/scripts/db/data/
