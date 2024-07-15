@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef } from "react"
 
 import { useChat } from "@/hooks/chat/useChat"
 import { useMessages } from "@/hooks/chat/useMessages"
@@ -13,39 +13,27 @@ import ChatHeader from "./ChatHeader"
 
 type ChatProps = {}
 
-// TODO: Review: Editing setup & useChat vs useConversation
 const Chat = (_props: ChatProps) => {
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-  const [inputValue, setInputValue] = useState<string>("")
-  const { conversationId } = useChat()
-
+  const { roomId } = useChat()
   const { session } = useSession()
-
-  const {
-    messages,
-    isLoading,
-    addReaction,
-    removeReaction,
-    sendMessage,
-    editMessage,
-    deleteMessage,
-  } = useMessages(conversationId, session?.username)
+  const messageListRef = useRef<HTMLDivElement>(null)
+  const { messages, isLoading, sendMessage } = useMessages(
+    roomId,
+    session?.username
+  )
 
   const handleSend = useCallback(
     (content: string) => {
-      if (editingMessageId) {
-        setEditingMessageId(null)
-        return editMessage(editingMessageId, content)
-      }
       return sendMessage(content)
     },
-    [editMessage, editingMessageId, sendMessage]
+    [sendMessage]
   )
 
-  const handleEditClick = useCallback((messageId: string, content: string) => {
-    setEditingMessageId(messageId)
-    setInputValue(content)
-  }, [])
+  useEffect(() => {
+    if (messageListRef.current) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight
+    }
+  }, [messages])
 
   return (
     <Card className="flex flex-col rounded-none border-t-0 md:size-full">
@@ -54,22 +42,13 @@ const Chat = (_props: ChatProps) => {
       </CardHeader>
       <CardContent className="h-0 min-h-0 flex-auto space-y-2 overflow-y-auto">
         <MessageList
+          ref={messageListRef}
           messages={messages}
           loading={isLoading}
           username={session?.username!}
-          onEdit={handleEditClick}
-          onDelete={deleteMessage}
-          onAddReaction={addReaction}
-          onRemoveReaction={removeReaction}
         />
+        <MessageInput onSubmit={handleSend} />
       </CardContent>
-      <CardFooter>
-        <MessageInput
-          key={editingMessageId}
-          defaultValue={inputValue}
-          onSubmit={handleSend}
-        />
-      </CardFooter>
     </Card>
   )
 }

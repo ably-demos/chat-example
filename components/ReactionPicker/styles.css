@@ -1,7 +1,0 @@
-:root {
-  .ReactionPickerReact.epr-dark-theme {
-    --epr-bg-color: hsl(var(--popover));
-    --epr-category-label-bg-color: hsl(var(--popover));
-    --epr-search-input-bg-color: hsl(var(--popover));
-  }
-}

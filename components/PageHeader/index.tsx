@@ -5,6 +5,8 @@ import { ExternalLink } from "lucide-react"
 import appConfig from "@/config/app"
 import { Button } from "@/components/ui/button"
 
+import styles from "./PageHeader.module.css"
+
 const PageHeader = () => {
   const { name } = appConfig
   return (
@@ -17,18 +19,32 @@ const PageHeader = () => {
           {name}
         </Link>
         <div className="flex items-center justify-end space-x-6">
-          <div className="inline-flex items-center space-x-2 text-sm">
+          <div className="relative inline-flex items-center space-x-2 text-sm">
             <InfoCircledIcon />
-            <span>How to try this demo</span>
+            <span className={styles["hover-target"]}>How to try this demo</span>
+            <div className={styles["hidden-text-box"]}>
+              Open this page in multiple windows or share the URL with your team
+              to try out the live app.
+            </div>
           </div>
           <Button asChild variant={"secondary"}>
-            <Link href="#" className="items-center space-x-2">
+            <Link
+              href="https://ably.com/docs/products/chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="items-center space-x-2"
+            >
               <span>Chat Docs</span>
               <ExternalLink size={15} />
             </Link>
           </Button>
           <Button asChild>
-            <Link href="https://ably.com/sign-up">Sign Up</Link>
+            <Link
+              target="_blank"
+              href="https://github.com/ably-demos/chat-example"
+            >
+              Github
+            </Link>
           </Button>
         </div>
       </nav>

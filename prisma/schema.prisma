@@ -1,51 +1,42 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  url      = env("POSTGRES_PRISMA_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Videos   Video[]
-  Channels Channel[] @relation(name: "users")
-
-  username    String @unique
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  username    String   @unique
   avatar      String
-  subscribers Int    @default(0)
+  subscribers Int      @default(0)
+  Videos      Video[]
+  Rooms       Room[]   @relation("users")
 }
 
 model Video {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  userId  Int
-  user    User      @relation(fields: [userId], references: [id])
-  Channel Channel[]
-
-  title String
-  live  Boolean @default(true)
-  url   String
-  views Int     @default(0)
+  userId    Int
+  title     String
+  live      Boolean  @default(true)
+  url       String
+  views     Int      @default(0)
+  Rooms     Room[]
+  user      User     @relation(fields: [userId], references: [id])
 }
 
-model Channel {
+model Room {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  users   User[] @relation(name: "users")
-  video   Video  @relation(fields: [videoId], references: [id])
-  videoId Int
-
-  name String @unique
+  videoId   Int
+  name      String   @unique
+  video     Video    @relation(fields: [videoId], references: [id])
+  users     User[]   @relation("users")
 }

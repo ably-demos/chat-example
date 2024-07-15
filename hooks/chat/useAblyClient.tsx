@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { Maybe } from "@/types"
-import { Realtime } from "ably/promises"
+import * as Ably from "ably"
 
 /**
  * @param username The name of the user
@@ -12,15 +12,13 @@ import { Realtime } from "ably/promises"
  * const client = useAblyClient(username)
  */
 export const useAblyClient = (username: Maybe<string>) => {
-  const client = useMemo(() => {
+  return useMemo(() => {
+    console.log("Getting a new client, do we have a username?", username)
     return username
-      ? new Realtime({
-          authUrl: "/api/auth",
-          restHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
-          realtimeHost: "eu-west-2-a.primary.chat.cluster.ably-nonprod.net",
+      ? new Ably.Realtime({
+          authUrl: `/api/auth?clientId=${username}`,
+          clientId: username,
         })
       : null
   }, [username])
-
-  return client
 }

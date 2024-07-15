@@ -1,11 +1,11 @@
 import { createContext, FC, ReactNode, useMemo } from "react"
-import { Chat, ConversationController as Conversation } from "@ably-labs/chat"
+import { ChatClient, Room, RoomOptionsDefaults } from "@ably/chat"
 import { useAbly } from "ably/react"
 
 interface ChatContextProps {
-  client: Chat
-  conversationId: string
-  conversation: Conversation
+  chatClient: ChatClient
+  roomId: string
+  room: Room
 }
 
 export const ChatContext = createContext<ChatContextProps | undefined>(
@@ -14,37 +14,37 @@ export const ChatContext = createContext<ChatContextProps | undefined>(
 
 interface ChatProviderProps {
   children: ReactNode
-  conversationId: string
+  roomId: string
 }
 
 /**
- * Initializes the Chat SDK and provides the Chat context, which includes the Chat SDK client and the current conversation.
+ * Initializes the Chat SDK and provides the Chat context, which includes the Chat SDK client and the current room.
  *
- * @param client Ably client
- * @param conversationId The ID of the conversation to join
+ * @param children The children to render
+ * @param roomId The ID of the room to join
  *
  * @returns children wrapped in a ChatContext.Provider
  * @example
  * <AblyProvider client={client}>
- *  <ChatProvider conversationId={conversationId}>
+ *  <ChatProvider roomId={roomId}>
  *   <Chat />
  *  </ChatProvider>
  * </AblyProvider>
  *
  **/
-const ChatProvider: FC<ChatProviderProps> = ({ children, conversationId }) => {
+const ChatProvider: FC<ChatProviderProps> = ({ children, roomId }) => {
   const ablyClient = useAbly()
 
   const context = useMemo(() => {
-    const client = new Chat(ablyClient)
-    const conversation = client.conversations.get(conversationId)
+    const chatClient = new ChatClient(ablyClient)
+    const room = chatClient.rooms.get(roomId, RoomOptionsDefaults)
     return {
-      client,
-      conversationId: conversationId,
-      conversation: conversation,
+      chatClient: chatClient,
+      roomId: roomId,
+      room: room,
       messages: [],
     }
-  }, [ablyClient, conversationId])
+  }, [ablyClient, roomId])
 
   return <ChatContext.Provider value={context}>{children}</ChatContext.Provider>
 }

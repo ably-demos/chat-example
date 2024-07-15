@@ -1,0 +1,5 @@
+/* MessageList.module.css */
+.MessageList {
+    overflow-y: auto;
+    height: 500px; /* or any appropriate height */
+}

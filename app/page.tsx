@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { redirect, useSearchParams } from "next/navigation"
 
-import { generateChannelName, isValidChannel } from "@/lib/channel"
+import { generateRoomName, isValidRoom } from "@/lib/room"
 import { useSession } from "@/hooks/useSession"
 import Spinner from "@/components/Spinner"
 
@@ -11,21 +11,22 @@ export default function IndexPage() {
   const { session, isLoading } = useSession()
   const searchParams = useSearchParams()
 
-  const channelName = searchParams.get("channel")
+  const roomName = searchParams.get("room")
 
-  const [channel, setChannel] = useState(channelName)
+  const [room, setRoom] = useState(roomName)
 
   useEffect(() => {
     if (!session?.username || isLoading) return
 
-    if (!isValidChannel(channel)) {
-      const name = generateChannelName()
-
-      setChannel(name)
+    // We will redirect to the watch page if the room is valid
+    if (!isValidRoom(room)) {
+      // See if we have a default room name else grab a random room name
+      const name = process.env.NEXT_PUBLIC_DEFAULT_ROOM || generateRoomName()
+      setRoom(name)
     } else {
-      redirect(`/watch?channel=${channel}`)
+      redirect(`/watch?room=${room}`)
     }
-  }, [channel, isLoading, session?.username])
+  }, [room, isLoading, session?.username])
 
   return (
     <section className="container grid items-center justify-center gap-6 pb-8 pt-6 md:py-10">

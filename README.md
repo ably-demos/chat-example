@@ -1,67 +1,78 @@
-# Ably Chat Demo
+# Ably Livestream Chat Demo
 
-A Fullstack Chat Application, showing some of the ways that chat can be implemented in a project using the ably chat sdk
+A fullstack chat application demonstrating some of the features of the Ably Chat SDK. It uses:
 
-## Features
+* [`rooms`](https://ably.com/docs/chat/rooms) and [`messages`](https://ably.com/docs/chat/rooms/messages) for users to send and subscribe to chat messages, and [`history`](https://ably.com/docs/chat/rooms/history) to retrieve those that have been previously sent.
+* [`reactions`](https://ably.com/docs/chat/rooms/reactions) to enable users to send and receive room-level reactions.
+* [`occupancy`](https://ably.com/docs/chat/rooms/occupancy) to show the number of users connected to the room.
+* [`presence`](https://ably.com/docs/chat/rooms/presence) to synchronize video playback between users.
+* Postgres to demonstrate storing [`room`](https://ably.com/docs/chat/rooms) and user data.
 
-- Ably Chat SDK
-- Next.js 14 App Directory
-- Prisma | Postgres
-- Radix UI Primitives / Shadcn
-- Tailwind CSS
+> Note: some elements of this application are purely for demonstration purposes, such as the video sync any chat bots.
+
+## Built with
+
+- [Ably Chat SDK](https://github.com/ably/ably-chat-js)
+- [Next.js](https://nextjs.org/) 14 App Directory
+- [Prisma](https://www.prisma.io/) | [Postgres](https://www.postgresql.org/) for database storage and ORM
+- [Radix UI Primitives](https://www.radix-ui.com/primitives) / [Shadcn](https://ui.shadcn.com/) for the UI components
+- [Tailwind CSS](https://tailwindcss.com/)
 - Icons from [Lucide](https://lucide.dev)
 
 ## Usage
 
-### Getting Started
+The application is hosted on [Vercel](https://vercel.com/) and available to view at [ably-livestream-chat-demo.vercel.app](https://ably-livestream-chat-demo.vercel.app). You can also run the application locally.
 
-> Note: The conversations package hasn't been published on npm, and is currently being included via the packages directory.
+### Local setup
 
-#### Setup
-
-Firstly, copy the env template and populate the values, a brief description of each can be found in comments in the `.env.template`
+Firstly, copy the env template to `.env` and populate the values, a brief description of each can be found in comments in the `.env.template`
 
 ```bash
 cp .env.template .env
 ```
-
-> Update the values before seeding, as some of the env variables are required by the seed scripts
+Install the dependencies and build the application:
 
 ```bash
 npm install
-npm run db:start # You can skip this if you have a local postgres server
+```
+
+#### Database setup
+
+This application uses Prisma and Postgres.
+For local development, you need to ensure you have [Docker](https://www.docker.com/) installed.
+There is a script that will spin up a Postgres container for you.
+Run it from the root directory:
+
+```bash
+/scripts/db/start
+```
+
+With the container running, you can now run the migrations and seed the database.
+Ensure you have set `POSTGRES_PRISMA_URL` in the `.env` file. This should be `postgres://default:S3cret@localhost:5432/chat_db` providing
+you have not changed the default Docker file values.
+
+```bash
+npm run db:migrate
 npm run db:seed
 ```
 
 #### Running
 
-```bash
-npm run dev
-```
-
-#### Building
+Build and run the development server to run locally:
 
 ```bash
 npm run build
+npm run dev
 ```
 
-#### Updating Conversations
+The app will be available at [http://localhost:3000](http://localhost:3000).
+If you head to the URL, your chat application should redirect you to a new room with a unique ID. You can copy this URL
+and paste it into a separate browser, or use inPrivate browsing to simulate a second user in the room.
 
-Make sure the conversations repo is present, and a sibling of this one
 
-The following steps should do this for you
+### Deploy to Vercel
 
-```bash
-pushd .
-cd ..
-git clone git@github.com:ably-labs/conversations.git
-popd
-npm run update:chat
-```
-
-### Deploying to Vercel
-
-Prequisites:
+Prerequisites:
 
 - A Vercel account
 - An Ably account
@@ -83,35 +94,32 @@ vercel link --yes
      - This will provision a remote postgres instance
      - You can use this instance for both dev and showcasing
 
-3. Update the PRISMA_POSTGRES_URL, with the newly created environment variable with the same name
+3. Update the `PRISMA_POSTGRES_URL`, with the newly created environment variable using the same name.
+
+4. Run the database migrations and seed the database:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+5. Deploy the application:
 
 ```bash
 vercel # Will deploy to dev
 vercel --prod # Fairly obvious, it will deploy to you guessed it, prod.
 ```
 
-Alternatively, if you're using github - add the [vercel git integration](https://vercel.com/docs/deployments/git/vercel-for-github).
+Alternatively, if you're using GitHub - add the [Vercel Git integration](https://vercel.com/docs/deployments/git/vercel-for-github).
 
-# BOTS
+## Bots
 
-They are setup to run out of the scope of the usual message flow, aside from the pollution in the network logs, they should be relatively obfuscated.
+The bots in the application are controlled by environment variables.
+These can be set in the `.env` file.
+A new realtime connection is acquired for each bot.
+This is to demonstrate the behaviour of occupancy which counts the number of connections in a room.
 
-The Bots are controlled by two variables,
-
-1. `NEXT_PUBLIC_WITH_BOTS` setting this to true will enable the bots
-2. A const variable `BOT_INTERVAL` determines the frequency of the message posting.
-
-## Postgres
-
-This app - to show an end to end experience - uses postgres as it's db.
-
-The scripts to run/create the postgres container can be found in scripts/db.
-
----
-
-Known Issues:
-
-- Message Reactions not being returned from the server
-- Message Reactions returning the wrong count.
-- Remove local ably conversations package after it's been published to npm
-  - Then remove scripts/update-chat.sh
+1. `NEXT_PUBLIC_WITH_BOTS` set to `true` to enable the bots.
+2. `NEXT_PUBLIC_BOT_INTERVAL` set to a number to determine how often the bots will send a message.
+3. `NEXT_PUBLIC_BOT_COUNT` set to a number to determine how many bots are spawned.
+4. `NEXT_PUBLIC_BOT_PUBLISHER_PROBABILITY` set to a number to determine how many of the bots will publish messages.

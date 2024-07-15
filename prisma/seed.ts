@@ -8,14 +8,14 @@ dotenv.config()
 const prisma = new PrismaClient()
 
 const seed = async () => {
-  const username = "Sport News"
+  const username = "Streaming Now"
 
   const user = await createUser(username, "/images/avatar.png", 855721)
 
   const video = await prisma.video.create({
     data: {
-      title: "Teddy Makes a Cut Upfield - American Football",
-      url: "/videos/green_bay_minnesota.mp4",
+      title: "International Basketball Playoffs",
+      url: "https://cdn.ably.com/chat/basket_ball_international.mov",
       views: 928,
       user: {
         connect: {
@@ -25,7 +25,7 @@ const seed = async () => {
     },
   })
 
-  const channel = await prisma.channel.create({
+  const room = await prisma.room.create({
     data: {
       name: "default",
       video: {
@@ -36,7 +36,7 @@ const seed = async () => {
     },
   })
 
-  console.info(user, video, channel)
+  console.info(user, video, room)
 }
 
 seed()

@@ -1,49 +1,33 @@
 "use client"
 
-import React from "react"
-import { Message } from "@ably-labs/chat"
+import React, { forwardRef } from "react"
+import { Message } from "@ably/chat"
 
 import MessageItem from "../MessageItem"
 import Spinner from "../Spinner"
+import styles from "./MessageList.module.css"
 
 type MessageListProps = {
   username: string
   loading: boolean
   messages: Message[]
-  onEdit: (messageId: string, content: string) => void
-  onDelete: (messageId: string) => void
-  onAddReaction: (messageId: string, reaction: string) => void
-  onRemoveReaction: (messageId: string, reactionId: string) => void
 }
 
-const MessageList = ({
-  username,
-  loading,
-  messages,
-  onEdit,
-  onDelete,
-  onAddReaction,
-  onRemoveReaction,
-}: MessageListProps) => {
-  if (loading) return <Spinner />
+const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
+  ({ username, loading, messages }, ref) => {
+    if (loading) return <Spinner />
+    return (
+      <div ref={ref} className={styles["MessageList"]}>
+        <ol>
+          {messages.map((message) => (
+            <MessageItem key={message.timeserial} message={message} />
+          ))}
+        </ol>
+      </div>
+    )
+  }
+)
 
-  return (
-    <ol>
-      {messages.map((message) => {
-        return (
-          <MessageItem
-            key={message.id}
-            username={username}
-            message={message}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onAddReaction={onAddReaction}
-            onRemoveReaction={onRemoveReaction}
-          />
-        )
-      })}
-    </ol>
-  )
-}
+MessageList.displayName = "MessageList"
 
 export default MessageList

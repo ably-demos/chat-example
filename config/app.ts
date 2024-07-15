@@ -1,5 +1,5 @@
 export const app = {
-  name: "Livestream Demo",
+  name: "Ably Chat Demo",
   description:
     "Ably reference app built with Next.js, TypeScript, Radix UI, Tailwind CSS, and Prisma.",
 }
