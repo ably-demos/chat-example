@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useMemo } from "react"
+import {createContext, FC, ReactNode, useEffect, useMemo} from "react"
 import { ChatClient, Room, RoomOptionsDefaults } from "@ably/chat"
 import { useAbly } from "ably/react"
 
@@ -32,21 +32,27 @@ interface ChatProviderProps {
  * </AblyProvider>
  *
  **/
-const ChatProvider: FC<ChatProviderProps> = ({ children, roomId }) => {
-  const ablyClient = useAbly()
+const ChatProvider: FC<ChatProviderProps> = ({children, roomId}) => {
+  const ablyClient = useAbly();
 
   const context = useMemo(() => {
-    const chatClient = new ChatClient(ablyClient)
-    const room = chatClient.rooms.get(roomId, RoomOptionsDefaults)
+    const chatClient = new ChatClient(ablyClient);
+    const room = chatClient.rooms.get(roomId, RoomOptionsDefaults);
     return {
       chatClient: chatClient,
       roomId: roomId,
       room: room,
-      messages: [],
-    }
-  }, [ablyClient, roomId])
+    };
+  }, [ablyClient, roomId]);
 
-  return <ChatContext.Provider value={context}>{children}</ChatContext.Provider>
-}
+  useEffect(() => {
+    context.room.attach();
+    return () => {
+      context.room.detach();
+    };
+  }, [context.room]);
 
-export default ChatProvider
+  return <ChatContext.Provider value={context}>{children}</ChatContext.Provider>;
+};
+
+export default ChatProvider;
