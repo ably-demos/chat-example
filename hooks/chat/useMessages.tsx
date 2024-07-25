@@ -31,14 +31,14 @@ const combineMessages = (
  *   sendMessage,
  * } = useMessages(roomId, username)
  */
-export const useMessages = (roomId: string, username?: string) => {
+export const useMessages = (username?: string) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const room = useRoom(roomId)
+  const {room} = useRoom()
 
   useEffect(() => {
     setMessages([])
-  }, [roomId])
+  }, [room])
 
   useEffect(() => {
     // Set loading state to true when the effect is first run

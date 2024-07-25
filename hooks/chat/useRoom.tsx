@@ -1,20 +1,25 @@
-import { useMemo } from "react"
-import { Room, RoomOptionsDefaults } from "@ably/chat"
-
-import { useChat } from "./useChat"
+import {useContext, useLayoutEffect} from "react"
+import {RoomContext} from "@/providers/RoomProvider"
+import {Room} from "@ably/chat";
 
 /**
- * @returns The current chat for the closest ChatProvider
+ * @returns The current room for the closest RoomProvider
  * @example
- * const room = useRoom("my-room-name")
+ * const {room} = useRoom()
  */
-export const useRoom = (givenRoomId: string) => {
-  const { chatClient, roomId, room } = useChat()
+export const useRoom = (): { room: Room } => {
+  const {room} = useContext(RoomContext) ?? {}
+  if (!room) throw new Error("Room is not set")
+  useLayoutEffect(() => {
+    // Attach to the room. Starts all features of the room.
+    room.attach();
 
-  return useMemo<Room>(() => {
-    if (roomId && givenRoomId === roomId) {
-      return room
-    }
-    return chatClient.rooms.get(givenRoomId, RoomOptionsDefaults)
-  }, [chatClient.rooms, roomId, givenRoomId, room])
+    return () => {
+      // cleanup: detach the room. Stops all enabled features of the room.
+      room.detach();
+    };
+  }, [room]);
+  return {
+    room,
+  }
 }

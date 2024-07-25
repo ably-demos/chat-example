@@ -15,11 +15,12 @@ import { useRoom } from "./useRoom"
  *   sendRoomReaction
  * } = useRoomReactions(roomId, username)
  */
-export const useRoomReactions = (roomName: string, username?: string) => {
+export const useRoomReactions = (username?: string) => {
   const [latestRoomReaction, setLatestRoomReaction] = useState<Reaction>()
-  const room = useRoom(roomName)
+  const {room} = useRoom()
 
   useEffect(() => {
+    if (!room) return
     // Define the reaction listener that will handle incoming reactions
     const handleAddRoomReaction: RoomReactionListener = (reaction) => {
       if (reaction.isSelf) return
@@ -27,7 +28,6 @@ export const useRoomReactions = (roomName: string, username?: string) => {
     }
     // Subscribe to room reactions with the defined listener
     const { unsubscribe } = room.reactions.subscribe(handleAddRoomReaction)
-
     // Cleanup function to unsubscribe from room reactions and mark the component as unmounted
     return () => {
       unsubscribe()

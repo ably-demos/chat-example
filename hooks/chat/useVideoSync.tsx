@@ -1,8 +1,8 @@
 import { RefObject, useEffect, useRef, useState } from "react"
-import { PresenceListener } from "@ably/chat/src/Presence"
+import { PresenceListener } from "@ably/chat"
 import ReactPlayer from "react-player/file"
 
-import { useChat } from "@/hooks/chat/useChat"
+import { useRoom } from "@/hooks/chat/useRoom"
 import { useSession } from "@/hooks/useSession"
 
 /**
@@ -15,7 +15,7 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
   const [newSyncedTime, setNewSyncedTime] = useState(0)
   const [isLeader, setIsLeader] = useState(false)
   const [leader, setLeader] = useState<string>("")
-  const { room, roomId } = useChat()
+  const { room } = useRoom()
   const { session } = useSession()
   const hasJoinedPresence = useRef(false)
 
@@ -23,19 +23,19 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
     const storedLeaderData = localStorage.getItem("roomLeader")
     if (!storedLeaderData) return
     const { storedLeader, storedRoomId } = JSON.parse(storedLeaderData)
-    if (storedLeader === session?.username && storedRoomId === roomId) {
+    if (storedLeader === session?.username && storedRoomId === room.roomId) {
       setIsLeader(true)
       setLeader(storedLeader)
     }
-  }, [session?.username, roomId])
+  }, [session?.username, room.roomId])
 
   useEffect(() => {
-    if (!leader || !roomId) return
+    if (!leader || !room.roomId) return
     localStorage.setItem(
       "roomLeader",
-      JSON.stringify({ storedLeader: leader, storedRoomId: roomId })
+      JSON.stringify({ storedLeader: leader, storedRoomId: room.roomId })
     )
-  }, [leader, roomId])
+  }, [leader, room.roomId])
 
   useEffect(() => {
     if (!session?.username || !room) return

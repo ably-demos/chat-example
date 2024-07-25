@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import { OnProgressProps } from "react-player/base"
 import ReactPlayer from "react-player/file"
 
-import { useChat } from "@/hooks/chat/useChat"
+import { useRoom } from "@/hooks/chat/useRoom"
 import { useOccupancyCount } from "@/hooks/chat/useOccupancy"
 import { useRoomReactions } from "@/hooks/chat/useRoomReactions"
 import { useVideoSync } from "@/hooks/chat/useVideoSync"
@@ -41,10 +41,8 @@ const VideoContainer = ({
   const videoRef = useRef<ReactPlayer>(null)
   const [volume, setVolume] = useState<number>(0.5)
   const userCount = useOccupancyCount()
-  const { roomId } = useChat()
   const { session } = useSession()
   const { latestRoomReaction, sendRoomReaction } = useRoomReactions(
-    roomId,
     session?.username
   )
   const { newSyncedTime } = useVideoSync(videoRef)

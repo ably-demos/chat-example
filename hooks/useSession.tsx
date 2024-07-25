@@ -20,12 +20,16 @@ const doCreate = (url: string) => {
  * @returns The current session for the closest SessionProvider
  */
 export const useSession = () => {
-  const { data, ...getSession } = useSWR(
+  const { data, ...getSession } =
+    useSWR(
     sessionApiRoute,
     fetchJson<SessionData>
   )
 
-  const { trigger: create } = useSWRMutation(sessionApiRoute, (url) =>
+  const { trigger: create } =
+    useSWRMutation(
+      sessionApiRoute,
+      (url) =>
     doCreate(url)
   )
 

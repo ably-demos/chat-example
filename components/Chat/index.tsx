@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react"
 
-import { useChat } from "@/hooks/chat/useChat"
+import { useRoom } from "@/hooks/chat/useRoom"
 import { useMessages } from "@/hooks/chat/useMessages"
 import { useSession } from "@/hooks/useSession"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -14,11 +14,9 @@ import ChatHeader from "./ChatHeader"
 type ChatProps = {}
 
 const Chat = (_props: ChatProps) => {
-  const { roomId } = useChat()
   const { session } = useSession()
   const messageListRef = useRef<HTMLDivElement>(null)
   const { messages, isLoading, sendMessage } = useMessages(
-    roomId,
     session?.username
   )
 
