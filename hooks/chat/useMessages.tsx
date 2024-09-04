@@ -1,6 +1,6 @@
-import {useCallback, useEffect, useState} from "react"
-import {Message, type MessageListener} from "@ably/chat"
-import {useRoom} from "@ably/chat/react"
+import { useCallback, useEffect, useState } from "react"
+import { Message, type MessageListener } from "@ably/chat"
+import { useRoom } from "@ably/chat/react"
 
 /** When receiving new messages via subscription and history query, this function will combine them and remove dupes*/
 const combineMessages = (
@@ -32,7 +32,7 @@ const combineMessages = (
 export const useMessages = (username?: string) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const {room} = useRoom()
+  const { room } = useRoom()
 
   useEffect(() => {
     setMessages([])
@@ -43,19 +43,19 @@ export const useMessages = (username?: string) => {
     setIsLoading(true)
 
     // Define the message listener that will handle incoming messages
-    const handleAdd: MessageListener = ({message}) => {
+    const handleAdd: MessageListener = ({ message }) => {
       setMessages((prevMessages) => [...prevMessages, message])
     }
 
     // Subscribe to message events with the defined listener
-    const {unsubscribe, getPreviousMessages} =
+    const { unsubscribe, getPreviousMessages } =
       room.messages.subscribe(handleAdd)
     let isMounted = true
 
     // Fetches the initial set of messages and combines them with the existing messages
     const fetchInitialMessages = async () => {
       try {
-        const lastMessages = await getPreviousMessages({limit: 50})
+        const lastMessages = await getPreviousMessages({ limit: 50 })
         if (isMounted) {
           setMessages((prevMessages) =>
             combineMessages(prevMessages, lastMessages.items).reverse()
@@ -81,7 +81,7 @@ export const useMessages = (username?: string) => {
 
   const sendMessage = useCallback(
     (text: string) => {
-      room.messages.send({text: text})
+      room.messages.send({ text: text })
     },
     [room]
   )

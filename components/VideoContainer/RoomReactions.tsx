@@ -3,13 +3,13 @@ import { nanoid } from "nanoid"
 
 import "./styles.css"
 
-import { Reaction } from "@ably/chat"
+import { Reaction, SendReactionParams } from "@ably/chat"
 
 import FloatingReaction from "./FloatingReaction"
 import ReactionButton from "./ReactionButton"
 
 type RoomReactionProps = {
-  onClick: (emoji: string) => void
+  onClick: (params: SendReactionParams) => Promise<void>
   latestRoomReaction?: Reaction
 }
 
@@ -74,7 +74,13 @@ const RoomReactions = ({
   const handleAddReactionByUser = useCallback(
     (name: string) => {
       handleEmojiUpdate(name)
-      handleClick(reactions[name as keyof typeof reactions])
+      handleClick({ type: reactions[name as keyof typeof reactions] })
+        .then(() => {
+          console.log("Reaction sent")
+        })
+        .catch((error) => {
+          console.error("Error sending reaction", error)
+        })
     },
     [handleClick]
   )
