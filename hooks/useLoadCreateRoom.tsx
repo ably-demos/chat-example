@@ -18,10 +18,12 @@ function doCreate(url: string, body: { name: string | null }) {
 
 /**
  *
+ * This hook will fetch the {@link Room} from the database, if it doesn't exist it will create it.
+ *
  * @param name The name of the room
  * @returns room, error, isLoading
  */
-export const useRoom = (name: string | null) => {
+export const useLoadCreateRoom = (name: string | null) => {
   const cacheKey = name ? `${roomApiRoute}/${name}` : null
 
   const {

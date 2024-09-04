@@ -1,15 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
-import { OnProgressProps } from "react-player/base"
+import React, {useCallback, useEffect, useRef, useState} from "react"
+import {OnProgressProps} from "react-player/base"
 import ReactPlayer from "react-player/file"
 
-import { useChat } from "@/hooks/chat/useChat"
-import { useOccupancyCount } from "@/hooks/chat/useOccupancy"
-import { useRoomReactions } from "@/hooks/chat/useRoomReactions"
-import { useVideoSync } from "@/hooks/chat/useVideoSync"
-import { useSession } from "@/hooks/useSession"
+import {useOccupancyCount} from "@/hooks/chat/useOccupancy"
+import {useVideoSync} from "@/hooks/chat/useVideoSync"
 
 import VideoControls from "./VideoControls"
 import VideoDetail from "./VideoDetail"
+import {useRoomReactions} from "@/hooks/chat/useRoomReactions";
 
 type VideoContainerProps = {
   title: string
@@ -32,22 +30,17 @@ type VideoContainerProps = {
  * @returns {JSX.Element} The rendered component.
  */
 const VideoContainer = ({
-  live,
-  url,
-  title,
-  user,
-}: VideoContainerProps): JSX.Element => {
+                          live,
+                          url,
+                          title,
+                          user,
+                        }: VideoContainerProps): JSX.Element => {
   const [currentTime, setCurrentTime] = useState(0)
   const videoRef = useRef<ReactPlayer>(null)
   const [volume, setVolume] = useState<number>(0.5)
   const userCount = useOccupancyCount()
-  const { roomId } = useChat()
-  const { session } = useSession()
-  const { latestRoomReaction, sendRoomReaction } = useRoomReactions(
-    roomId,
-    session?.username
-  )
-  const { newSyncedTime } = useVideoSync(videoRef)
+  const {latestRoomReaction, sendRoomReaction} = useRoomReactions()
+  const {newSyncedTime} = useVideoSync(videoRef)
 
   // Retrieve the stored playback position from local storage on component mount
   useEffect(() => {

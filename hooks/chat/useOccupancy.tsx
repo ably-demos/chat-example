@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { OccupancyListener, Room } from "@ably/chat"
-
-import { useChat } from "@/hooks/chat/useChat"
+import { useRoom } from "@ably/chat/react"
 
 const useOccupancyEvent = (room: Room, cb: OccupancyListener) => {
   useEffect(() => {
@@ -19,7 +18,7 @@ const useOccupancyEvent = (room: Room, cb: OccupancyListener) => {
  */
 export const useOccupancyCount = () => {
   const [onlineUserCount, setOnlineUserCount] = useState(0)
-  const { room } = useChat()
+  const { room } = useRoom()
 
   const handleAdd: OccupancyListener = useCallback((event) => {
     setOnlineUserCount(event.connections)

@@ -1,9 +1,7 @@
 import { RefObject, useEffect, useRef, useState } from "react"
-import { PresenceListener } from "@ably/chat/src/Presence"
+import { PresenceListener } from "@ably/chat"
+import { useChatClient, useRoom } from "@ably/chat/react"
 import ReactPlayer from "react-player/file"
-
-import { useChat } from "@/hooks/chat/useChat"
-import { useSession } from "@/hooks/useSession"
 
 /**
  * Custom hook to synchronize video playback across multiple clients using Ably presence.
@@ -15,30 +13,30 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
   const [newSyncedTime, setNewSyncedTime] = useState(0)
   const [isLeader, setIsLeader] = useState(false)
   const [leader, setLeader] = useState<string>("")
-  const { room, roomId } = useChat()
-  const { session } = useSession()
+  const { room } = useRoom()
+  const { clientId } = useChatClient()
   const hasJoinedPresence = useRef(false)
 
   useEffect(() => {
     const storedLeaderData = localStorage.getItem("roomLeader")
     if (!storedLeaderData) return
     const { storedLeader, storedRoomId } = JSON.parse(storedLeaderData)
-    if (storedLeader === session?.username && storedRoomId === roomId) {
+    if (storedLeader === clientId && storedRoomId === room.roomId) {
       setIsLeader(true)
       setLeader(storedLeader)
     }
-  }, [session?.username, roomId])
+  }, [clientId, room.roomId])
 
   useEffect(() => {
-    if (!leader || !roomId) return
+    if (!leader || !room.roomId) return
     localStorage.setItem(
       "roomLeader",
-      JSON.stringify({ storedLeader: leader, storedRoomId: roomId })
+      JSON.stringify({ storedLeader: leader, storedRoomId: room.roomId })
     )
-  }, [leader, roomId])
+  }, [leader, room.roomId])
 
   useEffect(() => {
-    if (!session?.username || !room) return
+    if (!clientId || !room) return
 
     const joinPresence = async () => {
       try {
@@ -47,13 +45,13 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
 
         if (members.length === 1) {
           setIsLeader(true)
-          setLeader(session.username)
+          setLeader(clientId)
           await room.presence.update({
             currentTime: 0,
             playing: true,
-            leader: session.username,
+            leader: clientId,
           })
-          console.log("Leader elected:", session.username)
+          console.log("Leader elected:", clientId)
         }
         console.log("Joined presence room")
       } catch (error) {
@@ -72,7 +70,7 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
         hasJoinedPresence.current = false
       }
     }
-  }, [room, session?.username])
+  }, [room, clientId])
 
   useEffect(() => {
     if (!room) return
@@ -91,17 +89,17 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
   }, [isLeader, room])
 
   useEffect(() => {
-    if (!session?.username || !isLeader) return
+    if (!clientId || !isLeader) return
     const interval = setInterval(() => {
       const currentTime = videoRef.current?.getCurrentTime() || 0
       room.presence.update({
         currentTime,
-        leader: session.username,
+        leader: clientId,
       })
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [isLeader, room, session?.username, videoRef])
+  }, [isLeader, room, clientId, videoRef])
 
   return { newSyncedTime, leader, isLeader }
 }
