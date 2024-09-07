@@ -22,7 +22,7 @@ export const useRoomReactions = (roomName: string, username?: string) => {
   useEffect(() => {
     // Define the reaction listener that will handle incoming reactions
     const handleAddRoomReaction: RoomReactionListener = (reaction) => {
-      if (reaction.isSelf) return
+      // if (reaction.isSelf) return
       setLatestRoomReaction(reaction)
     }
     // Subscribe to room reactions with the defined listener
