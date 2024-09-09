@@ -37,9 +37,10 @@ export const useBots = (roomName: string | undefined) => {
       })
 
       const botChatClient = new ChatClient(client)
-      // Needed to simulate a real user joining the room so occupancy is updated
-      botChatClient.rooms
-        .get(roomName, {})
+
+      const room = botChatClient.rooms.get(roomName, {})
+
+      room
         .attach()
         .then(() => {
           setCurrentBots((prev) => prev + 1)
@@ -50,12 +51,15 @@ export const useBots = (roomName: string | undefined) => {
 
           // Function to send message and reset interval for more human-like behavior
           const sendMessageWithRandomInterval = () => {
-            botChatClient.rooms
-              .get(roomName, {})
-              .messages.send({ text: generateMessage() })
+            room.messages
+              .send({ text: generateMessage() })
               .then(() => {
-                console.debug(
-                  `Bot ${clientId} sent message in room ${roomName}`
+                console.log(`Bot ${clientId} sent message in room ${roomName}`)
+              })
+              .catch((error) => {
+                console.error(
+                  `Error sending message in room ${roomName}`,
+                  error
                 )
               })
             const randomInterval =
