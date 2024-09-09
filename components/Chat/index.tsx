@@ -1,9 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
-import { useChatClient } from "@ably/chat/react"
+import { useEffect, useRef, useState } from "react"
+import { Message } from "@ably/chat"
+import { useMessages } from "@ably/chat/react"
 
-import { useMessages } from "@/hooks/chat/useMessages"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
@@ -14,15 +14,36 @@ type ChatProps = {}
 
 const Chat = (_props: ChatProps) => {
   const messageListRef = useRef<HTMLDivElement>(null)
-  const { clientId } = useChatClient()
-  const { messages, isLoading, sendMessage } = useMessages(clientId)
-
-  const handleSend = useCallback(
-    (content: string) => {
-      return sendMessage(content)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const { send, getPreviousMessages } = useMessages({
+    listener: (message) => {
+      setMessages((prevMessage) => [...prevMessage, message.message])
     },
-    [sendMessage]
-  )
+    onDiscontinuity: (discontinuity) => {
+      console.error("Discontinuity detected", discontinuity)
+      // reset the messages when a discontinuity is detected,
+      setMessages([])
+      // triggers the useEffect to fetch the initial messages again.
+      setIsLoading(true)
+    },
+  })
+
+  useEffect(() => {
+    if (getPreviousMessages && isLoading) {
+      getPreviousMessages({ limit: 50 })
+        .then((result) => {
+          setMessages((prevMessages) => [
+            ...result.items.reverse(),
+            ...prevMessages,
+          ])
+          setIsLoading(false)
+        })
+        .catch((error) => {
+          console.error("Error fetching previous messages", error)
+        })
+    }
+  }, [getPreviousMessages, isLoading])
 
   useEffect(() => {
     if (messageListRef.current) {
@@ -40,10 +61,9 @@ const Chat = (_props: ChatProps) => {
           ref={messageListRef}
           messages={messages}
           loading={isLoading}
-          username={clientId}
         />
-        <MessageInput onSubmit={handleSend} />
       </CardContent>
+      <MessageInput onSubmit={send} />
     </Card>
   )
 }

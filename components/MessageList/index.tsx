@@ -8,13 +8,12 @@ import Spinner from "../Spinner"
 import styles from "./MessageList.module.css"
 
 type MessageListProps = {
-  username: string
   loading: boolean
   messages: Message[]
 }
 
 const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
-  ({ username, loading, messages }, ref) => {
+  ({ loading, messages }, ref) => {
     if (loading) return <Spinner />
     return (
       <div ref={ref} className={styles["MessageList"]}>
