@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useCallback, useId } from "react"
+import { Messages } from "@ably/chat"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -11,7 +12,7 @@ import { Form, FormField } from "@/components/ui/form"
 import MessageInputField from "./MessageInputField"
 
 type Props = {
-  onSubmit: (value: string) => void
+  onSubmit: Messages["send"]
 }
 
 const messageSchema = z.object({
@@ -40,7 +41,7 @@ const MessageInput = React.memo(function MessagInputInner({ onSubmit }: Props) {
         return
       }
 
-      onSubmit(values.content)
+      onSubmit({ text: values.content })
       form.reset()
     },
     [form, onSubmit]
@@ -50,7 +51,7 @@ const MessageInput = React.memo(function MessagInputInner({ onSubmit }: Props) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="w-full space-y-2"
+        className="w-full space-y-2 px-3"
       >
         <div className="flex items-center space-x-2">
           <FormField
@@ -66,7 +67,7 @@ const MessageInput = React.memo(function MessagInputInner({ onSubmit }: Props) {
           />
           <Button
             type="submit"
-            size="sm"
+            size="lg"
             className="w-85 max-h-[45px] min-h-[45px] bg-blue-700"
           >
             Send
