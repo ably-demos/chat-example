@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
+import { Reaction } from "@ably/chat"
+import { useRoomReactions } from "@ably/chat/react"
 import { OnProgressProps } from "react-player/base"
 import ReactPlayer from "react-player/file"
 
-import { useChat } from "@/hooks/chat/useChat"
 import { useOccupancyCount } from "@/hooks/chat/useOccupancy"
-import { useRoomReactions } from "@/hooks/chat/useRoomReactions"
 import { useVideoSync } from "@/hooks/chat/useVideoSync"
-import { useSession } from "@/hooks/useSession"
 
 import VideoControls from "./VideoControls"
 import VideoDetail from "./VideoDetail"
@@ -41,12 +40,16 @@ const VideoContainer = ({
   const videoRef = useRef<ReactPlayer>(null)
   const [volume, setVolume] = useState<number>(0.5)
   const userCount = useOccupancyCount()
-  const { roomId } = useChat()
-  const { session } = useSession()
-  const { latestRoomReaction, sendRoomReaction } = useRoomReactions(
-    roomId,
-    session?.username
-  )
+  const [latestRoomReaction, setLatestRoomReaction] = useState<Reaction>()
+
+  const listenerCallback = useCallback((reaction: Reaction) => {
+    if (reaction.isSelf) return
+    setLatestRoomReaction(reaction)
+  }, [])
+
+  const { send } = useRoomReactions({
+    listener: listenerCallback,
+  })
   const { newSyncedTime } = useVideoSync(videoRef)
 
   // Retrieve the stored playback position from local storage on component mount
@@ -114,7 +117,7 @@ const VideoContainer = ({
             playing={true}
             volume={volume}
             onVolumeChange={setVolume}
-            onReaction={sendRoomReaction}
+            onReaction={send}
             latestRoomReaction={latestRoomReaction}
           />
         </div>

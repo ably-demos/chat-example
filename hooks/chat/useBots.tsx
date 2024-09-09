@@ -38,23 +38,36 @@ export const useBots = (roomName: string | undefined) => {
 
       const botChatClient = new ChatClient(client)
       // Needed to simulate a real user joining the room so occupancy is updated
-      botChatClient.rooms.get(roomName, {}).messages.channel.attach()
+      botChatClient.rooms
+        .get(roomName, {})
+        .attach()
+        .then(() => {
+          setCurrentBots((prev) => prev + 1)
+          console.debug(`Bot ${clientId} joined room ${roomName}`)
 
-      setCurrentBots((prev) => prev + 1)
+          // Check if bot should publish messages
+          if (Math.random() > BOT_PUBLISHER_PROBABILITY) return
 
-      // Check if bot should publish messages
-      if (Math.random() > BOT_PUBLISHER_PROBABILITY) return
-
-      // Function to send message and reset interval for more human-like behavior
-      const sendMessageWithRandomInterval = () => {
-        botChatClient.rooms
-          .get(roomName, {})
-          .messages.send({ text: generateMessage() })
-        const randomInterval =
-          Math.floor(Math.random() * (BOT_INTERVAL - 10000)) + 10000 // Ensure minimum interval of 10 seconds
-        setTimeout(sendMessageWithRandomInterval, randomInterval)
-      }
-      sendMessageWithRandomInterval()
+          // Function to send message and reset interval for more human-like behavior
+          const sendMessageWithRandomInterval = () => {
+            botChatClient.rooms
+              .get(roomName, {})
+              .messages.send({ text: generateMessage() })
+              .then(() => {
+                console.debug(
+                  `Bot ${clientId} sent message in room ${roomName}`
+                )
+              })
+            const randomInterval =
+              Math.floor(Math.random() * (BOT_INTERVAL - 10000)) + 10000 // Ensure minimum interval of 10 seconds
+            setTimeout(sendMessageWithRandomInterval, randomInterval)
+          }
+          sendMessageWithRandomInterval()
+        })
+        .catch((error) => {
+          setCurrentBots((prev) => prev + 1)
+          console.error(`Error joining room ${roomName}`, error)
+        })
     }
 
     initializeBot()

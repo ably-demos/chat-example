@@ -1,11 +1,10 @@
 "use client"
 
 import { useCallback, useEffect, useRef } from "react"
+import { useChatClient } from "@ably/chat/react"
 
-import { useChat } from "@/hooks/chat/useChat"
 import { useMessages } from "@/hooks/chat/useMessages"
-import { useSession } from "@/hooks/useSession"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
@@ -14,13 +13,9 @@ import ChatHeader from "./ChatHeader"
 type ChatProps = {}
 
 const Chat = (_props: ChatProps) => {
-  const { roomId } = useChat()
-  const { session } = useSession()
   const messageListRef = useRef<HTMLDivElement>(null)
-  const { messages, isLoading, sendMessage } = useMessages(
-    roomId,
-    session?.username
-  )
+  const { clientId } = useChatClient()
+  const { messages, isLoading, sendMessage } = useMessages(clientId)
 
   const handleSend = useCallback(
     (content: string) => {
@@ -45,7 +40,7 @@ const Chat = (_props: ChatProps) => {
           ref={messageListRef}
           messages={messages}
           loading={isLoading}
-          username={session?.username!}
+          username={clientId}
         />
         <MessageInput onSubmit={handleSend} />
       </CardContent>

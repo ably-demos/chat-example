@@ -1,5 +1,5 @@
 import React from "react"
-import { Reaction } from "@ably/chat"
+import { Reaction, SendReactionParams } from "@ably/chat"
 
 import RoomReactions from "./RoomReactions"
 import Volume from "./Volume"
@@ -8,7 +8,7 @@ type Props = {
   playing: boolean
   volume: number
   onVolumeChange: (volume: number) => void
-  onReaction: (emoji: string) => void
+  onReaction: (params: SendReactionParams) => Promise<void>
   latestRoomReaction?: Reaction
 }
 
