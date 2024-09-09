@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Reaction } from "@ably/chat"
-import { useRoomReactions } from "@ably/chat/react"
+import { useOccupancy, useRoomReactions } from "@ably/chat/react"
 import { OnProgressProps } from "react-player/base"
 import ReactPlayer from "react-player/file"
 
-import { useOccupancyCount } from "@/hooks/chat/useOccupancy"
 import { useVideoSync } from "@/hooks/chat/useVideoSync"
 
 import VideoControls from "./VideoControls"
@@ -39,7 +38,7 @@ const VideoContainer = ({
   const [currentTime, setCurrentTime] = useState(0)
   const videoRef = useRef<ReactPlayer>(null)
   const [volume, setVolume] = useState<number>(0.5)
-  const userCount = useOccupancyCount()
+  const { connections } = useOccupancy()
   const [latestRoomReaction, setLatestRoomReaction] = useState<Reaction>()
 
   const listenerCallback = useCallback((reaction: Reaction) => {
@@ -123,7 +122,7 @@ const VideoContainer = ({
         </div>
         <VideoDetail
           title={title}
-          views={userCount}
+          views={connections}
           username={user.username}
           avatar={user.avatar}
         />
