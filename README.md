@@ -1,23 +1,26 @@
 # Ably Livestream Chat Demo
 
-A fullstack chat application demonstrating some of the features of the Ably Chat SDK. It uses:
+A fullstack chat application demonstrating some of the features of the Ably Chat SDK and associated Chat React hooks. It uses:
 
 * [`rooms`](https://ably.com/docs/chat/rooms) and [`messages`](https://ably.com/docs/chat/rooms/messages) for users to send and subscribe to chat messages, and [`history`](https://ably.com/docs/chat/rooms/history) to retrieve those that have been previously sent.
 * [`reactions`](https://ably.com/docs/chat/rooms/reactions) to enable users to send and receive room-level reactions.
 * [`occupancy`](https://ably.com/docs/chat/rooms/occupancy) to show the number of users connected to the room.
 * [`presence`](https://ably.com/docs/chat/rooms/presence) to synchronize video playback between users.
+* [`Chat React hooks`](https://github.com/ably/ably-chat-js/tree/main/src/react) to access and manage the various chat features above.
 * Postgres to demonstrate storing [`room`](https://ably.com/docs/chat/rooms) and user data.
 
 > Note: some elements of this application are purely for demonstration purposes, such as the video sync any chat bots.
 
 ## Built with
 
-- [Ably Chat SDK](https://github.com/ably/ably-chat-js)
+- [Ably Chat SDK](https://github.com/ably/ably-chat-js) and [Chat React hooks](https://github.com/ably/ably-chat-js/tree/main/src/react)
 - [Next.js](https://nextjs.org/) 14 App Directory
 - [Prisma](https://www.prisma.io/) | [Postgres](https://www.postgresql.org/) for database storage and ORM
 - [Radix UI Primitives](https://www.radix-ui.com/primitives) / [Shadcn](https://ui.shadcn.com/) for the UI components
 - [Tailwind CSS](https://tailwindcss.com/)
 - Icons from [Lucide](https://lucide.dev)
+
+This demo app uses both the [ably-chat-js](https://github.com/ably/ably-chat-js) core SDK and React Hooks as well as [ably-js](https://github.com/ably/ably-js) core SDK and React hooks
 
 ## Usage
 
