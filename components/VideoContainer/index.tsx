@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { Reaction } from "@ably/chat"
-import { useOccupancy, useRoomReactions } from "@ably/chat/react"
+import { Reaction, useOccupancy, useRoomReactions } from "@ably/chat"
 import { OnProgressProps } from "react-player/base"
 import ReactPlayer from "react-player/file"
 

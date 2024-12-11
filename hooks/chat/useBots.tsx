@@ -37,41 +37,42 @@ export const useBots = (roomName: string | undefined) => {
       })
 
       const botChatClient = new ChatClient(client)
+      botChatClient.rooms.get(roomName, {}).then((room) =>
+        room
+          .attach()
+          .then(() => {
+            setCurrentBots((prev) => prev + 1)
+            console.debug(`Bot ${clientId} joined room ${roomName}`)
 
-      const room = botChatClient.rooms.get(roomName, {})
+            // Check if bot should publish messages
+            if (Math.random() > BOT_PUBLISHER_PROBABILITY) return
 
-      room
-        .attach()
-        .then(() => {
-          setCurrentBots((prev) => prev + 1)
-          console.debug(`Bot ${clientId} joined room ${roomName}`)
-
-          // Check if bot should publish messages
-          if (Math.random() > BOT_PUBLISHER_PROBABILITY) return
-
-          // Function to send message and reset interval for more human-like behavior
-          const sendMessageWithRandomInterval = () => {
-            room.messages
-              .send({ text: generateMessage() })
-              .then(() => {
-                console.log(`Bot ${clientId} sent message in room ${roomName}`)
-              })
-              .catch((error) => {
-                console.error(
-                  `Error sending message in room ${roomName}`,
-                  error
-                )
-              })
-            const randomInterval =
-              Math.floor(Math.random() * (BOT_INTERVAL - 10000)) + 10000 // Ensure minimum interval of 10 seconds
-            setTimeout(sendMessageWithRandomInterval, randomInterval)
-          }
-          sendMessageWithRandomInterval()
-        })
-        .catch((error) => {
-          setCurrentBots((prev) => prev + 1)
-          console.error(`Error joining room ${roomName}`, error)
-        })
+            // Function to send message and reset interval for more human-like behavior
+            const sendMessageWithRandomInterval = () => {
+              room.messages
+                .send({ text: generateMessage() })
+                .then(() => {
+                  console.log(
+                    `Bot ${clientId} sent message in room ${roomName}`
+                  )
+                })
+                .catch((error) => {
+                  console.error(
+                    `Error sending message in room ${roomName}`,
+                    error
+                  )
+                })
+              const randomInterval =
+                Math.floor(Math.random() * (BOT_INTERVAL - 10000)) + 10000 // Ensure minimum interval of 10 seconds
+              setTimeout(sendMessageWithRandomInterval, randomInterval)
+            }
+            sendMessageWithRandomInterval()
+          })
+          .catch((error) => {
+            setCurrentBots((prev) => prev + 1)
+            console.error(`Error joining room ${roomName}`, error)
+          })
+      )
     }
 
     initializeBot()

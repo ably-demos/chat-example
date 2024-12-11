@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { Room } from "@prisma/client"
 
 import prisma from "@/lib/prisma"
@@ -20,11 +20,20 @@ const addUserToRoom = (name: string, username: string) => {
   })
 }
 
-export async function GET(
-  _req: Request,
-  { params: { name } }: { params: { name: string } }
-): Promise<NextResponse<Room>> {
+export async function GET(req: NextRequest): Promise<NextResponse<Room>> {
   const session = await getSession()
+
+  const pathname = req.nextUrl.pathname
+  const segments = pathname.split("/") // Extract the room name from the URL
+
+  const name = segments[segments.length - 1] // Extract the room name from the URL
+
+  if (!name) {
+    return NextResponse.json(
+      { error: "No room provided in URL" },
+      { status: 400 }
+    )
+  }
 
   try {
     const { users, ...room } = await getRoom(name, session.username)
@@ -32,9 +41,8 @@ export async function GET(
     if (!users.length) {
       await addUserToRoom(name, session.username)
     }
-
     return NextResponse.json(room)
   } catch (error) {
-    return new NextResponse("room not found", { status: 404 })
+    return NextResponse.json({ error: "room not found" }, { status: 404 })
   }
 }

@@ -19,7 +19,7 @@ const MessageList = forwardRef<HTMLDivElement, MessageListProps>(
       <div ref={ref} className={styles["MessageList"]}>
         <ol>
           {messages.map((message) => (
-            <MessageItem key={message.timeserial} message={message} />
+            <MessageItem key={message.serial} message={message} />
           ))}
         </ol>
       </div>

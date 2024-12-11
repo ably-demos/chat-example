@@ -8,7 +8,7 @@ export interface SessionData {
 export const getSession = async (
   cookieStore: ReturnType<typeof cookies> = cookies()
 ) =>
-  getIronSession<SessionData>(cookieStore, {
+  getIronSession<SessionData>(await cookieStore, {
     cookieName: "session",
     password: process.env.SESSION_SECRET!,
     cookieOptions: {

@@ -27,7 +27,7 @@ export async function GET() {
   return Response.json(session)
 }
 
-export async function POST(req: NextRequest, res: NextResponse<SessionData>) {
+export async function POST() {
   const session = await getSession()
 
   if (!session.username) {

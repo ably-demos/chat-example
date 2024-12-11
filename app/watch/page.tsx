@@ -2,8 +2,13 @@
 
 import React, { useMemo } from "react"
 import { useSearchParams } from "next/navigation"
-import { ChatClient, LogLevel, RoomOptionsDefaults } from "@ably/chat"
-import { ChatClientProvider, ChatRoomProvider } from "@ably/chat/react"
+import {
+  AllFeaturesEnabled,
+  ChatClient,
+  ChatClientProvider,
+  ChatRoomProvider,
+  LogLevel,
+} from "@ably/chat"
 import { AblyProvider } from "ably/react"
 
 import { useAblyClient } from "@/hooks/chat/useAblyClient"
@@ -59,10 +64,7 @@ const Watch = () => {
   return (
     <AblyProvider client={client}>
       <ChatClientProvider client={chatClient}>
-        <ChatRoomProvider
-          id={room.name}
-          options={RoomOptionsDefaults}
-        >
+        <ChatRoomProvider id={room.name} options={AllFeaturesEnabled}>
           <ChatContainer roomId={room.id} video={video} />
         </ChatRoomProvider>
       </ChatClientProvider>

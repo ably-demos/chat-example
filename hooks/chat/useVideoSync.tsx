@@ -1,7 +1,12 @@
 import { RefObject, useEffect, useRef, useState } from "react"
-import { PresenceListener } from "@ably/chat"
-import { useChatClient, useRoom } from "@ably/chat/react"
+import { PresenceListener, useChatClient, useRoom } from "@ably/chat"
 import ReactPlayer from "react-player/file"
+
+interface VideoSyncState {
+  newSyncedTime: number
+  leader: string
+  isLeader: boolean
+}
 
 /**
  * Custom hook to synchronize video playback across multiple clients using Ably presence.
@@ -9,11 +14,13 @@ import ReactPlayer from "react-player/file"
  * @returns {Object} - The current time, leader information, and isLeader flag.
  */
 
-export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
+export const useVideoSync = (
+  videoRef: RefObject<ReactPlayer>
+): VideoSyncState => {
   const [newSyncedTime, setNewSyncedTime] = useState(0)
   const [isLeader, setIsLeader] = useState(false)
   const [leader, setLeader] = useState<string>("")
-  const { room } = useRoom()
+  const { room, roomId } = useRoom()
   const { clientId } = useChatClient()
   const hasJoinedPresence = useRef(false)
 
@@ -21,19 +28,19 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
     const storedLeaderData = localStorage.getItem("roomLeader")
     if (!storedLeaderData) return
     const { storedLeader, storedRoomId } = JSON.parse(storedLeaderData)
-    if (storedLeader === clientId && storedRoomId === room.roomId) {
+    if (storedLeader === clientId && storedRoomId === roomId) {
       setIsLeader(true)
       setLeader(storedLeader)
     }
-  }, [clientId, room.roomId])
+  }, [clientId, roomId])
 
   useEffect(() => {
-    if (!leader || !room.roomId) return
+    if (!leader || !roomId) return
     localStorage.setItem(
       "roomLeader",
-      JSON.stringify({ storedLeader: leader, storedRoomId: room.roomId })
+      JSON.stringify({ storedLeader: leader, storedRoomId: roomId })
     )
-  }, [leader, room.roomId])
+  }, [leader, roomId])
 
   useEffect(() => {
     if (!clientId || !room) return
@@ -89,7 +96,7 @@ export const useVideoSync = (videoRef: React.RefObject<ReactPlayer>) => {
   }, [isLeader, room])
 
   useEffect(() => {
-    if (!clientId || !isLeader) return
+    if (!clientId || !isLeader || !room) return
     const interval = setInterval(() => {
       const currentTime = videoRef.current?.getCurrentTime() || 0
       room.presence.update({
