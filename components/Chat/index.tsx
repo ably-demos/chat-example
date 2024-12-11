@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Message } from "@ably/chat"
+import { Message, MessageEventPayload, PaginatedResult } from "@ably/chat"
 import { useMessages } from "@ably/chat/react"
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -17,8 +17,8 @@ const Chat = (_props: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const { send, getPreviousMessages } = useMessages({
-    listener: (message) => {
-      setMessages((prevMessage) => [...prevMessage, message.message])
+    listener: (event: MessageEventPayload) => {
+      setMessages((prevMessage) => [...prevMessage, event.message])
     },
     onDiscontinuity: (discontinuity) => {
       console.error("Discontinuity detected", discontinuity)
@@ -32,14 +32,14 @@ const Chat = (_props: ChatProps) => {
   useEffect(() => {
     if (getPreviousMessages && isLoading) {
       getPreviousMessages({ limit: 50 })
-        .then((result) => {
+        .then((result: PaginatedResult<Message>) => {
           setMessages((prevMessages) => [
             ...result.items.reverse(),
             ...prevMessages,
           ])
           setIsLoading(false)
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error("Error fetching previous messages", error)
         })
     }

@@ -19,7 +19,7 @@
     "vercel"
   ],
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_DEBUG=next next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
@@ -34,7 +34,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@ably/chat": "0.2.0",
+    "@ably/chat": "ably/ably-chat-js#release/0.3.0",
     "@emoji-mart/data": "1.1.2",
     "@emoji-mart/react": "1.1.1",
     "@faker-js/faker": "8.3.1",

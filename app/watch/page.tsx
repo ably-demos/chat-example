@@ -59,10 +59,7 @@ const Watch = () => {
   return (
     <AblyProvider client={client}>
       <ChatClientProvider client={chatClient}>
-        <ChatRoomProvider
-          id={room.name}
-          options={RoomOptionsDefaults}
-        >
+        <ChatRoomProvider id={room.name} options={RoomOptionsDefaults}>
           <ChatContainer roomId={room.id} video={video} />
         </ChatRoomProvider>
       </ChatClientProvider>
