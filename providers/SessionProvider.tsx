@@ -1,53 +1,140 @@
 "use client"
 
-import { createContext, FC, ReactNode, useMemo } from "react"
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 
+import { fetchJson } from "@/lib/fetcher"
 import { SessionData } from "@/lib/session"
-import { useSession } from "@/hooks/useSession"
 
 import Spinner from "../components/Spinner"
 
 interface SessionContextProps {
   username: string
+  avatar: string
 }
-
 export const SessionContext = createContext<SessionContextProps | undefined>(
   undefined
 )
 
 interface SessionProviderProps {
   children: ReactNode
+  /**
+   * Optional username to check or create.
+   * If undefined, a new session is created automatically (POST).
+   * If defined, we first attempt to fetch the session via GET, and if mismatched or missing, we fallback to POST.
+   */
+  username?: string
 }
 
-const isValidSession = (
-  session: Partial<SessionData> | undefined
-): session is SessionData => !!session?.username
+const sessionApiRoute = "/api/session"
 
 /**
- * Provides the current session context, which includes the username.
- * @returns children wrapped in a SessionContext.Provider, or a Spinner if the session is loading
- * @example
- * <SessionProvider>
- *   <UserProfile />
- * </SessionProvider>
+ * GETs the session from the server.
+ * @throws Error if the fetch fails
  */
-export const SessionProvider: FC<SessionProviderProps> = ({ children }) => {
-  const { session, isLoading } = useSession()
+async function fetchSession(username: string): Promise<SessionData> {
+  const url = username
+    ? `${sessionApiRoute}?username=${encodeURIComponent(username)}`
+    : sessionApiRoute
+  const response = await fetchJson<{ session: SessionData }>(url, {
+    method: "GET",
+  })
+  return response.session
+}
 
-  const context = useMemo(
-    () => ({ username: session?.username }),
-    [session?.username]
-  )
+/**
+ * POSTs to create (or update) the session on the server.
+ * @param usernameToCreate if provided, it’s included in the request body
+ * @throws Error if the creation fails
+ */
+async function createSession(usernameToCreate?: string): Promise<SessionData> {
+  const response = await fetchJson<{ session: SessionData }>(sessionApiRoute, {
+    method: "POST",
+    body: JSON.stringify({ username: usernameToCreate }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  return response.session
+}
 
-  if (isLoading || !isValidSession(context))
+export const SessionProvider: FC<SessionProviderProps> = ({
+  children,
+  username,
+}) => {
+  const [session, setSession] = useState<SessionData | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    const initSession = async () => {
+      setIsLoading(true)
+      try {
+        if (!username) {
+          const newSession = await createSession()
+          setSession(newSession)
+        } else {
+          try {
+            const existingSession = await fetchSession(username)
+
+            if (existingSession.username !== username) {
+              const newSession = await createSession(username)
+              setSession(newSession)
+            } else {
+              setSession(existingSession)
+            }
+          } catch (err) {
+            const newSession = await createSession(username)
+            setSession(newSession)
+          }
+        }
+      } catch (err) {
+        setError(err as Error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    void initSession()
+  }, [username])
+
+  // Prepare context value (null if session is invalid)
+  const contextValue = useMemo(() => {
+    if (!session || !session.username) return undefined
+    return { username: session.username, avatar: session.avatar }
+  }, [session])
+
+  // Display spinner while loading
+  if (isLoading) {
     return (
       <div className="flex size-full">
         <Spinner />
       </div>
     )
+  }
+
+  // If we haven’t validly set context, show a fallback or error
+  // (You could choose to render children anyway, depending on your use-case)
+  if (!contextValue || error) {
+    return (
+      <div className="flex size-full items-center justify-center">
+        <p className="text-red-600">
+          {error
+            ? `Error initializing session: ${error.message}`
+            : "Invalid session"}
+        </p>
+      </div>
+    )
+  }
 
   return (
-    <SessionContext.Provider value={context}>
+    <SessionContext.Provider value={contextValue}>
       {children}
     </SessionContext.Provider>
   )

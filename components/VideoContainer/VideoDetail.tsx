@@ -1,15 +1,16 @@
 import React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
-import { Clock10Icon, UserIcon } from "lucide-react"
+import { UserIcon } from "lucide-react"
+
+import { useSession } from "@/hooks/useSession"
 
 type Props = {
   title: string
   views: number
-  username: string
-  avatar: string
 }
 
-const VideoDetail = ({ title, views, username, avatar }: Props) => {
+const VideoDetail = ({ title, views }: Props) => {
+  const { username, avatar } = useSession()
   return (
     <>
       <div className="my-4 flex w-full justify-between">

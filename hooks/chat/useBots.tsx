@@ -11,15 +11,21 @@ const generateBot = () => faker.internet.userName()
 
 const BOTS_ENABLED = process.env.NEXT_PUBLIC_WITH_BOTS === "true"
 // How often the bot will send a message in milliseconds
-const rawInterval = parseInt(process.env.NEXT_PUBLIC_BOT_INTERVAL ?? "60000", 10);
-const BOT_INTERVAL = Number.isNaN(rawInterval) || rawInterval <= 0 ? 60000 : rawInterval;
+const rawInterval = parseInt(
+  process.env.NEXT_PUBLIC_BOT_INTERVAL ?? "60000",
+  10
+)
+const BOT_INTERVAL =
+  Number.isNaN(rawInterval) || rawInterval <= 0 ? 60000 : rawInterval
 
-const rawCount = parseInt(process.env.NEXT_PUBLIC_BOT_COUNT ?? "100", 10);
-const BOT_COUNT = Number.isNaN(rawCount) || rawCount <= 0 ? 100 : rawCount;
+const rawCount = parseInt(process.env.NEXT_PUBLIC_BOT_COUNT ?? "100", 10)
+const BOT_COUNT = Number.isNaN(rawCount) || rawCount <= 0 ? 100 : rawCount
 
-const rawProbability = parseFloat(process.env.NEXT_PUBLIC_BOT_PUBLISHER_PROBABILITY ?? "1");
-const BOT_PUBLISHER_PROBABILITY = Number.isNaN(rawProbability) || rawProbability <= 0 ? 1 : rawProbability;
-
+const rawProbability = parseFloat(
+  process.env.NEXT_PUBLIC_BOT_PUBLISHER_PROBABILITY ?? "1"
+)
+const BOT_PUBLISHER_PROBABILITY =
+  Number.isNaN(rawProbability) || rawProbability <= 0 ? 1 : rawProbability
 
 /**
  * Custom hook to spawn bots in the chat room.
