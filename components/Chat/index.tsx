@@ -1,7 +1,13 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Message, MessageEvent, PaginatedResult, useMessages } from "@ably/chat"
+import {
+  Message,
+  MessageEvent,
+  MessageEvents,
+  PaginatedResult,
+  useMessages,
+} from "@ably/chat"
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
@@ -11,13 +17,76 @@ import ChatHeader from "./ChatHeader"
 
 type ChatProps = {}
 
+function messageCompare(a: Message, b: Message): number {
+  return a.before(b) ? -1 : 1
+}
+
+// Binary insert to keep the array sorted efficiently
+function insertSorted(array: Message[], newItem: Message): Message[] {
+  let low = 0
+  let high = array.length
+
+  while (low < high) {
+    const mid = (low + high) >>> 1
+    if (messageCompare(newItem, array[mid]) < 0) {
+      high = mid
+    } else {
+      low = mid + 1
+    }
+  }
+  array.splice(low, 0, newItem)
+  return array
+}
+
 const Chat = (_props: ChatProps) => {
   const messageListRef = useRef<HTMLDivElement>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { send, getPreviousMessages } = useMessages({
+  const [isAtBottom, setIsAtBottom] = useState(true) // Add a state to track whether the user is at the bottom
+
+  const { send, update, deleteMessage, getPreviousMessages } = useMessages({
     listener: (event: MessageEvent) => {
-      setMessages((prevMessage) => [...prevMessage, event.message])
+      const message = event.message
+      switch (event.type) {
+        case MessageEvents.Created: {
+          setMessages((prevMessages) => {
+            // Skip if already present
+            const alreadyExists = prevMessages.some((m) => m.isSameAs(message))
+            if (alreadyExists) return prevMessages
+
+            return insertSorted([...prevMessages], message)
+          })
+          break
+        }
+        case MessageEvents.Updated:
+        case MessageEvents.Deleted: {
+          setMessages((prevMessages) => {
+            console.log("got deletion or update event", event)
+            const index = prevMessages.findIndex((other) =>
+              message.isSameAs(other)
+            )
+            if (index === -1) {
+              return prevMessages
+            }
+
+            const newMessage = prevMessages[index].with(event)
+
+            // if no change, do nothing
+            if (newMessage === prevMessages[index]) {
+              return prevMessages
+            }
+
+            // copy array and replace the message
+            const updatedArray = prevMessages.slice()
+            updatedArray[index] = newMessage
+            return updatedArray
+          })
+          break
+        }
+        default: {
+          console.error("Unknown message", message)
+        }
+      }
     },
     onDiscontinuity: (discontinuity) => {
       console.error("Discontinuity detected", discontinuity)
@@ -45,10 +114,11 @@ const Chat = (_props: ChatProps) => {
   }, [getPreviousMessages, isLoading])
 
   useEffect(() => {
-    if (messageListRef.current) {
+    if (isAtBottom && messageListRef.current) {
+      console.log("atBottom", messageListRef.current)
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight
     }
-  }, [messages])
+  }, [messages, isAtBottom])
 
   return (
     <Card className="flex flex-col rounded-none border-t-0 md:size-full">
@@ -60,6 +130,9 @@ const Chat = (_props: ChatProps) => {
           ref={messageListRef}
           messages={messages}
           loading={isLoading}
+          onUpdate={update}
+          onDelete={deleteMessage}
+          onScrollStateChange={setIsAtBottom}
         />
       </CardContent>
       <MessageInput onSubmit={send} />
