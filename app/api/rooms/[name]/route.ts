@@ -20,13 +20,13 @@ const addUserToRoom = (name: string, username: string) => {
   })
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse<Room>> {
+export async function GET(
+  _req: NextRequest,
+  params: { params: Promise<{ name: string }> }
+): Promise<NextResponse<Room>> {
   const session = await getSession()
 
-  const pathname = req.nextUrl.pathname
-  const segments = pathname.split("/") // Extract the room name from the URL
-
-  const name = segments[segments.length - 1] // Extract the room name from the URL
+  const { name } = await params.params
 
   if (!name) {
     return NextResponse.json(
