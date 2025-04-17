@@ -73,6 +73,13 @@ export const SessionProvider: FC<SessionProviderProps> = ({
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
+    if (!session) return
+    // Store the username in sessionStorage for later page loads
+    sessionStorage.setItem("ably-chat-demo-clientId", session.username)
+    sessionStorage.setItem("ably-chat-demo-clientId-avatar", session.avatar)
+  }, [session])
+
+  useEffect(() => {
     const initSession = async () => {
       setIsLoading(true)
       try {
@@ -99,6 +106,15 @@ export const SessionProvider: FC<SessionProviderProps> = ({
       } finally {
         setIsLoading(false)
       }
+    }
+
+    // Check if we already have a session in sessionStorage
+    const clientId = sessionStorage.getItem("ably-chat-demo-clientId")
+    const avatar = sessionStorage.getItem("ably-chat-demo-clientId-avatar")
+    if (clientId) {
+      setSession({ username: clientId, avatar: avatar || "" })
+      setIsLoading(false)
+      return
     }
 
     void initSession()
