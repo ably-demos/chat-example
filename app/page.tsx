@@ -8,7 +8,7 @@ import { useSession } from "@/hooks/useSession"
 import Spinner from "@/components/Spinner"
 
 export default function IndexPage() {
-  const { session, isLoading } = useSession()
+  const { username } = useSession()
   const searchParams = useSearchParams()
 
   const roomName = searchParams.get("room")
@@ -16,8 +16,6 @@ export default function IndexPage() {
   const [room, setRoom] = useState(roomName)
 
   useEffect(() => {
-    if (!session?.username || isLoading) return
-
     // We will redirect to the watch page if the room is valid
     if (!isValidRoom(room)) {
       // See if we have a default room name else grab a random room name
@@ -26,7 +24,7 @@ export default function IndexPage() {
     } else {
       redirect(`/watch?room=${room}`)
     }
-  }, [room, isLoading, session?.username])
+  }, [room, username])
 
   return (
     <section className="container grid items-center justify-center gap-6 pb-8 pt-6 md:py-10">

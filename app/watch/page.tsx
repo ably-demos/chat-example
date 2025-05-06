@@ -31,12 +31,12 @@ const Watch = () => {
   const roomParam = useMemo(() => searchParams.get("room"), [searchParams])
 
   const { video, isLoading: isVideoLoading } = useVideo()
-  const { session } = useSession()
+  const { username } = useSession()
   const { room, isLoading: isRoomLoading } = useLoadCreateRoom(roomParam)
 
   useBots(room?.name)
 
-  const client = useAblyClient(session?.username)
+  const client = useAblyClient(username)
 
   const chatClient = useMemo(() => {
     if (client) {
@@ -48,14 +48,7 @@ const Watch = () => {
     return null
   }, [client])
 
-  if (
-    isVideoLoading ||
-    isRoomLoading ||
-    !client ||
-    !room ||
-    !session ||
-    !chatClient
-  ) {
+  if (isVideoLoading || isRoomLoading || !client || !room || !chatClient) {
     return <Spinner />
   }
 
@@ -77,7 +70,6 @@ interface ChatContainerProps {
   video: {
     title: string
     url: string
-    user: { username: string; avatar: string; subscribers: number }
     live: boolean
   }
 }
@@ -87,12 +79,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ video }) => {
   return (
     <main className="flex flex-1 flex-col lg:flex-row">
       <article className="flex h-[50%] w-full lg:h-full">
-        <VideoContainer
-          title={video.title}
-          url={video.url}
-          user={video.user}
-          live={video.live}
-        />
+        <VideoContainer title={video.title} url={video.url} live={video.live} />
       </article>
       <aside className="flex h-[50%] max-h-full lg:h-full lg:max-w-md">
         <Chat />

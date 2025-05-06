@@ -1,51 +1,16 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
-import useSWR from "swr"
-import useSWRMutation from "swr/mutation"
-
-import { fetchJson } from "@/lib/fetcher"
-import { SessionData } from "@/lib/session"
-import { POST } from "@/app/api/session/route"
-
-const sessionApiRoute = "/api/session"
-
-const doCreate = (url: string) => {
-  return fetchJson<typeof POST>(url, {
-    method: "POST",
-  })
-}
+import { useContext } from "react"
+import { SessionContext } from "@/providers/SessionProvider"
 
 /**
- * @returns The current session for the closest SessionProvider
+ * Hook to access the session context
+ * @returns session context containing the username
  */
 export const useSession = () => {
-  const { data, ...getSession } = useSWR(
-    sessionApiRoute,
-    fetchJson<SessionData>
-  )
-
-  const { trigger: create } = useSWRMutation(sessionApiRoute, (url) =>
-    doCreate(url)
-  )
-
-  useEffect(() => {
-    if (
-      !data?.username &&
-      !getSession.isLoading &&
-      getSession.error &&
-      getSession.error.status === 404
-    ) {
-      create()
-    }
-  }, [create, data?.username, getSession.error, getSession.isLoading])
-
-  return useMemo(
-    () => ({
-      session: data,
-      createSession: create,
-      ...getSession,
-    }),
-    [create, data, getSession]
-  )
+  const context = useContext(SessionContext)
+  if (!context) {
+    throw new Error("useSession must be used within a SessionProvider")
+  }
+  return context
 }
