@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
   const client = new Ably.Rest({
     key: process.env.ABLY_API_KEY,
-    environment: 'local',
+    environment: "local",
     tls: false,
     port: 8081,
   })

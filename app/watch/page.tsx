@@ -7,7 +7,6 @@ import { ChatClientProvider, ChatRoomProvider } from "@ably/chat/react"
 import { AblyProvider } from "ably/react"
 
 import { useAblyClient } from "@/hooks/chat/useAblyClient"
-import { useBots } from "@/hooks/chat/useBots"
 /**
  * Hooks
  */
@@ -28,7 +27,6 @@ const Watch = () => {
   const { video, isLoading: isVideoLoading } = useVideo()
   const { username } = useSession()
   const { room, isLoading: isRoomLoading } = useLoadCreateRoom(roomParam)
-
   const client = useAblyClient(username)
 
   const chatClient = useMemo(() => {
@@ -40,7 +38,6 @@ const Watch = () => {
     }
     return null
   }, [client])
-
 
   if (isVideoLoading || isRoomLoading || !client || !room || !chatClient) {
     return <Spinner />

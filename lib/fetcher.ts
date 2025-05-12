@@ -25,7 +25,6 @@ export async function fetchJson<JSON = unknown>(
       res.status
     )
 
-    console.trace(error)
     try {
       console.error(await res.text())
     } catch (e) {

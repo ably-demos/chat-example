@@ -1,12 +1,17 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { ChatClient } from "@ably/chat"
 import { faker } from "@faker-js/faker"
 import * as Ably from "ably"
 
 import { generateMessage } from "@/lib/bot"
-import { useRoom } from '@ably/chat/react';
+
+interface BotResource {
+  client: Ably.Realtime
+  chatClient: ChatClient
+  clientId: string
+}
 
 const generateBot = () => faker.internet.userName()
 
@@ -33,88 +38,123 @@ const BOT_PUBLISHER_PROBABILITY =
  * @param {string} roomName - The name of the room to spawn bots in.
  */
 export const useBots = (roomName: string | undefined) => {
-  const [currentBots, setCurrentBots] = useState(0)
-  const botClientsRef = useRef<Ably.Realtime[]>([])
-  const botChatClientsRef = useRef<ChatClient[]>([])
-  const botRoomsRef = useRef<any[]>([])
+  const currentBotsRef = useRef<number>(0)
+  const botResourcesRef = useRef<BotResource[]>([])
   const timeoutsRef = useRef<NodeJS.Timeout[]>([])
 
   useEffect(() => {
-    if (!BOTS_ENABLED || !roomName || currentBots >= BOT_COUNT) return
+    if (!BOTS_ENABLED || !roomName || currentBotsRef.current >= BOT_COUNT)
+      return
 
     const initializeBot = async () => {
+      // Generate a unique bot username
       const clientId = generateBot()
+
+      // Create an Ably Realtime client for the bot
       const client = new Ably.Realtime({
         authUrl: `/api/auth?clientId=${clientId}`,
         clientId,
-        environment: 'local',
+        environment: "local",
         tls: false,
         port: 8081,
       })
-      botClientsRef.current.push(client)
 
-      const botChatClient = new ChatClient(client)
-      botChatClientsRef.current.push(botChatClient)
-
-      const room = await botChatClient.rooms.get(roomName)
-      botRoomsRef.current.push(room)
-
+      // Create a chat client and join the room
+      const chatClient = new ChatClient(client)
+      const room = await chatClient.rooms.get(roomName)
       await room.attach()
-      setCurrentBots((prev) => prev + 1)
-      console.debug(`Bot ${clientId} joined room ${roomName}`)
 
+      const botResource: BotResource = {
+        client,
+        chatClient,
+        clientId,
+      }
+
+      botResourcesRef.current.push(botResource)
+      currentBotsRef.current += 1
+
+      console.debug(
+        `Bot ${clientId} joined room ${roomName} (${currentBotsRef.current}/${BOT_COUNT})`
+      )
+
+      // Randomly determine if this bot will send messages based on probability
       if (Math.random() > BOT_PUBLISHER_PROBABILITY) return
 
-      const sendMessageWithRandomInterval = () => {
-        room.messages
-          .send({ text: generateMessage() })
-          .then(() => {
-            console.log(`Bot ${clientId} sent message in room ${roomName}`)
-          })
-          .catch((error) => {
-            console.error(
-              `Error sending message in room ${roomName}`,
-              error
-            )
-          })
+      // Function to send messages at random intervals
+      const sendMessageWithRandomInterval = async () => {
+        try {
+          await room.messages.send({ text: generateMessage() })
+          console.log(
+            `Bot ${botResource.clientId} sent message in room ${roomName}`
+          )
+        } catch (error) {
+          console.error(
+            `Error sending message in room ${roomName} for bot ${botResource.clientId}`,
+            error
+          )
+        }
+
+        // Calculate a random interval for the next message (between 10s and BOT_INTERVAL)
         const randomInterval =
           Math.floor(Math.random() * (BOT_INTERVAL - 10000)) + 10000
-        const timeoutId = setTimeout(sendMessageWithRandomInterval, randomInterval)
+
+        // Schedule the next message and track the timeout
+        const timeoutId = setTimeout(
+          sendMessageWithRandomInterval,
+          randomInterval
+        )
         timeoutsRef.current.push(timeoutId)
       }
 
+      // Start sending messages at random intervals
       sendMessageWithRandomInterval()
     }
-    initializeBot()
 
-    // Cleanup function
+    const initializeBots = () => {
+      // Recursive function to create bots one by one with a delay
+      const createBotWithDelay = (index: number) => {
+        if (index >= BOT_COUNT || currentBotsRef.current >= BOT_COUNT) return
+        const timeoutId = setTimeout(async () => {
+          try {
+            await initializeBot()
+            console.debug(`Bot ${index + 1} initialized`)
+          } catch (error) {
+            console.error(`Error initializing bot ${index + 1}:`, error)
+          }
+          createBotWithDelay(index + 1)
+        }, 100) // Small delay between bot creations to prevent performance issues
+        timeoutsRef.current.push(timeoutId)
+      }
+      createBotWithDelay(currentBotsRef.current)
+    }
+
+    initializeBots()
     return () => {
-      // Clear all timeouts
-      timeoutsRef.current.forEach(timeoutId => clearTimeout(timeoutId))
+      // Clear all scheduled timeouts to prevent them from running after unmount
+      timeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
       timeoutsRef.current = []
 
-      // Release all rooms
-      // botRoomsRef.current.forEach(room => {
-      //   if (room && typeof room.release === 'function') {
-      //     room.release().catch(error => {
-      //       console.error(`Error releasing room ${roomName}`, error)
-      //     })
-      //   }
-      // })
-      botRoomsRef.current = []
+      const cleanupBotResources = async () => {
+        for (const resource of botResourcesRef.current) {
+          // Release the room connection if it exists
+          try {
+            await resource.chatClient.rooms.release(roomName)
+          } catch (error) {
+            console.error(
+              `Error releasing room ${roomName} for bot ${resource.clientId}`,
+              error
+            )
+          }
+          // Close the Ably client connection
+          resource.client.close()
+        }
+        botResourcesRef.current = []
+        currentBotsRef.current = 0
 
-      // Close all clients
-      // botClientsRef.current.forEach(client => {
-      //   if (client && typeof client.close === 'function') {
-      //     client.close()
-      //   }
-      // })
-      botClientsRef.current = []
-      botChatClientsRef.current = []
+        console.debug(`Cleaned up all bots for room ${roomName}`)
+      }
 
-      setCurrentBots(0)
-
-      console.debug(`Cleaned up all bots for room ${roomName}`)
+      cleanupBotResources()
     }
-  }, [roomName, currentBots])
+  }, [roomName])
 }

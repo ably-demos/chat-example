@@ -7,14 +7,14 @@ import {
   MessageEvents,
   PaginatedResult,
 } from "@ably/chat"
-import { useMessages, useRoom } from '@ably/chat/react';
+import { useMessages, useRoom } from "@ably/chat/react"
 
+import { useBots } from "@/hooks/chat/useBots"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import MessageInput from "../MessageInput"
 import MessageList from "../MessageList"
 import ChatHeader from "./ChatHeader"
-import { useBots } from '@/hooks/chat/useBots';
 
 type ChatProps = {}
 
@@ -44,8 +44,10 @@ const Chat = (_props: ChatProps) => {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isAtBottom, setIsAtBottom] = useState(true) // Add a state to track whether the user is at the bottom
-  const { roomId } = useRoom()
-  useBots(roomId)
+
+  // Enable the bots in the chat
+  const { room } = useRoom()
+  useBots(room?.roomId)
 
   const { send, update, deleteMessage, getPreviousMessages } = useMessages({
     listener: (event: MessageEvent) => {

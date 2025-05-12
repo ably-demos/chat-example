@@ -20,7 +20,7 @@ export async function GET(
     const foundRoom = await getRoom(name)
 
     if (!foundRoom) {
-      return NextResponse.json("Room not found", { status: 404 })
+      return NextResponse.json({ error: "Room not found" }, { status: 404 })
     }
 
     return NextResponse.json(foundRoom)
