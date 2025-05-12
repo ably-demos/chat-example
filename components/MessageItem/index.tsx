@@ -43,7 +43,7 @@ export type MessageItemProps = {
 const MessageItem = forwardRef<HTMLLIElement, MessageItemProps>(
   ({ message, onUpdate, onDelete }, ref) => {
     const [open, setOpen] = useState(false)
-    const { session } = useSession()
+    const { username } = useSession()
 
     const [isEditing, setIsEditing] = useState(false)
     const [editText, setEditText] = useState(message.text)
@@ -56,7 +56,7 @@ const MessageItem = forwardRef<HTMLLIElement, MessageItemProps>(
     useKeyboardDown("Escape", handleEscape)
 
     const color = getUserColor(message.clientId)
-    const isUsersMessage = message?.clientId === session?.username
+    const isUsersMessage = message?.clientId === username
     const isMessageDeleted = message?.isDeleted
 
     const handleUpdate = useCallback(

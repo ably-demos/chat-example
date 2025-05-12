@@ -18,6 +18,9 @@ export const useAblyClient = (username: Maybe<string>) => {
       ? new Ably.Realtime({
           authUrl: `/api/auth?clientId=${username}`,
           clientId: username,
+        environment: 'local',
+        tls: false,
+        port: 8081,
         })
       : null
   }, [username])

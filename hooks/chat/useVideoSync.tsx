@@ -1,5 +1,6 @@
 import { RefObject, useEffect, useRef, useState } from "react"
-import { PresenceListener, useChatClient, useRoom } from "@ably/chat"
+import { PresenceListener } from "@ably/chat"
+import { useChatClient, useRoom } from "@ably/chat/react"
 import ReactPlayer from "react-player/file"
 
 interface VideoSyncState {
@@ -23,7 +24,6 @@ export const useVideoSync = (
   const { room, roomId } = useRoom()
   const { clientId } = useChatClient()
   const hasJoinedPresence = useRef(false)
-
   useEffect(() => {
     const storedLeaderData = localStorage.getItem("roomLeader")
     if (!storedLeaderData) return
@@ -73,8 +73,9 @@ export const useVideoSync = (
 
     return () => {
       if (hasJoinedPresence.current) {
-        room.presence.leave()
-        hasJoinedPresence.current = false
+        room.presence.leave().then(() => {
+          hasJoinedPresence.current = false
+        })
       }
     }
   }, [room, clientId])

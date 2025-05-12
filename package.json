@@ -34,7 +34,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@ably/chat": "^0.5.1",
+    "@ably/chat": "github:ably/ably-chat-js#main",
     "@emoji-mart/data": "1.1.2",
     "@emoji-mart/react": "1.1.1",
     "@faker-js/faker": "8.3.1",
@@ -101,7 +101,7 @@
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-tailwindcss": "3.14.0",
     "husky": "8.0.3",
-    "next": "15.2.3",
+    "next": "15.2.4",
     "postcss": "8.4.33",
     "prisma": "5.9.0"
   },
