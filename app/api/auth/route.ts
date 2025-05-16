@@ -19,9 +19,6 @@ export async function GET(request: NextRequest) {
 
   const client = new Ably.Rest({
     key: process.env.ABLY_API_KEY,
-    environment: "local",
-    tls: false,
-    port: 8081,
   })
   // create token request with the client id and chat capabilities
   const tokenRequestData = await client.auth.createTokenRequest({

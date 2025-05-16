@@ -54,9 +54,6 @@ export const useBots = (roomName: string | undefined) => {
       const client = new Ably.Realtime({
         authUrl: `/api/auth?clientId=${clientId}`,
         clientId,
-        environment: "local",
-        tls: false,
-        port: 8081,
       })
 
       // Create a chat client and join the room
@@ -122,7 +119,7 @@ export const useBots = (roomName: string | undefined) => {
             console.error(`Error initializing bot ${index + 1}:`, error)
           }
           createBotWithDelay(index + 1)
-        }, 100) // Small delay between bot creations to prevent performance issues
+        }, 500)
         timeoutsRef.current.push(timeoutId)
       }
       createBotWithDelay(currentBotsRef.current)
@@ -136,7 +133,6 @@ export const useBots = (roomName: string | undefined) => {
 
       const cleanupBotResources = async () => {
         for (const resource of botResourcesRef.current) {
-          // Release the room connection if it exists
           try {
             await resource.chatClient.rooms.release(roomName)
           } catch (error) {
@@ -145,7 +141,6 @@ export const useBots = (roomName: string | undefined) => {
               error
             )
           }
-          // Close the Ably client connection
           resource.client.close()
         }
         botResourcesRef.current = []
