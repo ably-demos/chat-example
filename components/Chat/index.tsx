@@ -18,10 +18,6 @@ import ChatHeader from "./ChatHeader"
 
 type ChatProps = {}
 
-function messageCompare(a: Message, b: Message): number {
-  return a.before(b) ? -1 : 1
-}
-
 // Binary insert to keep the array sorted efficiently
 function insertSorted(array: Message[], newItem: Message): Message[] {
   let low = 0
@@ -29,7 +25,7 @@ function insertSorted(array: Message[], newItem: Message): Message[] {
 
   while (low < high) {
     const mid = (low + high) >>> 1
-    if (messageCompare(newItem, array[mid]) < 0) {
+    if (newItem.before(array[mid])) {
       high = mid
     } else {
       low = mid + 1
