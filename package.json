@@ -34,7 +34,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@ably/chat": "github:ably/ably-chat-js#main",
+    "@ably/chat": "0.7.0",
     "@emoji-mart/data": "1.1.2",
     "@emoji-mart/react": "1.1.1",
     "@faker-js/faker": "8.3.1",
