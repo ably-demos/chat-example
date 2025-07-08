@@ -13,11 +13,6 @@ type VideoContainerProps = {
   title: string
   url: string
   live: boolean
-  user: {
-    username: string
-    avatar: string
-    subscribers: number
-  }
 }
 
 /**
@@ -26,14 +21,12 @@ type VideoContainerProps = {
  * @param {boolean} props.live - Indicates if the video is live.
  * @param {string} props.url - The URL of the video.
  * @param {string} props.title - The title of the video.
- * @param {Object} props.user - The user details.
  * @returns {JSX.Element} The rendered component.
  */
 const VideoContainer = ({
   live,
   url,
   title,
-  user,
 }: VideoContainerProps): JSX.Element => {
   const [currentTime, setCurrentTime] = useState(0)
   const videoRef = useRef<ReactPlayer>(null)
@@ -120,12 +113,7 @@ const VideoContainer = ({
             latestRoomReaction={latestRoomReaction}
           />
         </div>
-        <VideoDetail
-          title={title}
-          views={connections}
-          username={user.username}
-          avatar={user.avatar}
-        />
+        <VideoDetail title={title} views={connections} />
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import { faker } from "@faker-js/faker/locale/en_GB"
 import prisma from "@/lib/prisma"
 
 export const generateUsername = async () => {
-  let username
+  let username: string
   do {
     username = faker.internet.userName()
   } while (await prisma.user.findUnique({ where: { username } }))

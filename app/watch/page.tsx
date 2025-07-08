@@ -2,12 +2,11 @@
 
 import React, { useMemo } from "react"
 import { useSearchParams } from "next/navigation"
-import { ChatClient, LogLevel, RoomOptionsDefaults } from "@ably/chat"
+import { ChatClient, LogLevel } from "@ably/chat"
 import { ChatClientProvider, ChatRoomProvider } from "@ably/chat/react"
 import { AblyProvider } from "ably/react"
 
 import { useAblyClient } from "@/hooks/chat/useAblyClient"
-import { useBots } from "@/hooks/chat/useBots"
 /**
  * Hooks
  */
@@ -26,31 +25,21 @@ const Watch = () => {
   const roomParam = useMemo(() => searchParams.get("room"), [searchParams])
 
   const { video, isLoading: isVideoLoading } = useVideo()
-  const { session } = useSession()
+  const { username } = useSession()
   const { room, isLoading: isRoomLoading } = useLoadCreateRoom(roomParam)
-
-  useBots(room?.name)
-
-  const client = useAblyClient(session?.username)
+  const client = useAblyClient(username)
 
   const chatClient = useMemo(() => {
     if (client) {
       return new ChatClient(client, {
-        logLevel: LogLevel.Info,
+        logLevel: LogLevel.Debug,
         logHandler: console.log,
       })
     }
     return null
   }, [client])
 
-  if (
-    isVideoLoading ||
-    isRoomLoading ||
-    !client ||
-    !room ||
-    !session ||
-    !chatClient
-  ) {
+  if (isVideoLoading || isRoomLoading || !client || !room || !chatClient) {
     return <Spinner />
   }
 
@@ -61,7 +50,7 @@ const Watch = () => {
       <ChatClientProvider client={chatClient}>
         <ChatRoomProvider
           id={room.name}
-          options={RoomOptionsDefaults}
+          options={{ occupancy: { enableEvents: true } }}
         >
           <ChatContainer roomId={room.id} video={video} />
         </ChatRoomProvider>
@@ -75,7 +64,6 @@ interface ChatContainerProps {
   video: {
     title: string
     url: string
-    user: { username: string; avatar: string; subscribers: number }
     live: boolean
   }
 }
@@ -85,12 +73,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({ video }) => {
   return (
     <main className="flex flex-1 flex-col lg:flex-row">
       <article className="flex h-[50%] w-full lg:h-full">
-        <VideoContainer
-          title={video.title}
-          url={video.url}
-          user={video.user}
-          live={video.live}
-        />
+        <VideoContainer title={video.title} url={video.url} live={video.live} />
       </article>
       <aside className="flex h-[50%] max-h-full lg:h-full lg:max-w-md">
         <Chat />

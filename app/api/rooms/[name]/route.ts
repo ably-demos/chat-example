@@ -1,40 +1,31 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { Room } from "@prisma/client"
 
-import prisma from "@/lib/prisma"
-import { getSession } from "@/lib/session"
 import { getRoom } from "@/app/controllers/room"
 
-const addUserToRoom = (name: string, username: string) => {
-  return prisma?.room.update({
-    where: {
-      name,
-    },
-    data: {
-      users: {
-        connect: {
-          username,
-        },
-      },
-    },
-  })
-}
-
 export async function GET(
-  _req: Request,
-  { params: { name } }: { params: { name: string } }
+  _req: NextRequest,
+  params: { params: Promise<{ name: string }> }
 ): Promise<NextResponse<Room>> {
-  const session = await getSession()
-
   try {
-    const { users, ...room } = await getRoom(name, session.username)
+    const { name } = await params.params
 
-    if (!users.length) {
-      await addUserToRoom(name, session.username)
+    if (!name) {
+      return NextResponse.json(
+        { error: "No room provided in URL" },
+        { status: 400 }
+      )
     }
 
-    return NextResponse.json(room)
+    const foundRoom = await getRoom(name)
+
+    if (!foundRoom) {
+      return NextResponse.json({ error: "Room not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(foundRoom)
   } catch (error) {
-    return new NextResponse("room not found", { status: 404 })
+    console.error("Error fetching room:", error)
+    return NextResponse.json({ error: "Failed to fetch room" }, { status: 500 })
   }
 }
