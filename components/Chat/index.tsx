@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react"
 import {
   Message,
-  MessageEvent,
-  MessageEvents,
+  ChatMessageEvent,
+  ChatMessageEventType,
   PaginatedResult,
 } from "@ably/chat"
 import { useMessages, useRoom } from "@ably/chat/react"
@@ -42,14 +42,14 @@ const Chat = (_props: ChatProps) => {
   const [isAtBottom, setIsAtBottom] = useState(true) // Add a state to track whether the user is at the bottom
 
   // Enable the bots in the chat
-  const { room } = useRoom()
-  useBots(room?.roomId)
+  const { roomName } = useRoom()
+  useBots(roomName)
 
-  const { send, update, deleteMessage, getPreviousMessages } = useMessages({
-    listener: (event: MessageEvent) => {
+  const { sendMessage, updateMessage, deleteMessage, historyBeforeSubscribe } = useMessages({
+    listener: (event: ChatMessageEvent) => {
       const message = event.message
       switch (event.type) {
-        case MessageEvents.Created: {
+        case ChatMessageEventType.Created: {
           setMessages((prevMessages) => {
             // Skip if already present
             const alreadyExists = prevMessages.some((m) => m.isSameAs(message))
@@ -59,8 +59,8 @@ const Chat = (_props: ChatProps) => {
           })
           break
         }
-        case MessageEvents.Updated:
-        case MessageEvents.Deleted: {
+        case ChatMessageEventType.Updated:
+        case ChatMessageEventType.Deleted: {
           setMessages((prevMessages) => {
             console.log("got deletion or update event", event)
             const index = prevMessages.findIndex((other) =>
@@ -99,8 +99,8 @@ const Chat = (_props: ChatProps) => {
   })
 
   useEffect(() => {
-    if (getPreviousMessages && isLoading) {
-      getPreviousMessages({ limit: 50 })
+    if (historyBeforeSubscribe && isLoading) {
+      historyBeforeSubscribe({ limit: 50 })
         .then((result: PaginatedResult<Message>) => {
           setMessages((prevMessages) => [
             ...result.items.reverse(),
@@ -112,7 +112,7 @@ const Chat = (_props: ChatProps) => {
           console.error("Error fetching previous messages", error)
         })
     }
-  }, [getPreviousMessages, isLoading])
+  }, [historyBeforeSubscribe, isLoading])
 
   useEffect(() => {
     if (isAtBottom && messageListRef.current) {
@@ -131,12 +131,12 @@ const Chat = (_props: ChatProps) => {
           ref={messageListRef}
           messages={messages}
           loading={isLoading}
-          onUpdate={update}
+          onUpdate={updateMessage}
           onDelete={deleteMessage}
           onScrollStateChange={setIsAtBottom}
         />
       </CardContent>
-      <MessageInput onSubmit={send} />
+      <MessageInput onSubmit={sendMessage} />
     </Card>
   )
 }

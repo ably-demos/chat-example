@@ -1,5 +1,5 @@
 import React from "react"
-import { Reaction, SendReactionParams } from "@ably/chat"
+import { RoomReaction, SendReactionParams } from "@ably/chat"
 
 import RoomReactions from "./RoomReactions"
 import Volume from "./Volume"
@@ -9,7 +9,7 @@ type Props = {
   volume: number
   onVolumeChange: (volume: number) => void
   onReaction: (params: SendReactionParams) => Promise<void>
-  latestRoomReaction?: Reaction
+  latestRoomReaction?: RoomReaction
 }
 
 const VideoControls = ({
