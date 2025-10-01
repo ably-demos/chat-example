@@ -61,7 +61,7 @@ const MessageItem = forwardRef<HTMLLIElement, MessageItemProps>(
 
     const handleUpdate = useCallback(
       (message: Message, text: string) => {
-        onUpdate(message.copy({ text })).catch((error) => {
+        onUpdate(message.serial, message.copy({ text })).catch((error) => {
           console.error("Failed to update message", error)
         })
       },

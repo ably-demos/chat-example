@@ -1,6 +1,11 @@
 import { RefObject, useEffect, useRef, useState } from "react"
-import { PresenceListener } from "@ably/chat"
-import { useChatClient, useRoom } from "@ably/chat/react"
+import { PresenceData, PresenceEvent, PresenceListener, PresenceMember, RoomStatus } from "@ably/chat"
+import {
+  useChatClient,
+  usePresence,
+  usePresenceListener,
+  useRoom,
+} from "@ably/chat/react"
 import ReactPlayer from "react-player/file"
 
 interface VideoSyncState {
@@ -21,39 +26,58 @@ export const useVideoSync = (
   const [newSyncedTime, setNewSyncedTime] = useState(0)
   const [isLeader, setIsLeader] = useState(false)
   const [leader, setLeader] = useState<string>("")
-  const { room, roomId } = useRoom()
+  const { roomName, roomStatus } = useRoom()
   const { clientId } = useChatClient()
   const hasJoinedPresence = useRef(false)
+  const { enter, update, leave } = usePresence({ autoEnterLeave: false })
+  const { presenceData } = usePresenceListener({
+    listener: (event: PresenceEvent) => {
+      if (isLeader) return
+      const data = event.member.data as { currentTime: number; leader: string }
+      if (!data) return
+      setNewSyncedTime(data.currentTime)
+      setLeader(data.leader)
+      console.log("Received presence update:", data)
+    }
+  })
+  const canEnterPresence = roomStatus === RoomStatus.Attached;
+
+  const presenceMembersRef = useRef<PresenceMember[]>(presenceData)
+  useEffect(() => {
+    presenceMembersRef.current = presenceData
+  }, [presenceData])
+
   useEffect(() => {
     const storedLeaderData = localStorage.getItem("roomLeader")
     if (!storedLeaderData) return
     const { storedLeader, storedRoomId } = JSON.parse(storedLeaderData)
-    if (storedLeader === clientId && storedRoomId === roomId) {
+    if (storedLeader === clientId && storedRoomId === roomName) {
       setIsLeader(true)
       setLeader(storedLeader)
     }
-  }, [clientId, roomId])
+  }, [clientId, roomName])
 
   useEffect(() => {
-    if (!leader || !roomId) return
+    if (!leader || !roomName) return
     localStorage.setItem(
       "roomLeader",
-      JSON.stringify({ storedLeader: leader, storedRoomId: roomId })
+      JSON.stringify({ storedLeader: leader, storedRoomId: roomName })
     )
-  }, [leader, roomId])
+  }, [leader, roomName])
 
   useEffect(() => {
-    if (!clientId || !room) return
+    if (!clientId || !canEnterPresence) return
 
     const joinPresence = async () => {
       try {
-        await room.presence.enter()
-        const members = await room.presence.get()
+        await enter()
 
-        if (members.length === 1) {
+        // If nobody else is leading, we're the leader
+        const leader = presenceMembersRef.current.length === 0 || presenceMembersRef.current.length === 1 && presenceMembersRef.current[0].clientId === clientId 
+        if (leader) {
           setIsLeader(true)
           setLeader(clientId)
-          await room.presence.update({
+          await update({
             currentTime: 0,
             playing: true,
             leader: clientId,
@@ -73,41 +97,22 @@ export const useVideoSync = (
 
     return () => {
       if (hasJoinedPresence.current) {
-        room.presence.leave().then(() => {
+        leave().then(() => {
           hasJoinedPresence.current = false
         })
       }
     }
-  }, [room, clientId])
+  }, [canEnterPresence, roomName, enter, update, leave, clientId])
 
   useEffect(() => {
-    if (!room) return
-    const handlePresenceUpdate: PresenceListener = (msg) => {
-      if (isLeader) return
-      const data = msg.data as { currentTime: number; leader: string }
-      if (!data) return
-      setNewSyncedTime(data.currentTime)
-      setLeader(data.leader)
-      console.log("Received presence update:", data)
-    }
-    const { unsubscribe } = room.presence.subscribe(handlePresenceUpdate)
-    return () => {
-      unsubscribe()
-    }
-  }, [isLeader, room])
-
-  useEffect(() => {
-    if (!clientId || !isLeader || !room) return
+    if (!clientId || !isLeader) return
     const interval = setInterval(() => {
       const currentTime = videoRef.current?.getCurrentTime() || 0
-      room.presence.update({
-        currentTime,
-        leader: clientId,
-      })
+      update({ currentTime, leader: clientId })
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [isLeader, room, clientId, videoRef])
+  }, [isLeader, update, clientId, videoRef])
 
   return { newSyncedTime, leader, isLeader }
 }

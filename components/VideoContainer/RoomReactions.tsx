@@ -3,14 +3,14 @@ import { nanoid } from "nanoid"
 
 import "./styles.css"
 
-import { Reaction, SendReactionParams } from "@ably/chat"
+import { RoomReaction, SendReactionParams } from "@ably/chat"
 
 import FloatingReaction from "./FloatingReaction"
 import ReactionButton from "./ReactionButton"
 
 type RoomReactionProps = {
   onClick: (params: SendReactionParams) => Promise<void>
-  latestRoomReaction?: Reaction
+  latestRoomReaction?: RoomReaction
 }
 
 const reactions = {
@@ -47,10 +47,7 @@ const RoomReactions = ({
   const handleEmojiUpdate = (name: string) => {
     const id = nanoid()
     setActiveReactions((prev) => {
-      return {
-        ...prev,
-        [name]: [...prev[name], id],
-      }
+      return { ...prev, [name]: [...prev[name], id] }
     })
     setTimeout(() => {
       setActiveReactions((prev) => ({
@@ -63,9 +60,9 @@ const RoomReactions = ({
   // setActiveReactions if latestReaction changes
   useEffect(() => {
     if (!latestRoomReaction) return
-    const emojiType = getKeyByValue(reactions, latestRoomReaction.type)
+    const emojiType = getKeyByValue(reactions, latestRoomReaction.name)
     if (!emojiType) {
-      console.error("Emoji not found in reactions", latestRoomReaction.type)
+      console.error("Emoji not found in reactions", latestRoomReaction.name)
       return
     }
     handleEmojiUpdate(emojiType)
@@ -74,7 +71,7 @@ const RoomReactions = ({
   const handleAddReactionByUser = useCallback(
     (name: string) => {
       handleEmojiUpdate(name)
-      handleClick({ type: reactions[name as keyof typeof reactions] })
+      handleClick({ name: reactions[name as keyof typeof reactions] })
         .then(() => {
           console.log("Reaction sent")
         })

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { Reaction } from "@ably/chat"
+import { RoomReaction, RoomReactionEvent } from "@ably/chat"
 import { useOccupancy, useRoomReactions } from "@ably/chat/react"
 import { OnProgressProps } from "react-player/base"
 import ReactPlayer from "react-player/file"
@@ -32,14 +32,14 @@ const VideoContainer = ({
   const videoRef = useRef<ReactPlayer>(null)
   const [volume, setVolume] = useState<number>(0.5)
   const { connections } = useOccupancy()
-  const [latestRoomReaction, setLatestRoomReaction] = useState<Reaction>()
+  const [latestRoomReaction, setLatestRoomReaction] = useState<RoomReaction>()
 
-  const listenerCallback = useCallback((reaction: Reaction) => {
-    if (reaction.isSelf) return
-    setLatestRoomReaction(reaction)
+  const listenerCallback = useCallback((event: RoomReactionEvent) => {
+    if (event.reaction.isSelf) return
+    setLatestRoomReaction(event.reaction)
   }, [])
 
-  const { send } = useRoomReactions({
+  const { sendRoomReaction } = useRoomReactions({
     listener: listenerCallback,
   })
   const { newSyncedTime } = useVideoSync(videoRef)
@@ -109,7 +109,7 @@ const VideoContainer = ({
             playing={true}
             volume={volume}
             onVolumeChange={setVolume}
-            onReaction={send}
+            onReaction={sendRoomReaction}
             latestRoomReaction={latestRoomReaction}
           />
         </div>
