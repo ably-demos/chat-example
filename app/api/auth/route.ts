@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import Ably from "ably"
+import jwt from "jsonwebtoken"
 
 export async function GET(request: NextRequest) {
   // get client id from query params
@@ -17,18 +17,40 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const client = new Ably.Rest({
-    key: process.env.ABLY_API_KEY,
-  })
-  // create token request with the client id and chat capabilities
-  const tokenRequestData = await client.auth.createTokenRequest({
-    capability: {
+  const apiKey = process.env.ABLY_API_KEY
+  if (!apiKey) {
+    return NextResponse.json(
+      {
+        error: "ABLY_API_KEY is not configured",
+      },
+      {
+        status: 500,
+      }
+    )
+  }
+
+  // Parse the API key to extract key name and secret
+  const [keyName, keySecret] = apiKey.split(":")
+
+  // Create JWT claims
+  const claims = {
+    "x-ably-capability": JSON.stringify({
       "[chat]*": ["*"],
-    },
-    clientId: clientIdParam!,
+    }),
+    "x-ably-clientId": clientIdParam,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour expiration
+  }
+
+  // Sign the JWT with the key secret
+  const token = jwt.sign(claims, keySecret, {
+    keyid: keyName,
   })
 
-  return NextResponse.json(tokenRequestData, {
+  return new NextResponse(token, {
     status: 200,
+    headers: {
+      "Content-Type": "application/jwt",
+    },
   })
 }
