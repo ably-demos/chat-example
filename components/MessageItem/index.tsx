@@ -1,5 +1,5 @@
 import { forwardRef, useCallback, useState } from "react"
-import { Message, Messages } from "@ably/chat"
+import { ChatMessageAction, Message, Messages } from "@ably/chat"
 import { Pencil, Trash2 } from "lucide-react"
 
 /**
@@ -57,7 +57,7 @@ const MessageItem = forwardRef<HTMLLIElement, MessageItemProps>(
 
     const color = getUserColor(message.clientId)
     const isUsersMessage = message?.clientId === username
-    const isMessageDeleted = message?.isDeleted
+    const isMessageDeleted = message?.action === ChatMessageAction.MessageDelete
 
     const handleUpdate = useCallback(
       (message: Message, text: string) => {
@@ -70,7 +70,7 @@ const MessageItem = forwardRef<HTMLLIElement, MessageItemProps>(
 
     const handleDelete = useCallback(
       (message: Message) => {
-        onDelete(message).catch((error) => {
+        onDelete(message.serial).catch((error) => {
           console.error("Failed to delete message", error)
         })
       },
