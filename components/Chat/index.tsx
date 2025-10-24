@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import {
-  Message,
   ChatMessageEvent,
   ChatMessageEventType,
+  Message,
   PaginatedResult,
 } from "@ably/chat"
 import { useMessages, useRoom } from "@ably/chat/react"
@@ -25,7 +25,7 @@ function insertSorted(array: Message[], newItem: Message): Message[] {
 
   while (low < high) {
     const mid = (low + high) >>> 1
-    if (newItem.before(array[mid])) {
+    if (newItem.serial < array[mid].serial) {
       high = mid
     } else {
       low = mid + 1
@@ -45,58 +45,61 @@ const Chat = (_props: ChatProps) => {
   const { roomName } = useRoom()
   useBots(roomName)
 
-  const { sendMessage, updateMessage, deleteMessage, historyBeforeSubscribe } = useMessages({
-    listener: (event: ChatMessageEvent) => {
-      const message = event.message
-      switch (event.type) {
-        case ChatMessageEventType.Created: {
-          setMessages((prevMessages) => {
-            // Skip if already present
-            const alreadyExists = prevMessages.some((m) => m.isSameAs(message))
-            if (alreadyExists) return prevMessages
+  const { sendMessage, updateMessage, deleteMessage, historyBeforeSubscribe } =
+    useMessages({
+      listener: (event: ChatMessageEvent) => {
+        const message = event.message
+        switch (event.type) {
+          case ChatMessageEventType.Created: {
+            setMessages((prevMessages) => {
+              // Skip if already present
+              const alreadyExists = prevMessages.some(
+                (m) => m.serial === message.serial
+              )
+              if (alreadyExists) return prevMessages
 
-            return insertSorted([...prevMessages], message)
-          })
-          break
+              return insertSorted([...prevMessages], message)
+            })
+            break
+          }
+          case ChatMessageEventType.Updated:
+          case ChatMessageEventType.Deleted: {
+            setMessages((prevMessages) => {
+              console.log("got deletion or update event", event)
+              const index = prevMessages.findIndex(
+                (other) => other.serial === message.serial
+              )
+              if (index === -1) {
+                return prevMessages
+              }
+
+              const newMessage = prevMessages[index].with(event)
+
+              // if no change, do nothing
+              if (newMessage === prevMessages[index]) {
+                return prevMessages
+              }
+
+              // copy array and replace the message
+              const updatedArray = prevMessages.slice()
+              updatedArray[index] = newMessage
+              return updatedArray
+            })
+            break
+          }
+          default: {
+            console.error("Unknown message", message)
+          }
         }
-        case ChatMessageEventType.Updated:
-        case ChatMessageEventType.Deleted: {
-          setMessages((prevMessages) => {
-            console.log("got deletion or update event", event)
-            const index = prevMessages.findIndex((other) =>
-              message.isSameAs(other)
-            )
-            if (index === -1) {
-              return prevMessages
-            }
-
-            const newMessage = prevMessages[index].with(event)
-
-            // if no change, do nothing
-            if (newMessage === prevMessages[index]) {
-              return prevMessages
-            }
-
-            // copy array and replace the message
-            const updatedArray = prevMessages.slice()
-            updatedArray[index] = newMessage
-            return updatedArray
-          })
-          break
-        }
-        default: {
-          console.error("Unknown message", message)
-        }
-      }
-    },
-    onDiscontinuity: (discontinuity) => {
-      console.error("Discontinuity detected", discontinuity)
-      // reset the messages when a discontinuity is detected,
-      setMessages([])
-      // triggers the useEffect to fetch the initial messages again.
-      setIsLoading(true)
-    },
-  })
+      },
+      onDiscontinuity: (discontinuity) => {
+        console.error("Discontinuity detected", discontinuity)
+        // reset the messages when a discontinuity is detected,
+        setMessages([])
+        // triggers the useEffect to fetch the initial messages again.
+        setIsLoading(true)
+      },
+    })
 
   useEffect(() => {
     if (historyBeforeSubscribe && isLoading) {
