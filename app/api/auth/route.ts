@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
   // Create JWT claims
   const claims = {
     "x-ably-capability": JSON.stringify({
-      "[chat]*": ["*"],
+      "chat:*": ["*"],
     }),
     "x-ably-clientId": clientIdParam,
     iat: Math.floor(Date.now() / 1000),
